@@ -1,0 +1,1015 @@
+/* =========================================
+   PERSONALIZED ROADMAP PAGE
+========================================= */
+
+.roadmap-page {
+  min-height: 100vh;
+  padding: 40px;
+  background: #f7f8fc;
+  color: #1f2937;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.roadmap-header {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+}
+
+.roadmap-label {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #6366f1;
+}
+
+.roadmap-header h1 {
+  margin: 0;
+  font-size: 38px;
+  line-height: 1.2;
+}
+
+.roadmap-description {
+  max-width: 650px;
+  margin-top: 14px;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   OVERALL PROGRESS
+========================================= */
+
+.roadmap-progress-card {
+  min-width: 260px;
+  padding: 20px;
+  background: white;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.progress-circle {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.roadmap-progress-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.roadmap-progress-card p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* =========================================
+   CAREER SELECTOR
+========================================= */
+
+.career-selector {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  padding: 20px 24px;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.career-selector label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.career-selector select {
+  min-width: 260px;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.career-selector select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* =========================================
+   RECOMMENDED NEXT STEP
+========================================= */
+
+.recommended-card {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  padding: 28px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+  border: 1px solid #c7d2fe;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.recommended-icon {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #6366f1;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.recommended-content {
+  flex: 1;
+}
+
+.recommended-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #6366f1;
+}
+
+.recommended-content h2 {
+  margin: 6px 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.recommended-content p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.recommended-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.recommended-meta span {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: white;
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid #e0e7ff;
+}
+
+/* =========================================
+   PRIORITY FOCUS
+========================================= */
+
+.priority-focus-card {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  padding: 28px;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.priority-focus-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.priority-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #6366f1;
+  margin-bottom: 8px;
+}
+
+.priority-focus-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.priority-focus-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.priority-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff7ed;
+  font-size: 25px;
+}
+
+/* =========================================
+   PRIORITY SKILLS
+========================================= */
+
+.priority-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.priority-skill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 14px;
+}
+
+.priority-rank {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #6366f1;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.priority-skill-info {
+  flex: 1;
+}
+
+.priority-skill-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 7px;
+}
+
+.priority-bar {
+  width: 100%;
+  height: 7px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.priority-bar-fill {
+  height: 100%;
+  background: #f59e0b;
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+.priority-score {
+  min-width: 48px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ea580c;
+}
+
+.no-gaps-message {
+  padding: 16px;
+  background: #f0fdf4;
+  border-radius: 12px;
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* =========================================
+   ROADMAP TIMELINE
+========================================= */
+
+.roadmap-timeline {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.roadmap-phase {
+  position: relative;
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.phase-number {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  z-index: 2;
+}
+
+.phase-card {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================
+   PHASE HEADER
+========================================= */
+
+.phase-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.phase-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.phase-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6366f1;
+  letter-spacing: 1px;
+}
+
+.priority-phase-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.phase-header h2 {
+  margin: 7px 0;
+  font-size: 23px;
+}
+
+.phase-header p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.phase-duration {
+  white-space: nowrap;
+  height: fit-content;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+/* =========================================
+   PHASE PROGRESS
+========================================= */
+
+.phase-progress {
+  margin-top: 25px;
+}
+
+.phase-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* =========================================
+   SKILLS
+========================================= */
+
+.skills-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.skill-item:hover {
+  background: #f9fafb;
+}
+
+.skill-item input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.skill-item.completed {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.skill-item.completed span:first-of-type {
+  text-decoration: line-through;
+  color: #6b7280;
+}
+
+.completed-text {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* =========================================
+   ASSESSMENT SCORE
+========================================= */
+
+.assessment-score {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ea580c;
+  background: #fff7ed;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+/* =========================================
+   MOBILE RESPONSIVE
+========================================= */
+
+@media (max-width: 800px) {
+  .roadmap-page {
+    padding: 20px;
+  }
+
+  .roadmap-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .roadmap-header h1 {
+    font-size: 30px;
+  }
+
+  .roadmap-progress-card {
+    min-width: auto;
+  }
+
+  .career-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .career-selector select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .phase-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 700px) {
+  .recommended-card {
+    padding: 20px;
+    gap: 14px;
+  }
+
+  .recommended-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 22px;
+  }
+
+  .recommended-content h2 {
+    font-size: 20px;
+  }
+
+  .recommended-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .priority-focus-card {
+    padding: 20px;
+  }
+
+  .priority-focus-header {
+    align-items: flex-start;
+  }
+
+  .priority-icon {
+    display: none;
+  }
+
+  .priority-skill {
+    gap: 10px;
+  }
+
+  .roadmap-phase {
+    gap: 12px;
+  }
+
+  .phase-card {
+    padding: 20px;
+  }
+
+  .phase-number {
+    width: 38px;
+    height: 38px;
+  }
+}
+/* ==========================================
+   GAMIFICATION PANEL
+========================================== */
+
+.gamification-panel {
+  max-width: 1000px;
+  margin: 0 auto 25px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.game-stat {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.game-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 13px;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.game-stat span {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: #6b7280;
+  letter-spacing: 1px;
+}
+
+.game-stat strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  color: #111827;
+}
+
+/* ==========================================
+   LEVEL PROGRESS
+========================================== */
+
+.level-progress-card {
+  max-width: 1000px;
+  margin: 0 auto 25px;
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.level-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.level-progress-header strong {
+  color: #111827;
+}
+
+.level-progress-header p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.level-progress-bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.level-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+/* ==========================================
+   BADGES
+========================================== */
+
+.badges-card {
+  max-width: 1000px;
+  margin: 0 auto 25px;
+  padding: 25px;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.badges-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.badges-header h2 {
+  margin: 5px 0 0;
+  font-size: 22px;
+}
+
+.badges-header > span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.badge {
+  padding: 18px 12px;
+  text-align: center;
+  border-radius: 16px;
+  transition: 0.2s ease;
+}
+
+.badge:hover {
+  transform: translateY(-3px);
+}
+
+.badge-unlocked {
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+}
+
+.badge-locked {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  opacity: 0.6;
+}
+
+.badge-emoji {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.badge strong {
+  display: block;
+  font-size: 13px;
+}
+
+.badge p {
+  margin: 5px 0;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.badge span {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+/* ==========================================
+   DAILY MISSION
+========================================== */
+
+.daily-mission {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  padding: 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #312e81, #4f46e5);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.25);
+}
+
+.mission-icon {
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+}
+
+.mission-content {
+  flex: 1;
+}
+
+.mission-content > span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.mission-content h2 {
+  margin: 5px 0;
+  font-size: 21px;
+}
+
+.mission-content p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.mission-progress > div:first-child {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.mission-bar {
+  height: 7px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.mission-bar div {
+  height: 100%;
+  background: white;
+  border-radius: 20px;
+  transition: width 0.4s ease;
+}
+
+.mission-reward {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   XP REWARD
+========================================== */
+
+.xp-reward {
+  margin-left: auto;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   MOTIVATION
+========================================== */
+
+.motivation-card {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 18px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.motivation-emoji {
+  font-size: 35px;
+}
+
+.motivation-card p {
+  margin: 0 0 5px;
+  font-size: 17px;
+  font-weight: 800;
+  color: #9a3412;
+}
+
+.motivation-card span {
+  font-size: 13px;
+  color: #c2410c;
+}
+
+/* ==========================================
+   NOTIFICATION
+========================================== */
+
+.gamification-notification {
+  position: fixed;
+  top: 85px;
+  right: 25px;
+  z-index: 1000;
+  padding: 15px 20px;
+  border-radius: 14px;
+  background: #111827;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  animation: notificationIn 0.3s ease;
+}
+
+.gamification-notification.success {
+  background: #16a34a;
+}
+
+.gamification-notification.info {
+  background: #4f46e5;
+}
+
+@keyframes notificationIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 850px) {
+  .gamification-panel {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .badges-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .gamification-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .badges-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .daily-mission {
+    align-items: flex-start;
+  }
+
+  .mission-reward {
+    display: none;
+  }
+
+  .gamification-notification {
+    left: 15px;
+    right: 15px;
+    text-align: center;
+  }
+}
+/* ================================
+   XP REWARD POPUP
+================================ */
+
+.xp-popup {
+  position: fixed;
+  top: 90px;
+  right: 30px;
+  z-index: 9999;
+
+  padding: 16px 22px;
+
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+
+  color: white;
+
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.3);
+
+  animation: xpPopupAnimation 0.35s ease-out;
+}
+
+@keyframes xpPopupAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
