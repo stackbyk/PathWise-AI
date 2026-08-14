@@ -1,1448 +1,1322 @@
-import React, { useEffect, useMemo, useState } from "react";
-import "./PersonalizedRoadmap.css";
+// src/pages/PersonalizedRoadmap.jsx
 
-/* =========================================================
-   CAREER ROADMAP DATA
-========================================================= */
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const ROADMAPS = {
-  "Full Stack Developer": [
-    {
-      id: 1,
-      title: "Web Development Foundations",
-      description:
-        "Build a strong foundation in modern web development and programming.",
-      duration: "2 Weeks",
-      skills: [
-        { name: "HTML & CSS", completed: false },
-        { name: "JavaScript Fundamentals", completed: false },
-        { name: "Git & GitHub", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Frontend Development",
-      description:
-        "Learn how to build responsive and interactive web applications.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "React Basics", completed: false },
-        { name: "Components & Props", completed: false },
-        { name: "State Management", completed: false },
-        { name: "API Integration", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Backend Development",
-      description:
-        "Learn how servers, APIs and databases power modern applications.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Node.js", completed: false },
-        { name: "Express.js", completed: false },
-        { name: "REST APIs", completed: false },
-        { name: "MongoDB", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Full-Stack Portfolio Project",
-      description:
-        "Combine frontend and backend skills by building a real-world project.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Project Planning", completed: false },
-        { name: "Build the Application", completed: false },
-        { name: "Testing & Debugging", completed: false },
-        { name: "Deploy the Project", completed: false },
-      ],
-    },
-  ],
+const roadmapData = {
+  "Full Stack Developer": {
+    icon: "💻",
+    description:
+      "Build modern full-stack web applications from frontend to backend.",
 
-  "AI / ML Engineer": [
-    {
-      id: 1,
-      title: "Python & Programming Foundations",
-      description:
-        "Build the programming foundation required for artificial intelligence and machine learning.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Python Fundamentals", completed: false },
-        { name: "Object-Oriented Programming", completed: false },
-        { name: "Data Structures", completed: false },
-        { name: "Problem Solving", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Mathematics & Statistics",
-      description:
-        "Develop the mathematical understanding required to train and evaluate machine learning models.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Linear Algebra", completed: false },
-        { name: "Probability", completed: false },
-        { name: "Statistics", completed: false },
-        { name: "Calculus Basics", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Machine Learning",
-      description:
-        "Learn how to build, train and evaluate machine learning models.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Supervised Learning", completed: false },
-        { name: "Unsupervised Learning", completed: false },
-        { name: "Model Evaluation", completed: false },
-        { name: "Feature Engineering", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Deep Learning & AI",
-      description:
-        "Move from traditional machine learning into neural networks and modern AI.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Neural Networks", completed: false },
-        { name: "TensorFlow / PyTorch", completed: false },
-        { name: "Computer Vision", completed: false },
-        { name: "Natural Language Processing", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "AI Portfolio Project",
-      description:
-        "Build and deploy an AI project that demonstrates your skills.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Choose an AI Problem", completed: false },
-        { name: "Prepare the Dataset", completed: false },
-        { name: "Train & Evaluate the Model", completed: false },
-        { name: "Deploy the AI Application", completed: false },
-      ],
-    },
-  ],
+    steps: [
+      {
+        title: "HTML & CSS",
+        description: "Learn webpage structure, styling and responsive design.",
+        resources: [
+          {
+            title: "HTML & CSS Basics",
+            type: "Course",
+            url: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content",
+          },
+          {
+            title: "CSS Guide",
+            type: "Documentation",
+            url: "https://developer.mozilla.org/en-US/docs/Web/CSS",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "JavaScript",
+        description:
+          "Learn JavaScript fundamentals, ES6+, DOM and asynchronous programming.",
+        resources: [
+          {
+            title: "JavaScript Guide",
+            type: "Documentation",
+            url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+          },
+          {
+            title: "JavaScript.info",
+            type: "Tutorial",
+            url: "https://javascript.info/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "React",
+        description:
+          "Build modern interactive frontend applications with React.",
+        resources: [
+          {
+            title: "React Documentation",
+            type: "Documentation",
+            url: "https://react.dev/learn",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Node.js",
+        description: "Learn backend development and server-side JavaScript.",
+        resources: [
+          {
+            title: "Node.js Documentation",
+            type: "Documentation",
+            url: "https://nodejs.org/en/learn",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "REST APIs",
+        description:
+          "Learn how to design and consume APIs for web applications.",
+        resources: [
+          {
+            title: "MDN HTTP Guide",
+            type: "Documentation",
+            url: "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Databases",
+        description:
+          "Learn SQL and NoSQL databases such as PostgreSQL and MongoDB.",
+        resources: [
+          {
+            title: "MongoDB University",
+            type: "Course",
+            url: "https://learn.mongodb.com/",
+          },
+          {
+            title: "PostgreSQL Tutorial",
+            type: "Tutorial",
+            url: "https://www.postgresql.org/docs/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Git & GitHub",
+        description:
+          "Learn version control and collaborative software development.",
+        resources: [
+          {
+            title: "Git Documentation",
+            type: "Documentation",
+            url: "https://git-scm.com/doc",
+          },
+          {
+            title: "GitHub Skills",
+            type: "Course",
+            url: "https://skills.github.com/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Full Stack Project",
+        description: "Build and deploy a complete full-stack application.",
+        resources: [
+          {
+            title: "GitHub",
+            type: "Projects",
+            url: "https://github.com/",
+          },
+        ],
+        points: 200,
+      },
+    ],
+  },
 
-  "Data Scientist": [
-    {
-      id: 1,
-      title: "Python for Data Science",
-      description:
-        "Learn Python programming and the tools used for data science.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Python Fundamentals", completed: false },
-        { name: "Functions & Data Structures", completed: false },
-        { name: "Pandas", completed: false },
-        { name: "NumPy", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Statistics & Mathematics",
-      description:
-        "Build the statistical foundation needed to understand and analyze data.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Descriptive Statistics", completed: false },
-        { name: "Probability", completed: false },
-        { name: "Hypothesis Testing", completed: false },
-        { name: "Regression", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Data Analysis & Visualization",
-      description:
-        "Transform raw datasets into useful insights and visualizations.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Data Cleaning", completed: false },
-        { name: "Exploratory Data Analysis", completed: false },
-        { name: "Matplotlib / Seaborn", completed: false },
-        { name: "Power BI / Tableau", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Machine Learning for Data Science",
-      description:
-        "Use machine learning techniques to solve real-world data problems.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Regression Models", completed: false },
-        { name: "Classification", completed: false },
-        { name: "Clustering", completed: false },
-        { name: "Model Evaluation", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "Data Science Portfolio",
-      description: "Complete an end-to-end data science project.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Find a Real Dataset", completed: false },
-        { name: "Clean & Analyze Data", completed: false },
-        { name: "Build a Predictive Model", completed: false },
-        { name: "Present Your Findings", completed: false },
-      ],
-    },
-  ],
+  "Cybersecurity Engineer": {
+    icon: "🔐",
+    description:
+      "Build the skills needed to protect systems, networks and applications from cyber threats.",
 
-  "Cloud Engineer": [
-    {
-      id: 1,
-      title: "Cloud & Linux Foundations",
-      description:
-        "Understand operating systems, networking and cloud fundamentals.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Linux Fundamentals", completed: false },
-        { name: "Networking Basics", completed: false },
-        { name: "Command Line", completed: false },
-        { name: "Cloud Computing Concepts", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Cloud Platforms",
-      description: "Learn the core services offered by modern cloud platforms.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "AWS / Azure / GCP Fundamentals", completed: false },
-        { name: "Compute Services", completed: false },
-        { name: "Storage Services", completed: false },
-        { name: "Cloud Databases", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Infrastructure & Networking",
-      description:
-        "Learn how cloud infrastructure and networking are designed.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Virtual Networks", completed: false },
-        { name: "Load Balancing", completed: false },
-        { name: "DNS", completed: false },
-        { name: "Infrastructure as Code", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Cloud Security & Monitoring",
-      description: "Learn to secure, monitor and maintain cloud environments.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "IAM", completed: false },
-        { name: "Cloud Security", completed: false },
-        { name: "Logging & Monitoring", completed: false },
-        { name: "Backup & Disaster Recovery", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "Cloud Portfolio Project",
-      description: "Deploy a production-style application on the cloud.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Design Cloud Architecture", completed: false },
-        { name: "Deploy Application", completed: false },
-        { name: "Configure Security", completed: false },
-        { name: "Monitor & Optimize", completed: false },
-      ],
-    },
-  ],
+    steps: [
+      {
+        title: "Cybersecurity Fundamentals",
+        description:
+          "Learn CIA triad, common attacks, vulnerabilities and security principles.",
+        resources: [
+          {
+            title: "OWASP",
+            type: "Security Resource",
+            url: "https://owasp.org/",
+          },
+          {
+            title: "NIST Cybersecurity Framework",
+            type: "Framework",
+            url: "https://www.nist.gov/cyberframework",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Networking",
+        description:
+          "Learn TCP/IP, DNS, HTTP, ports, protocols and network architecture.",
+        resources: [
+          {
+            title: "Cisco Networking Basics",
+            type: "Course",
+            url: "https://www.netacad.com/courses/networking-basics",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Linux",
+        description:
+          "Learn Linux commands, permissions, processes and system administration.",
+        resources: [
+          {
+            title: "Linux Documentation",
+            type: "Documentation",
+            url: "https://docs.kernel.org/",
+          },
+          {
+            title: "Linux Journey",
+            type: "Tutorial",
+            url: "https://linuxjourney.com/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Network Security",
+        description:
+          "Learn firewalls, VPNs, IDS/IPS and secure network configuration.",
+        resources: [
+          {
+            title: "Cloudflare Learning",
+            type: "Security Resource",
+            url: "https://www.cloudflare.com/learning/security/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Ethical Hacking",
+        description:
+          "Learn penetration testing concepts and vulnerability assessment.",
+        resources: [
+          {
+            title: "PortSwigger Web Security Academy",
+            type: "Practice",
+            url: "https://portswigger.net/web-security",
+          },
+          {
+            title: "OWASP Web Security",
+            type: "Security Resource",
+            url: "https://owasp.org/www-project-top-ten/",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Threat Detection",
+        description:
+          "Learn how to identify suspicious activity and security threats.",
+        resources: [
+          {
+            title: "MITRE ATT&CK",
+            type: "Security Resource",
+            url: "https://attack.mitre.org/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Python & Scripting",
+        description:
+          "Use Python and scripting to automate security-related tasks.",
+        resources: [
+          {
+            title: "Python Documentation",
+            type: "Documentation",
+            url: "https://docs.python.org/3/tutorial/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Incident Response",
+        description:
+          "Learn how to detect, investigate and respond to security incidents.",
+        resources: [
+          {
+            title: "NIST Incident Response",
+            type: "Security Resource",
+            url: "https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Cybersecurity Project",
+        description: "Build a practical cybersecurity project.",
+        resources: [
+          {
+            title: "CyberDefenders",
+            type: "Practice",
+            url: "https://cyberdefenders.org/",
+          },
+          {
+            title: "TryHackMe",
+            type: "Practice",
+            url: "https://tryhackme.com/",
+          },
+        ],
+        points: 250,
+      },
+    ],
+  },
 
-  "Cybersecurity Engineer": [
-    {
-      id: 1,
-      title: "Cybersecurity Foundations",
-      description:
-        "Understand the core principles of cybersecurity and networking.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Cybersecurity Fundamentals", completed: false },
-        { name: "Networking Fundamentals", completed: false },
-        { name: "Operating Systems", completed: false },
-        { name: "Security Principles", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Network Security",
-      description: "Learn how networks are protected from attacks and threats.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Firewalls", completed: false },
-        { name: "VPNs", completed: false },
-        { name: "Network Monitoring", completed: false },
-        { name: "Intrusion Detection", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Ethical Hacking",
-      description:
-        "Learn defensive security and ethical penetration testing concepts.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Reconnaissance", completed: false },
-        { name: "Vulnerability Assessment", completed: false },
-        { name: "Web Security", completed: false },
-        { name: "Security Testing", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Security Operations",
-      description: "Learn how security teams detect and respond to incidents.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "SIEM Fundamentals", completed: false },
-        { name: "Incident Response", completed: false },
-        { name: "Threat Detection", completed: false },
-        { name: "Security Logging", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "Cybersecurity Portfolio",
-      description:
-        "Build a security-focused project to demonstrate your practical skills.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Design Security Lab", completed: false },
-        { name: "Perform Security Analysis", completed: false },
-        { name: "Document Findings", completed: false },
-        { name: "Create Security Report", completed: false },
-      ],
-    },
-  ],
+  "AI / ML Engineer": {
+    icon: "🤖",
+    description: "Build machine learning and artificial intelligence systems.",
 
-  "DevOps Engineer": [
-    {
-      id: 1,
-      title: "Linux & Git Foundations",
-      description:
-        "Build the foundations required for modern DevOps engineering.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Linux", completed: false },
-        { name: "Shell Scripting", completed: false },
-        { name: "Git", completed: false },
-        { name: "GitHub", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Containers & Docker",
-      description:
-        "Learn how applications are packaged and deployed using containers.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Docker Fundamentals", completed: false },
-        { name: "Docker Images", completed: false },
-        { name: "Docker Compose", completed: false },
-        { name: "Container Networking", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "CI/CD & Automation",
-      description: "Automate software testing and deployment pipelines.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "CI/CD Concepts", completed: false },
-        { name: "GitHub Actions", completed: false },
-        { name: "Automated Testing", completed: false },
-        { name: "Deployment Pipelines", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Cloud & Kubernetes",
-      description:
-        "Learn how modern applications are deployed and managed at scale.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Cloud Fundamentals", completed: false },
-        { name: "Kubernetes", completed: false },
-        { name: "Infrastructure as Code", completed: false },
-        { name: "Monitoring", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "DevOps Portfolio Project",
-      description: "Build a complete automated deployment pipeline.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Containerize Application", completed: false },
-        { name: "Create CI Pipeline", completed: false },
-        { name: "Deploy to Cloud", completed: false },
-        { name: "Monitor Application", completed: false },
-      ],
-    },
-  ],
+    steps: [
+      {
+        title: "Python",
+        description: "Learn Python programming and programming fundamentals.",
+        resources: [
+          {
+            title: "Python Tutorial",
+            type: "Documentation",
+            url: "https://docs.python.org/3/tutorial/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Mathematics",
+        description:
+          "Learn linear algebra, calculus and mathematical foundations.",
+        resources: [
+          {
+            title: "Khan Academy Math",
+            type: "Course",
+            url: "https://www.khanacademy.org/math",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Statistics",
+        description: "Learn probability, statistics and statistical reasoning.",
+        resources: [
+          {
+            title: "Khan Academy Statistics",
+            type: "Course",
+            url: "https://www.khanacademy.org/math/statistics-probability",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Machine Learning",
+        description: "Learn supervised and unsupervised machine learning.",
+        resources: [
+          {
+            title: "Google Machine Learning",
+            type: "Course",
+            url: "https://developers.google.com/machine-learning/crash-course",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Deep Learning",
+        description: "Learn neural networks and deep learning.",
+        resources: [
+          {
+            title: "DeepLearning.AI",
+            type: "Course",
+            url: "https://www.deeplearning.ai/",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Data Processing",
+        description: "Learn how to clean, transform and prepare datasets.",
+        resources: [
+          {
+            title: "Pandas Documentation",
+            type: "Documentation",
+            url: "https://pandas.pydata.org/docs/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "TensorFlow / PyTorch",
+        description: "Build ML models using modern ML frameworks.",
+        resources: [
+          {
+            title: "TensorFlow Tutorials",
+            type: "Documentation",
+            url: "https://www.tensorflow.org/tutorials",
+          },
+          {
+            title: "PyTorch Tutorials",
+            type: "Documentation",
+            url: "https://pytorch.org/tutorials/",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "AI Project",
+        description: "Build and deploy a practical AI project.",
+        resources: [
+          {
+            title: "Kaggle",
+            type: "Practice",
+            url: "https://www.kaggle.com/",
+          },
+        ],
+        points: 250,
+      },
+    ],
+  },
 
-  "Mobile App Developer": [
-    {
-      id: 1,
-      title: "Programming Foundations",
-      description:
-        "Build strong programming fundamentals for mobile development.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Programming Fundamentals", completed: false },
-        { name: "Object-Oriented Programming", completed: false },
-        { name: "Data Structures", completed: false },
-        { name: "Git & GitHub", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "Mobile Development",
-      description: "Learn the fundamentals of building mobile applications.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "React Native / Flutter", completed: false },
-        { name: "Mobile UI", completed: false },
-        { name: "Navigation", completed: false },
-        { name: "State Management", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "Backend & APIs",
-      description:
-        "Connect mobile applications with real-world backend services.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "REST APIs", completed: false },
-        { name: "Authentication", completed: false },
-        { name: "Databases", completed: false },
-        { name: "API Integration", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Testing & Deployment",
-      description: "Prepare mobile applications for real users.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Mobile Testing", completed: false },
-        { name: "Performance Optimization", completed: false },
-        { name: "App Builds", completed: false },
-        { name: "App Store Deployment", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "Mobile Portfolio Project",
-      description: "Build and publish a complete mobile application.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Plan App", completed: false },
-        { name: "Build App", completed: false },
-        { name: "Test App", completed: false },
-        { name: "Publish App", completed: false },
-      ],
-    },
-  ],
+  "Data Scientist": {
+    icon: "📊",
+    description: "Learn how to analyze data and build predictive models.",
 
-  "UI/UX Designer": [
-    {
-      id: 1,
-      title: "Design Foundations",
-      description:
-        "Learn the fundamentals of visual design and user experience.",
-      duration: "2 Weeks",
-      skills: [
-        { name: "Design Principles", completed: false },
-        { name: "Color Theory", completed: false },
-        { name: "Typography", completed: false },
-        { name: "Layout & Composition", completed: false },
-      ],
-    },
-    {
-      id: 2,
-      title: "UX Research",
-      description: "Learn how to understand users and identify their needs.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "User Research", completed: false },
-        { name: "User Personas", completed: false },
-        { name: "User Journeys", completed: false },
-        { name: "Usability Testing", completed: false },
-      ],
-    },
-    {
-      id: 3,
-      title: "UI Design",
-      description: "Create polished and accessible digital interfaces.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Wireframing", completed: false },
-        { name: "Prototyping", completed: false },
-        { name: "Design Systems", completed: false },
-        { name: "Responsive Design", completed: false },
-      ],
-    },
-    {
-      id: 4,
-      title: "Figma & Product Design",
-      description:
-        "Use professional design tools to create realistic product designs.",
-      duration: "3 Weeks",
-      skills: [
-        { name: "Figma", completed: false },
-        { name: "Interactive Prototypes", completed: false },
-        { name: "Components", completed: false },
-        { name: "Developer Handoff", completed: false },
-      ],
-    },
-    {
-      id: 5,
-      title: "UX Portfolio Project",
-      description: "Create a complete case study for your design portfolio.",
-      duration: "4 Weeks",
-      skills: [
-        { name: "Choose a Problem", completed: false },
-        { name: "Conduct Research", completed: false },
-        { name: "Design the Solution", completed: false },
-        { name: "Create Case Study", completed: false },
-      ],
-    },
-  ],
+    steps: [
+      {
+        title: "Python",
+        description: "Learn Python programming for data analysis.",
+        resources: [
+          {
+            title: "Python Tutorial",
+            type: "Documentation",
+            url: "https://docs.python.org/3/tutorial/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Statistics",
+        description: "Learn probability and statistical analysis.",
+        resources: [
+          {
+            title: "Khan Academy Statistics",
+            type: "Course",
+            url: "https://www.khanacademy.org/math/statistics-probability",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "SQL",
+        description: "Learn how to query and analyze databases.",
+        resources: [
+          {
+            title: "PostgreSQL Documentation",
+            type: "Documentation",
+            url: "https://www.postgresql.org/docs/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Data Analysis",
+        description: "Learn how to clean, explore and analyze datasets.",
+        resources: [
+          {
+            title: "Pandas Documentation",
+            type: "Documentation",
+            url: "https://pandas.pydata.org/docs/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Data Visualization",
+        description: "Create meaningful charts and dashboards.",
+        resources: [
+          {
+            title: "Matplotlib Documentation",
+            type: "Documentation",
+            url: "https://matplotlib.org/stable/users/index.html",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Machine Learning",
+        description: "Learn machine learning algorithms and model building.",
+        resources: [
+          {
+            title: "Google Machine Learning",
+            type: "Course",
+            url: "https://developers.google.com/machine-learning/crash-course",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Data Science Project",
+        description: "Complete an end-to-end data science project.",
+        resources: [
+          {
+            title: "Kaggle",
+            type: "Practice",
+            url: "https://www.kaggle.com/",
+          },
+        ],
+        points: 250,
+      },
+    ],
+  },
+
+  "Backend Developer": {
+    icon: "⚙️",
+    description:
+      "Build scalable backend systems, APIs and database-driven applications.",
+
+    steps: [
+      {
+        title: "Programming Fundamentals",
+        description: "Strengthen programming and problem-solving skills.",
+        resources: [
+          {
+            title: "freeCodeCamp",
+            type: "Course",
+            url: "https://www.freecodecamp.org/learn/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Node.js",
+        description: "Learn server-side JavaScript and backend development.",
+        resources: [
+          {
+            title: "Node.js Learn",
+            type: "Documentation",
+            url: "https://nodejs.org/en/learn",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "REST APIs",
+        description: "Build and consume RESTful APIs.",
+        resources: [
+          {
+            title: "MDN HTTP",
+            type: "Documentation",
+            url: "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Databases",
+        description: "Learn SQL and NoSQL databases.",
+        resources: [
+          {
+            title: "MongoDB University",
+            type: "Course",
+            url: "https://learn.mongodb.com/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Authentication",
+        description: "Learn authentication and authorization.",
+        resources: [
+          {
+            title: "Firebase Authentication",
+            type: "Documentation",
+            url: "https://firebase.google.com/docs/auth",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Server Architecture",
+        description: "Learn backend architecture and scalable server design.",
+        resources: [
+          {
+            title: "Node.js Architecture",
+            type: "Documentation",
+            url: "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Git & GitHub",
+        description: "Use Git for version control.",
+        resources: [
+          {
+            title: "GitHub Skills",
+            type: "Course",
+            url: "https://skills.github.com/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Backend Project",
+        description: "Build and deploy a complete backend application.",
+        resources: [
+          {
+            title: "GitHub",
+            type: "Projects",
+            url: "https://github.com/",
+          },
+        ],
+        points: 250,
+      },
+    ],
+  },
+
+  "Cloud Engineer": {
+    icon: "☁️",
+    description:
+      "Learn how to deploy, manage and secure applications in the cloud.",
+
+    steps: [
+      {
+        title: "Linux",
+        description: "Learn Linux systems, commands and administration.",
+        resources: [
+          {
+            title: "Linux Journey",
+            type: "Tutorial",
+            url: "https://linuxjourney.com/",
+          },
+        ],
+        points: 100,
+      },
+      {
+        title: "Networking",
+        description: "Learn networking fundamentals and cloud networking.",
+        resources: [
+          {
+            title: "Cisco Networking Basics",
+            type: "Course",
+            url: "https://www.netacad.com/courses/networking-basics",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "AWS / Azure / GCP",
+        description: "Learn the fundamentals of a major cloud platform.",
+        resources: [
+          {
+            title: "AWS Training",
+            type: "Course",
+            url: "https://aws.amazon.com/training/",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Docker",
+        description: "Learn containers and containerized applications.",
+        resources: [
+          {
+            title: "Docker Get Started",
+            type: "Documentation",
+            url: "https://docs.docker.com/get-started/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Kubernetes",
+        description: "Learn container orchestration.",
+        resources: [
+          {
+            title: "Kubernetes Basics",
+            type: "Tutorial",
+            url: "https://kubernetes.io/docs/tutorials/",
+          },
+        ],
+        points: 200,
+      },
+      {
+        title: "Cloud Security",
+        description: "Learn identity, access management and cloud security.",
+        resources: [
+          {
+            title: "AWS Security",
+            type: "Documentation",
+            url: "https://aws.amazon.com/security/",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "CI/CD",
+        description: "Learn automated testing and continuous deployment.",
+        resources: [
+          {
+            title: "GitHub Actions",
+            type: "Documentation",
+            url: "https://docs.github.com/en/actions",
+          },
+        ],
+        points: 150,
+      },
+      {
+        title: "Cloud Project",
+        description: "Deploy and manage a complete application in the cloud.",
+        resources: [
+          {
+            title: "AWS Projects",
+            type: "Practice",
+            url: "https://aws.amazon.com/getting-started/hands-on/",
+          },
+        ],
+        points: 250,
+      },
+    ],
+  },
 };
-
-/* =========================================================
-   CAREER NORMALIZATION
-========================================================= */
-
-const normalizeCareer = (career) => {
-  if (!career) return null;
-
-  const value = career.trim().toLowerCase();
-
-  if (
-    value.includes("full stack") ||
-    value.includes("full-stack") ||
-    value.includes("fullstack")
-  ) {
-    return "Full Stack Developer";
-  }
-
-  if (
-    value.includes("ai / ml") ||
-    value.includes("ai/ml") ||
-    value.includes("ai ml") ||
-    value.includes("machine learning") ||
-    value.includes("artificial intelligence")
-  ) {
-    return "AI / ML Engineer";
-  }
-
-  if (value.includes("data scientist")) {
-    return "Data Scientist";
-  }
-
-  if (value.includes("cloud")) {
-    return "Cloud Engineer";
-  }
-
-  if (value.includes("cyber") || value.includes("security")) {
-    return "Cybersecurity Engineer";
-  }
-
-  if (value.includes("devops")) {
-    return "DevOps Engineer";
-  }
-
-  if (
-    value.includes("mobile") ||
-    value.includes("android") ||
-    value.includes("ios")
-  ) {
-    return "Mobile App Developer";
-  }
-
-  if (
-    value.includes("ui/ux") ||
-    value.includes("ui ux") ||
-    value.includes("designer")
-  ) {
-    return "UI/UX Designer";
-  }
-
-  return null;
-};
-
-/* =========================================================
-   CREATE FRESH ROADMAP
-========================================================= */
-
-const createRoadmap = (career) => {
-  const selectedRoadmap = ROADMAPS[career];
-
-  if (!selectedRoadmap) {
-    return [];
-  }
-
-  return selectedRoadmap.map((phase) => ({
-    ...phase,
-    skills: phase.skills.map((skill) => ({
-      ...skill,
-      completed: false,
-    })),
-  }));
-};
-
-/* =========================================================
-   COMPONENT
-========================================================= */
 
 function PersonalizedRoadmap() {
-  /*
-    IMPORTANT:
-    Assessment career gets PRIORITY.
+  const navigate = useNavigate();
 
-    This fixes the problem where:
-    AI/ML assessment
-          ↓
-    old selectedCareer = Full Stack
-          ↓
-    Full Stack roadmap
-  */
+  /* =====================================================
+     SELECTED CAREER
+  ===================================================== */
 
-  const assessmentCareerRaw = localStorage.getItem("assessmentCareer");
+  const getSelectedCareer = () => {
+    const storedCareer =
+      localStorage.getItem("selectedCareer") ||
+      localStorage.getItem("assessmentCareer") ||
+      "Full Stack Developer";
 
-  const selectedCareerRaw = localStorage.getItem("selectedCareer");
+    const careerAliases = {
+      "AI/ML Engineer": "AI / ML Engineer",
+      "AI ML Engineer": "AI / ML Engineer",
+      "AI-ML Engineer": "AI / ML Engineer",
 
-  const normalizedAssessmentCareer = normalizeCareer(assessmentCareerRaw);
+      "Cyber Security Engineer": "Cybersecurity Engineer",
+      "Cyber Security": "Cybersecurity Engineer",
+      Cybersecurity: "Cybersecurity Engineer",
 
-  const normalizedSelectedCareer = normalizeCareer(selectedCareerRaw);
+      "Full-Stack Developer": "Full Stack Developer",
+      "Fullstack Developer": "Full Stack Developer",
 
-  const selectedCareer =
-    normalizedAssessmentCareer ||
-    normalizedSelectedCareer ||
-    "Full Stack Developer";
+      "Data Scientist": "Data Scientist",
+      "Backend Developer": "Backend Developer",
+      "Cloud Engineer": "Cloud Engineer",
+    };
 
-  /* =========================================================
-     CAREER-SPECIFIC STORAGE KEYS
-  ========================================================= */
+    return careerAliases[storedCareer] || storedCareer;
+  };
 
-  const roadmapStorageKey = `pathwiseRoadmap_${selectedCareer}`;
+  const selectedCareer = getSelectedCareer();
 
-  const xpStorageKey = `pathwiseXP_${selectedCareer}`;
+  const roadmap =
+    roadmapData[selectedCareer] || roadmapData["Full Stack Developer"];
 
-  const completedStorageKey = `pathwiseCompletedSkills_${selectedCareer}`;
-
-  /* =========================================================
-     ROADMAP STATE
-  ========================================================= */
-
-  const [roadmap, setRoadmap] = useState(() => {
-    const savedRoadmap = localStorage.getItem(roadmapStorageKey);
-
-    if (savedRoadmap) {
-      try {
-        return JSON.parse(savedRoadmap);
-      } catch {
-        return createRoadmap(selectedCareer);
-      }
-    }
-
-    return createRoadmap(selectedCareer);
-  });
-
-  const [xpMessage, setXpMessage] = useState("");
-
-  const [xp, setXp] = useState(() => {
-    return Number(localStorage.getItem(xpStorageKey)) || 0;
-  });
-
-  const [completedCount, setCompletedCount] = useState(() => {
-    return Number(localStorage.getItem(completedStorageKey)) || 0;
-  });
-
-  /* =========================================================
-     SAVE ROADMAP
-  ========================================================= */
-
-  useEffect(() => {
-    localStorage.setItem(roadmapStorageKey, JSON.stringify(roadmap));
-
-    /*
-      Keep compatibility with older parts
-      of your project.
-    */
-    localStorage.setItem("pathwiseRoadmap", JSON.stringify(roadmap));
-  }, [roadmap, roadmapStorageKey]);
-
-  /* =========================================================
-     SAVE XP
-  ========================================================= */
-
-  useEffect(() => {
-    localStorage.setItem(xpStorageKey, String(xp));
-
-    localStorage.setItem(completedStorageKey, String(completedCount));
-
-    window.dispatchEvent(new Event("pathwiseXPUpdated"));
-  }, [xp, completedCount, xpStorageKey, completedStorageKey]);
-
-  /* =========================================================
+  /* =====================================================
      ASSESSMENT RESULTS
-  ========================================================= */
+  ===================================================== */
 
-  const assessmentResults = useMemo(() => {
+  const getAssessmentResults = () => {
     try {
-      return JSON.parse(localStorage.getItem("assessmentResults") || "{}");
-    } catch {
+      const saved = JSON.parse(
+        localStorage.getItem("assessmentResults") || "{}",
+      );
+
+      return saved && typeof saved === "object" ? saved : {};
+    } catch (error) {
+      console.error("Could not read assessment results:", error);
       return {};
-    }
-  }, []);
-
-  /* =========================================================
-     PRIORITY SKILLS
-  ========================================================= */
-
-  const prioritySkills = useMemo(() => {
-    return Object.entries(assessmentResults)
-      .filter(([, score]) => Number(score) < 75)
-      .sort(([, a], [, b]) => Number(a) - Number(b))
-      .slice(0, 5);
-  }, [assessmentResults]);
-
-  /* =========================================================
-     TOGGLE SKILL
-  ========================================================= */
-
-  const toggleSkill = (phaseId, skillIndex) => {
-    const phase = roadmap.find((item) => item.id === phaseId);
-
-    if (!phase) return;
-
-    const skill = phase.skills[skillIndex];
-
-    if (!skill) return;
-
-    const wasCompleted = skill.completed;
-
-    setRoadmap((currentRoadmap) =>
-      currentRoadmap.map((currentPhase) => {
-        if (currentPhase.id !== phaseId) {
-          return currentPhase;
-        }
-
-        return {
-          ...currentPhase,
-
-          skills: currentPhase.skills.map((currentSkill, index) => {
-            if (index !== skillIndex) {
-              return currentSkill;
-            }
-
-            return {
-              ...currentSkill,
-              completed: !currentSkill.completed,
-            };
-          }),
-        };
-      }),
-    );
-
-    /*
-      Award XP only when completing
-      an unfinished skill.
-    */
-
-    if (!wasCompleted) {
-      setXp((currentXP) => currentXP + 50);
-
-      setCompletedCount((currentCount) => currentCount + 1);
-
-      setXpMessage("+50 XP! 🎉 Skill completed!");
-
-      setTimeout(() => {
-        setXpMessage("");
-      }, 2500);
-    } else {
-      /*
-        If user unchecks a skill,
-        remove the completion count.
-
-        XP is NOT removed because XP represents
-        earned experience.
-      */
-      setCompletedCount((currentCount) => Math.max(0, currentCount - 1));
     }
   };
 
-  /* =========================================================
-     TOTAL PROGRESS
-  ========================================================= */
+  const assessmentResults = getAssessmentResults();
 
-  const totalSkills = roadmap.reduce(
-    (total, phase) => total + phase.skills.length,
-    0,
-  );
+  /* =====================================================
+     COMPLETED ROADMAP STEPS
+  ===================================================== */
 
-  const completedSkills = roadmap.reduce(
-    (total, phase) =>
-      total + phase.skills.filter((skill) => skill.completed).length,
-    0,
-  );
+  const getCompletedSteps = () => {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem("pathwiseCompletedRoadmapSteps") || "{}",
+      );
 
-  const progress =
-    totalSkills === 0 ? 0 : Math.round((completedSkills / totalSkills) * 100);
+      return saved && typeof saved === "object" ? saved : {};
+    } catch (error) {
+      console.error("Could not read completed roadmap steps:", error);
+      return {};
+    }
+  };
 
-  /* =========================================================
-     LEVEL SYSTEM
-  ========================================================= */
+  const [completedSteps, setCompletedSteps] = useState(getCompletedSteps);
 
-  const level = Math.min(10, Math.floor(xp / 250) + 1);
+  /* =====================================================
+     NORMALIZE SKILL NAME
+  ===================================================== */
 
-  const levelName =
-    level === 1
-      ? "Beginner"
-      : level === 2
-        ? "Explorer"
-        : level === 3
-          ? "Skill Builder"
-          : level === 4
-            ? "Rising Star"
-            : level === 5
-              ? "Career Ready"
-              : level <= 7
-                ? "Advanced"
-                : "PathWise Pro";
+  const normalize = (value) => {
+    if (!value) return "";
 
-  const xpIntoLevel = xp % 250;
+    return value
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[\/\-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
 
-  const xpToNextLevel = 250 - xpIntoLevel;
+  /* =====================================================
+     SKILL ALIASES
+  ===================================================== */
 
-  /* =========================================================
-     NEXT SKILL
-  ========================================================= */
+  const skillAliases = {
+    "programming fundamentals": [
+      "programming",
+      "problem solving",
+      "programming fundamentals",
+    ],
 
-  const nextSkill = roadmap
-    .flatMap((phase) =>
-      phase.skills.map((skill) => ({
-        ...skill,
-        phaseTitle: phase.title,
-      })),
-    )
-    .find((skill) => !skill.completed);
+    programming: ["programming", "programming fundamentals"],
 
-  /* =========================================================
-     ACHIEVEMENTS
-  ========================================================= */
+    databases: ["databases", "mongodb", "sql", "postgresql", "database"],
 
-  const achievements = [
-    {
-      icon: "🚀",
-      title: "First Step",
-      unlocked: completedSkills >= 1,
-      description: "Complete your first skill",
-    },
-    {
-      icon: "🔥",
-      title: "Skill Builder",
-      unlocked: completedSkills >= 5,
-      description: "Complete 5 skills",
-    },
-    {
-      icon: "🏆",
-      title: "Roadmap Starter",
-      unlocked: completedSkills >= 10,
-      description: "Complete 10 skills",
-    },
-    {
-      icon: "💎",
-      title: "Career Ready",
-      unlocked: progress >= 75,
-      description: "Reach 75% roadmap progress",
-    },
-    {
-      icon: "👑",
-      title: "PathWise Pro",
-      unlocked: progress === 100,
-      description: "Complete the entire roadmap",
-    },
-  ];
+    "full stack project": ["full stack project"],
 
-  const unlockedAchievements = achievements.filter(
-    (achievement) => achievement.unlocked,
+    "cybersecurity fundamentals": [
+      "cybersecurity fundamentals",
+      "cyber security fundamentals",
+    ],
+
+    networking: ["networking"],
+
+    linux: ["linux"],
+
+    "network security": ["network security"],
+
+    "ethical hacking": ["ethical hacking"],
+
+    "threat detection": ["threat detection"],
+
+    "python and scripting": ["python and scripting", "python scripting"],
+
+    "incident response": ["incident response"],
+
+    python: ["python"],
+
+    mathematics: ["mathematics", "math"],
+
+    statistics: ["statistics"],
+
+    "machine learning": ["machine learning"],
+
+    "deep learning": ["deep learning"],
+
+    "data processing": ["data processing"],
+
+    "model evaluation": ["model evaluation"],
+
+    "tensorflow pytorch": ["tensorflow pytorch", "tensorflow pytorch"],
+
+    "data analysis": ["data analysis"],
+
+    "data visualization": ["data visualization"],
+
+    sql: ["sql", "databases"],
+
+    "pandas numpy": ["pandas numpy", "pandas numpy"],
+
+    "node.js": ["node.js", "node"],
+
+    "rest apis": ["rest apis", "rest api"],
+
+    "git and github": ["git github", "git and github"],
+
+    react: ["react"],
+
+    "html css": ["html css", "html and css"],
+  };
+
+  /* =====================================================
+     GET ASSESSMENT SCORE FOR ROADMAP STEP
+  ===================================================== */
+
+  const getStepProgress = (stepTitle) => {
+    const normalizedTitle = normalize(stepTitle);
+
+    /* Exact match first */
+
+    if (typeof assessmentResults[stepTitle] === "number") {
+      return assessmentResults[stepTitle];
+    }
+
+    /* Normalized exact match */
+
+    const matchingKey = Object.keys(assessmentResults).find(
+      (key) => normalize(key) === normalizedTitle,
+    );
+
+    if (matchingKey) {
+      return Number(assessmentResults[matchingKey]) || 0;
+    }
+
+    /* Alias matching */
+
+    const aliases = skillAliases[normalizedTitle] || [];
+
+    for (const alias of aliases) {
+      const matchingAssessmentKey = Object.keys(assessmentResults).find(
+        (key) => normalize(key) === normalize(alias),
+      );
+
+      if (matchingAssessmentKey) {
+        return Number(assessmentResults[matchingAssessmentKey]) || 0;
+      }
+    }
+
+    /* Partial matching */
+
+    const partialMatch = Object.keys(assessmentResults).find((key) => {
+      const normalizedKey = normalize(key);
+
+      return (
+        normalizedKey.includes(normalizedTitle) ||
+        normalizedTitle.includes(normalizedKey)
+      );
+    });
+
+    if (partialMatch) {
+      return Number(assessmentResults[partialMatch]) || 0;
+    }
+
+    return 0;
+  };
+
+  /* =====================================================
+     TOGGLE ROADMAP STEP
+  ===================================================== */
+
+  const toggleComplete = (index, points) => {
+    const key = `${selectedCareer}-${index}`;
+
+    const wasCompleted = Boolean(completedSteps[key]);
+
+    const updatedCompletedSteps = {
+      ...completedSteps,
+      [key]: !wasCompleted,
+    };
+
+    setCompletedSteps(updatedCompletedSteps);
+
+    localStorage.setItem(
+      "pathwiseCompletedRoadmapSteps",
+      JSON.stringify(updatedCompletedSteps),
+    );
+
+    /* ---------------------------------------------
+       UPDATE GLOBAL XP
+    --------------------------------------------- */
+
+    const currentXP = Number(localStorage.getItem("pathwiseXP") || 0);
+
+    const updatedXP = wasCompleted
+      ? Math.max(0, currentXP - points)
+      : currentXP + points;
+
+    localStorage.setItem("pathwiseXP", String(updatedXP));
+
+    /* ---------------------------------------------
+       Update total points for this career
+    --------------------------------------------- */
+
+    const currentCareerXP = Number(
+      localStorage.getItem(`pathwiseXP-${selectedCareer}`) || 0,
+    );
+
+    const updatedCareerXP = wasCompleted
+      ? Math.max(0, currentCareerXP - points)
+      : currentCareerXP + points;
+
+    localStorage.setItem(
+      `pathwiseXP-${selectedCareer}`,
+      String(updatedCareerXP),
+    );
+
+    /* ---------------------------------------------
+       Notify Dashboard / Leaderboard
+    --------------------------------------------- */
+
+    window.dispatchEvent(new Event("pathwiseXPUpdated"));
+
+    window.dispatchEvent(new Event("pathwiseProgressUpdated"));
+  };
+
+  /* =====================================================
+     COMPLETED COUNT
+  ===================================================== */
+
+  const completedCount = roadmap.steps.filter(
+    (_, index) => completedSteps[`${selectedCareer}-${index}`],
   ).length;
 
-  /* =========================================================
-     MOTIVATIONAL QUOTES
-  ========================================================= */
+  /* =====================================================
+     CAREER XP
+  ===================================================== */
 
-  const quotes = [
-    "Small progress every day creates extraordinary results.",
-    "You don't need to be perfect. You just need to keep moving.",
-    "Every skill you complete makes your future stronger.",
-    "Your career is built one skill at a time.",
-    "Consistency beats motivation.",
-  ];
+  const totalPoints = roadmap.steps.reduce((total, step, index) => {
+    const key = `${selectedCareer}-${index}`;
 
-  const quote = quotes[completedSkills % quotes.length];
+    if (completedSteps[key]) {
+      return total + step.points;
+    }
 
-  /* =========================================================
-     NO ROADMAP SAFETY
-  ========================================================= */
+    return total;
+  }, 0);
 
-  if (roadmap.length === 0) {
-    return (
-      <div className="roadmap-page">
-        <div className="recommended-card">
-          <div className="recommended-icon">⚠️</div>
+  /* =====================================================
+     TOTAL POSSIBLE XP
+  ===================================================== */
 
-          <div className="recommended-content">
-            <h2>Career roadmap not found</h2>
+  const totalPossibleXP = roadmap.steps.reduce(
+    (total, step) => total + step.points,
+    0,
+  );
 
-            <p>
-              We could not find a roadmap for
-              <strong> {selectedCareer}</strong>.
-            </p>
+  /* =====================================================
+     ASSESSMENT PROGRESS
+  ===================================================== */
 
-            <p>Please return to the assessment and select your career again.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const assessmentProgress =
+    roadmap.steps.length > 0
+      ? Math.round(
+          roadmap.steps.reduce(
+            (total, step) => total + getStepProgress(step.title),
+            0,
+          ) / roadmap.steps.length,
+        )
+      : 0;
 
-  /* =========================================================
-     RETURN
-  ========================================================= */
+  /* =====================================================
+     ROADMAP COMPLETION
+  ===================================================== */
+
+  const roadmapCompletion =
+    roadmap.steps.length > 0
+      ? Math.round((completedCount / roadmap.steps.length) * 100)
+      : 0;
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
 
   return (
-    <div className="roadmap-page">
-      {/* =====================================================
-          XP POPUP
-      ===================================================== */}
+    <div className="min-h-screen bg-slate-50 py-10">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        {/* =================================================
+            BACK TO DASHBOARD
+        ================================================= */}
 
-      {xpMessage && <div className="xp-popup">⚡ {xpMessage}</div>}
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
-      <div className="roadmap-header">
-        <div>
-          <p className="roadmap-label">YOUR PERSONALIZED ROADMAP</p>
-
-          <h1>Become a {selectedCareer} 🚀</h1>
-
-          <p className="roadmap-description">
-            Your roadmap is personalized using your assessment results. Complete
-            skills, earn XP and move closer to your career goal.
-          </p>
-
-          {/* CAREER CONFIRMATION */}
-
-          <div
-            style={{
-              marginTop: "14px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 14px",
-              borderRadius: "999px",
-              background: "#ecfdf5",
-              color: "#047857",
-              fontSize: "13px",
-              fontWeight: 700,
-            }}
-          >
-            ✓ Assessment career detected: {selectedCareer}
-          </div>
-        </div>
-
-        <div className="roadmap-progress-card">
-          <div className="progress-circle">{progress}%</div>
-
-          <div>
-            <strong>Overall Progress</strong>
-
-            <p>
-              {completedSkills} of {totalSkills} skills completed
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* =====================================================
-          GAMIFICATION STATS
-      ===================================================== */}
-
-      <div className="career-selector">
-        <div>
-          <label>🎯 Target Career</label>
-
-          <div
-            style={{
-              marginTop: "6px",
-              fontWeight: 800,
-            }}
-          >
-            {selectedCareer}
-          </div>
-        </div>
-
-        <div
-          style={{
-            textAlign: "right",
-          }}
+        <button
+          type="button"
+          onClick={() => navigate("/dashboard")}
+          className="mb-8 inline-flex items-center gap-2 font-semibold text-slate-600 transition hover:text-primary-600"
         >
-          <div
-            style={{
-              fontSize: "12px",
-              color: "#6b7280",
-            }}
-          >
-            CURRENT LEVEL
-          </div>
+          ← Back to Dashboard
+        </button>
 
-          <strong>
-            🌱 Level {level} — {levelName}
-          </strong>
-        </div>
-      </div>
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
-      {/* =====================================================
-          XP / GAMIFICATION CARDS
-      ===================================================== */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-4xl">
+              {roadmap.icon}
+            </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "16px",
-          maxWidth: "1000px",
-          margin: "20px auto",
-        }}
-      >
-        <div className="roadmap-progress-card">
-          <div
-            style={{
-              fontSize: "30px",
-            }}
-          >
-            ⭐
-          </div>
+            <div>
+              <p className="text-sm font-semibold text-primary-600">
+                PERSONALIZED ROADMAP
+              </p>
 
-          <div>
-            <strong>XP</strong>
+              <h1 className="mt-1 text-3xl font-bold text-slate-900">
+                {selectedCareer}
+              </h1>
 
-            <p>{xp} points</p>
-          </div>
-        </div>
-
-        <div className="roadmap-progress-card">
-          <div
-            style={{
-              fontSize: "30px",
-            }}
-          >
-            🏅
-          </div>
-
-          <div>
-            <strong>Achievements</strong>
-
-            <p>
-              {unlockedAchievements}/{achievements.length} unlocked
-            </p>
-          </div>
-        </div>
-
-        <div className="roadmap-progress-card">
-          <div
-            style={{
-              fontSize: "30px",
-            }}
-          >
-            📈
-          </div>
-
-          <div>
-            <strong>Next Level</strong>
-
-            <p>{xpToNextLevel} XP to go</p>
-          </div>
-        </div>
-
-        <div className="roadmap-progress-card">
-          <div
-            style={{
-              fontSize: "30px",
-            }}
-          >
-            🎯
-          </div>
-
-          <div>
-            <strong>Skills</strong>
-
-            <p>
-              {completedSkills}/{totalSkills}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* =====================================================
-          XP LEVEL BAR
-      ===================================================== */}
-
-      <div
-        style={{
-          maxWidth: "1000px",
-          margin: "20px auto",
-          padding: "20px",
-          background: "white",
-          borderRadius: "18px",
-          boxShadow: "0 8px 25px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: "10px",
-            fontWeight: 700,
-          }}
-        >
-          <span>🌱 Level {level}</span>
-
-          <span>{xpIntoLevel}/250 XP</span>
-        </div>
-
-        <div className="progress-bar">
-          <div
-            className="progress-bar-fill"
-            style={{
-              width: `${(xpIntoLevel / 250) * 100}%`,
-            }}
-          />
-        </div>
-
-        <p
-          style={{
-            marginTop: "10px",
-            fontSize: "13px",
-            color: "#6b7280",
-          }}
-        >
-          Keep completing skills to unlock your next level! 🚀
-        </p>
-      </div>
-
-      {/* =====================================================
-          PRIORITY SKILLS
-      ===================================================== */}
-
-      <div className="priority-focus-card">
-        <div className="priority-focus-header">
-          <div>
-            <span className="priority-label">🎯 SMART FOCUS</span>
-
-            <h2>Skills to Improve First</h2>
-
-            <p>
-              Based on your assessment, these areas need the most attention.
-            </p>
-          </div>
-
-          <div className="priority-icon">🔥</div>
-        </div>
-
-        {prioritySkills.length > 0 ? (
-          <div className="priority-skills">
-            {prioritySkills.map(([skill, score], index) => (
-              <div className="priority-skill" key={skill}>
-                <div className="priority-rank">{index + 1}</div>
-
-                <div className="priority-skill-info">
-                  <div className="priority-skill-name">{skill}</div>
-
-                  <div className="priority-bar">
-                    <div
-                      className="priority-bar-fill"
-                      style={{
-                        width: `${score}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="priority-score">{score}%</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="no-gaps-message">
-            🎉 Amazing! No major skill gaps were identified in your assessment.
-          </div>
-        )}
-      </div>
-
-      {/* =====================================================
-          RECOMMENDED NEXT STEP
-      ===================================================== */}
-
-      {nextSkill && (
-        <div className="recommended-card">
-          <div className="recommended-icon">🚀</div>
-
-          <div className="recommended-content">
-            <span className="recommended-label">RECOMMENDED NEXT STEP</span>
-
-            <h2>{nextSkill.name}</h2>
-
-            <p>
-              Start with this skill from the{" "}
-              <strong>{nextSkill.phaseTitle}</strong> phase. Complete it to earn{" "}
-              <strong>+50 XP</strong>.
-            </p>
-
-            <div className="recommended-meta">
-              <span>⚡ +50 XP</span>
-
-              <span>🎯 {selectedCareer}</span>
-
-              <span>📈 {progress}% complete</span>
+              <p className="mt-2 text-slate-600">{roadmap.description}</p>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* =====================================================
-          ROADMAP TIMELINE
-      ===================================================== */}
+          {/* =================================================
+              OVERALL PROGRESS
+          ================================================= */}
 
-      <div className="roadmap-timeline">
-        {roadmap.map((phase, phaseIndex) => {
-          const completed = phase.skills.filter(
-            (skill) => skill.completed,
-          ).length;
+          <div className="mt-6">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-600">
+                Overall Roadmap Progress
+              </span>
 
-          const phaseProgress =
-            phase.skills.length === 0
-              ? 0
-              : Math.round((completed / phase.skills.length) * 100);
-
-          return (
-            <div className="roadmap-phase" key={phase.id}>
-              <div className="phase-number">{phaseIndex + 1}</div>
-
-              <div className="phase-card">
-                <div className="phase-header">
-                  <div>
-                    <div className="phase-tags">
-                      <span className="phase-tag">PHASE {phaseIndex + 1}</span>
-
-                      {phaseProgress === 100 && (
-                        <span className="priority-phase-tag">✓ COMPLETED</span>
-                      )}
-
-                      {phaseProgress > 0 && phaseProgress < 100 && (
-                        <span className="priority-phase-tag">
-                          🔥 IN PROGRESS
-                        </span>
-                      )}
-                    </div>
-
-                    <h2>{phase.title}</h2>
-
-                    <p>{phase.description}</p>
-                  </div>
-
-                  <span className="phase-duration">⏱ {phase.duration}</span>
-                </div>
-
-                {/* PHASE PROGRESS */}
-
-                <div className="phase-progress">
-                  <div className="phase-progress-info">
-                    <span>Progress</span>
-
-                    <span>{phaseProgress}%</span>
-                  </div>
-
-                  <div className="progress-bar">
-                    <div
-                      className="progress-bar-fill"
-                      style={{
-                        width: `${phaseProgress}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* SKILLS */}
-
-                <div className="skills-list">
-                  {phase.skills.map((skill, skillIndex) => (
-                    <label
-                      className={`skill-item ${
-                        skill.completed ? "completed" : ""
-                      }`}
-                      key={skill.name}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={skill.completed}
-                        onChange={() => toggleSkill(phase.id, skillIndex)}
-                      />
-
-                      <span>{skill.name}</span>
-
-                      {!skill.completed && (
-                        <span className="assessment-score">+50 XP</span>
-                      )}
-
-                      {skill.completed && (
-                        <span className="completed-text">✓ Completed</span>
-                      )}
-                    </label>
-                  ))}
-                </div>
-              </div>
+              <span className="font-semibold text-primary-600">
+                {roadmapCompletion}%
+              </span>
             </div>
-          );
-        })}
-      </div>
 
-      {/* =====================================================
-          ACHIEVEMENTS
-      ===================================================== */}
-
-      <div
-        style={{
-          maxWidth: "1000px",
-          margin: "30px auto",
-          padding: "28px",
-          background: "white",
-          borderRadius: "20px",
-          boxShadow: "0 8px 25px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <div>
-            <span className="priority-label">🏆 ACHIEVEMENTS</span>
-
-            <h2>Your Badges</h2>
-          </div>
-
-          <strong>
-            {unlockedAchievements}/{achievements.length}
-          </strong>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-            gap: "14px",
-          }}
-        >
-          {achievements.map((achievement) => (
-            <div
-              key={achievement.title}
-              style={{
-                padding: "20px",
-                borderRadius: "16px",
-                textAlign: "center",
-                border: "1px solid #e5e7eb",
-                opacity: achievement.unlocked ? 1 : 0.55,
-              }}
-            >
+            <div className="h-3 overflow-hidden rounded-full bg-slate-100">
               <div
+                className="h-full rounded-full bg-primary-600 transition-all duration-500"
                 style={{
-                  fontSize: "34px",
+                  width: `${roadmapCompletion}%`,
                 }}
-              >
-                {achievement.unlocked ? achievement.icon : "🔒"}
-              </div>
+              />
+            </div>
+          </div>
 
-              <strong>{achievement.title}</strong>
+          {/* =================================================
+              STATS
+          ================================================= */}
 
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "#6b7280",
-                }}
-              >
-                {achievement.description}
+          <div className="mt-6 grid gap-4 sm:grid-cols-4">
+            {/* ASSESSMENT */}
+
+            <div className="rounded-xl bg-indigo-50 p-4">
+              <p className="text-sm text-slate-600">Skill Level</p>
+
+              <p className="mt-1 text-2xl font-bold text-primary-600">
+                {assessmentProgress}%
               </p>
             </div>
-          ))}
+
+            {/* COMPLETED */}
+
+            <div className="rounded-xl bg-green-50 p-4">
+              <p className="text-sm text-slate-600">Completed</p>
+
+              <p className="mt-1 text-2xl font-bold text-green-600">
+                {completedCount}/{roadmap.steps.length}
+              </p>
+            </div>
+
+            {/* XP */}
+
+            <div className="rounded-xl bg-yellow-50 p-4">
+              <p className="text-sm text-slate-600">XP Earned</p>
+
+              <p className="mt-1 text-2xl font-bold text-yellow-600">
+                ⭐ {totalPoints}
+              </p>
+            </div>
+
+            {/* REMAINING XP */}
+
+            <div className="rounded-xl bg-slate-100 p-4">
+              <p className="text-sm text-slate-600">XP Remaining</p>
+
+              <p className="mt-1 text-2xl font-bold text-slate-700">
+                {Math.max(0, totalPossibleXP - totalPoints)}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* =====================================================
-          MOTIVATION
-      ===================================================== */}
+        {/* =================================================
+            ROADMAP STEPS
+        ================================================= */}
 
-      <div
-        style={{
-          maxWidth: "1000px",
-          margin: "30px auto",
-          padding: "30px",
-          background: "#111827",
-          color: "white",
-          borderRadius: "20px",
-          textAlign: "center",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "32px",
-          }}
-        >
-          🧠
+        <div className="mt-8 space-y-5">
+          {roadmap.steps.map((step, index) => {
+            const progress = getStepProgress(step.title);
+
+            const key = `${selectedCareer}-${index}`;
+
+            const isCompleted = Boolean(completedSteps[key]);
+
+            return (
+              <div
+                key={step.title}
+                className={`rounded-2xl border bg-white p-6 shadow-sm transition ${
+                  isCompleted ? "border-green-300" : "border-slate-200"
+                }`}
+              >
+                <div className="flex gap-5">
+                  {/* NUMBER */}
+
+                  <div
+                    className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full font-bold ${
+                      isCompleted
+                        ? "bg-green-100 text-green-700"
+                        : "bg-primary-100 text-primary-700"
+                    }`}
+                  >
+                    {isCompleted ? "✓" : index + 1}
+                  </div>
+
+                  {/* CONTENT */}
+
+                  <div className="min-w-0 flex-1">
+                    {/* TITLE */}
+
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <h2 className="text-xl font-bold text-slate-900">
+                        {step.title}
+                      </h2>
+
+                      <span className="font-bold text-primary-600">
+                        +{step.points} XP
+                      </span>
+                    </div>
+
+                    {/* DESCRIPTION */}
+
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      {step.description}
+                    </p>
+
+                    {/* =================================================
+                        ASSESSMENT SKILL
+                    ================================================= */}
+
+                    <div className="mt-4">
+                      <div className="mb-2 flex justify-between text-sm">
+                        <span className="font-medium text-slate-500">
+                          Your assessed skill level
+                        </span>
+
+                        <span className="font-semibold text-primary-600">
+                          {progress}%
+                        </span>
+                      </div>
+
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className="h-full rounded-full bg-primary-600 transition-all duration-500"
+                          style={{
+                            width: `${progress}%`,
+                          }}
+                        />
+                      </div>
+
+                      {/* LEVEL TEXT */}
+
+                      <p className="mt-2 text-xs text-slate-500">
+                        {progress === 0 && "Not assessed yet"}
+
+                        {progress === 25 && "Beginner"}
+
+                        {progress === 50 && "Basic"}
+
+                        {progress === 75 && "Intermediate"}
+
+                        {progress === 100 && "Advanced"}
+                      </p>
+                    </div>
+
+                    {/* =================================================
+                        RESOURCES
+                    ================================================= */}
+
+                    {step.resources && step.resources.length > 0 && (
+                      <div className="mt-5">
+                        <h3 className="font-semibold text-slate-900">
+                          📚 Learning Resources
+                        </h3>
+
+                        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                          {step.resources.map((resource) => (
+                            <a
+                              key={resource.url}
+                              href={resource.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-primary-300 hover:bg-primary-50"
+                            >
+                              <p className="font-semibold text-primary-600">
+                                {resource.title}
+                              </p>
+
+                              <p className="mt-1 text-xs text-slate-500">
+                                {resource.type}
+                              </p>
+
+                              <p className="mt-2 text-xs font-medium text-slate-400">
+                                Open Resource →
+                              </p>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* =================================================
+                        COMPLETE BUTTON
+                    ================================================= */}
+
+                    <button
+                      type="button"
+                      onClick={() => toggleComplete(index, step.points)}
+                      className={`mt-5 rounded-xl px-5 py-3 font-semibold transition ${
+                        isCompleted
+                          ? "bg-green-100 text-green-700 hover:bg-red-50 hover:text-red-600"
+                          : "bg-primary-600 text-white hover:bg-primary-700"
+                      }`}
+                    >
+                      {isCompleted
+                        ? "✓ Completed — Remove XP"
+                        : `Mark Complete +${step.points} XP`}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <h2
-          style={{
-            margin: "10px 0",
-          }}
-        >
-          “{quote}”
-        </h2>
+        {/* =================================================
+            FINISH SECTION
+        ================================================= */}
 
-        <p
-          style={{
-            margin: 0,
-            color: "#cbd5e1",
-          }}
-        >
-          Keep going, {levelName}. Your future{" "}
-          {selectedCareer === "Full Stack Developer"
-            ? "developer"
-            : "professional"}{" "}
-          self is counting on you. 🚀
-        </p>
+        <div className="mt-8 rounded-2xl bg-primary-600 p-6 text-white shadow-lg">
+          <h2 className="text-xl font-bold">Keep building your career 🚀</h2>
+
+          <p className="mt-2 text-sm leading-6 text-primary-100">
+            Complete roadmap steps, earn XP and improve your career skills.
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="rounded-xl bg-white px-6 py-3 font-semibold text-primary-600 transition hover:bg-slate-100"
+            >
+              ← Dashboard
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/results")}
+              className="rounded-xl border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              View Results
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

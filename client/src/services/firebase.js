@@ -1,18 +1,26 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+
+// =========================================================
+// FIREBASE CONFIG
+// =========================================================
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD6GaYqQGkZWKfp55FOuyf2xWolxCei8mA",
-  authDomain: "pathwise-ai-85e68.firebaseapp.com",
-  projectId: "pathwise-ai-85e68",
-  storageBucket: "pathwise-ai-85e68.firebasestorage.app",
-  messagingSenderId: "653446986168",
-  appId: "1:653446986168:web:02e074c843f635e1c0f74d",
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
 };
+
+// =========================================================
+// INITIALIZE FIREBASE
+// =========================================================
 
 const app = initializeApp(firebaseConfig);
 
+// Firebase Authentication
 export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
 
 export default app;

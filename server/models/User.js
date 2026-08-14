@@ -81,16 +81,14 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-// Only hash password when one exists
-userSchema.pre("save", async function (next) {
+// Hash password only when it exists and has been modified
+userSchema.pre("save", async function () {
   if (!this.isModified("password") || !this.password) {
-    return next();
+    return;
   }
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-
-  next();
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

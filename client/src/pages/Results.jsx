@@ -10,36 +10,146 @@ import {
 } from "lucide-react";
 
 function Results() {
+  /* =====================================================
+     LOAD CAREER
+  ===================================================== */
+
   const selectedCareer =
-    localStorage.getItem("selectedCareer") || "Full-Stack Developer";
+    localStorage.getItem("assessmentCareer") ||
+    localStorage.getItem("selectedCareer") ||
+    "Full Stack Developer";
 
-  const answers = JSON.parse(localStorage.getItem("assessmentResults") || "{}");
+  /* =====================================================
+     LOAD SKILL DATA
+     
+     New format:
+     [
+       {
+         name: "React",
+         progress: 75,
+         level: "Intermediate",
+         source: "assessment"
+       }
+     ]
+  ===================================================== */
 
-  const skills = Object.entries(answers);
+  let skillData = [];
+
+  try {
+    const savedSkillData = localStorage.getItem("pathwiseSkillData");
+
+    if (savedSkillData) {
+      const parsedSkillData = JSON.parse(savedSkillData);
+
+      if (Array.isArray(parsedSkillData)) {
+        skillData = parsedSkillData;
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load skill data:", error);
+  }
+
+  /* =====================================================
+     FALLBACK TO OLD ASSESSMENT DATA
+     
+     This prevents breaking existing assessments.
+  ===================================================== */
+
+  if (skillData.length === 0) {
+    try {
+      const savedAnswers = localStorage.getItem("assessmentResults");
+
+      const answers = JSON.parse(savedAnswers || "{}");
+
+      skillData = Object.entries(answers).map(([name, progress]) => {
+        let level = "Beginner";
+
+        if (progress >= 100) {
+          level = "Advanced";
+        } else if (progress >= 75) {
+          level = "Intermediate";
+        } else if (progress >= 50) {
+          level = "Basic";
+        }
+
+        return {
+          name,
+          progress,
+          level,
+          source: "assessment",
+        };
+      });
+    } catch (error) {
+      console.error("Failed to load assessment results:", error);
+    }
+  }
+
+  /* =====================================================
+     ONLY ASSESSED SKILLS
+  ===================================================== */
+
+  const assessedSkills = skillData.filter(
+    (skill) =>
+      skill.source === "assessment" || typeof skill.progress === "number",
+  );
+
+  /* =====================================================
+     OVERALL SCORE
+  ===================================================== */
 
   const overallScore =
-    skills.length > 0
+    assessedSkills.length > 0
       ? Math.round(
-          skills.reduce((total, [, score]) => total + score, 0) / skills.length,
+          assessedSkills.reduce(
+            (total, skill) => total + Number(skill.progress || 0),
+            0,
+          ) / assessedSkills.length,
         )
       : 0;
 
-  const strongSkills = skills.filter(([, score]) => score >= 75);
+  /* =====================================================
+     STRONG SKILLS
+  ===================================================== */
 
-  const skillGaps = skills.filter(([, score]) => score < 75);
+  const strongSkills = assessedSkills.filter((skill) => skill.progress >= 75);
+
+  /* =====================================================
+     SKILL GAPS
+  ===================================================== */
+
+  const skillGaps = assessedSkills.filter((skill) => skill.progress < 75);
+
+  /* =====================================================
+     LEVEL
+  ===================================================== */
 
   const getLevel = (score) => {
     if (score >= 100) return "Advanced";
     if (score >= 75) return "Intermediate";
     if (score >= 50) return "Basic";
+
     return "Beginner";
   };
 
+  /* =====================================================
+     BAR COLOR
+  ===================================================== */
+
   const getBarColor = (score) => {
-    if (score >= 75) return "bg-green-500";
-    if (score >= 50) return "bg-yellow-500";
+    if (score >= 75) {
+      return "bg-green-500";
+    }
+
+    if (score >= 50) {
+      return "bg-yellow-500";
+    }
+
     return "bg-red-500";
   };
+
+  /* =====================================================
+     RESULT MESSAGE
+  ===================================================== */
 
   const resultMessage = useMemo(() => {
     if (overallScore >= 75) {
@@ -55,7 +165,10 @@ function Results() {
 
   return (
     <div className="py-8">
-      {/* Back */}
+      {/* =================================================
+          BACK
+      ================================================= */}
+
       <Link
         to="/assessment"
         className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600 mb-8"
@@ -64,7 +177,10 @@ function Results() {
         Back to Assessment
       </Link>
 
-      {/* Header */}
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
       <div className="text-center max-w-3xl mx-auto mb-10">
         <div className="inline-flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
           <CheckCircle2 size={17} />
@@ -84,7 +200,10 @@ function Results() {
         </p>
       </div>
 
-      {/* Overall Score */}
+      {/* =================================================
+          OVERALL SCORE
+      ================================================= */}
+
       <div className="max-w-4xl mx-auto bg-gradient-to-r from-primary-600 to-indigo-700 rounded-2xl p-8 text-white shadow-xl mb-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
@@ -105,7 +224,10 @@ function Results() {
         </div>
       </div>
 
-      {/* Skills */}
+      {/* =================================================
+          SKILL BREAKDOWN
+      ================================================= */}
+
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md border border-slate-100 p-6 md:p-8 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className="text-primary-600" size={24} />
@@ -122,28 +244,42 @@ function Results() {
         </div>
 
         <div className="space-y-6">
-          {skills.length === 0 ? (
-            <p className="text-slate-500">
-              No assessment results found. Please complete the assessment first.
-            </p>
+          {assessedSkills.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-slate-500">No assessment results found.</p>
+
+              <Link
+                to="/assessment"
+                className="inline-flex items-center gap-2 mt-4 px-5 py-3 rounded-xl bg-primary-600 text-white font-semibold hover:bg-primary-700 transition"
+              >
+                Take Assessment
+                <ArrowRight size={18} />
+              </Link>
+            </div>
           ) : (
-            skills.map(([skill, score]) => (
-              <div key={skill}>
+            assessedSkills.map((skill) => (
+              <div key={skill.name}>
                 <div className="flex justify-between items-center mb-2">
                   <div>
-                    <p className="font-semibold text-slate-800">{skill}</p>
+                    <p className="font-semibold text-slate-800">{skill.name}</p>
 
-                    <p className="text-xs text-slate-500">{getLevel(score)}</p>
+                    <p className="text-xs text-slate-500">
+                      {skill.level || getLevel(skill.progress)}
+                    </p>
                   </div>
 
-                  <span className="font-bold text-slate-700">{score}%</span>
+                  <span className="font-bold text-slate-700">
+                    {skill.progress}%
+                  </span>
                 </div>
 
                 <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${getBarColor(score)}`}
+                    className={`h-full rounded-full transition-all duration-500 ${getBarColor(
+                      skill.progress,
+                    )}`}
                     style={{
-                      width: `${score}%`,
+                      width: `${skill.progress}%`,
                     }}
                   />
                 </div>
@@ -153,9 +289,15 @@ function Results() {
         </div>
       </div>
 
-      {/* Strong Skills + Gaps */}
+      {/* =================================================
+          STRONG SKILLS + SKILL GAPS
+      ================================================= */}
+
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 mb-8">
-        {/* Strong */}
+        {/* =================================================
+            STRENGTHS
+        ================================================= */}
+
         <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
           <div className="flex items-center gap-3 mb-5">
             <CheckCircle2 className="text-green-500" size={23} />
@@ -171,14 +313,18 @@ function Results() {
 
           {strongSkills.length > 0 ? (
             <div className="space-y-3">
-              {strongSkills.map(([skill, score]) => (
+              {strongSkills.map((skill) => (
                 <div
-                  key={skill}
+                  key={skill.name}
                   className="flex justify-between items-center bg-green-50 rounded-xl px-4 py-3"
                 >
-                  <span className="font-medium text-green-800">{skill}</span>
+                  <span className="font-medium text-green-800">
+                    {skill.name}
+                  </span>
 
-                  <span className="font-bold text-green-600">{score}%</span>
+                  <span className="font-bold text-green-600">
+                    {skill.progress}%
+                  </span>
                 </div>
               ))}
             </div>
@@ -189,7 +335,10 @@ function Results() {
           )}
         </div>
 
-        {/* Gaps */}
+        {/* =================================================
+            GAPS
+        ================================================= */}
+
         <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
           <div className="flex items-center gap-3 mb-5">
             <AlertTriangle className="text-orange-500" size={23} />
@@ -205,14 +354,18 @@ function Results() {
 
           {skillGaps.length > 0 ? (
             <div className="space-y-3">
-              {skillGaps.map(([skill, score]) => (
+              {skillGaps.map((skill) => (
                 <div
-                  key={skill}
+                  key={skill.name}
                   className="flex justify-between items-center bg-orange-50 rounded-xl px-4 py-3"
                 >
-                  <span className="font-medium text-orange-800">{skill}</span>
+                  <span className="font-medium text-orange-800">
+                    {skill.name}
+                  </span>
 
-                  <span className="font-bold text-orange-600">{score}%</span>
+                  <span className="font-bold text-orange-600">
+                    {skill.progress}%
+                  </span>
                 </div>
               ))}
             </div>
@@ -224,7 +377,10 @@ function Results() {
         </div>
       </div>
 
-      {/* CTA */}
+      {/* =================================================
+          NEXT STEP
+      ================================================= */}
+
       <div className="max-w-4xl mx-auto text-center bg-slate-900 rounded-2xl p-8 text-white">
         <h2 className="text-2xl font-bold">
           Ready for your personalized roadmap?

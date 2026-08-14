@@ -1,273 +1,338 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+// src/pages/Login.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
 
-  // Firebase authentication functions
-  const { signInWithGoogle, signInWithEmail } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
 
   const [error, setError] = useState("");
 
-  // =========================================================
-  // HANDLE INPUT CHANGES
-  // =========================================================
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // =======================================================
+  // EMAIL / PASSWORD LOGIN
+  // =======================================================
 
-  // =========================================================
-  // EMAIL + PASSWORD LOGIN
-  // =========================================================
+  const handleLogin = async (event) => {
+    event.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
     setError("");
 
-    if (!formData.email || !formData.password) {
-      setError("Please enter your email and password.");
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
 
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      setLoginLoading(true);
+      const result = await login(email, password);
 
-      await signInWithEmail(formData.email, formData.password);
-
-      // Login successful
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Login Error:", error);
-
-      if (
-        error.code === "auth/invalid-credential" ||
-        error.code === "auth/wrong-password" ||
-        error.code === "auth/user-not-found"
-      ) {
-        setError("Invalid email or password.");
-      } else if (error.code === "auth/too-many-requests") {
-        setError("Too many login attempts. Please try again later.");
-      } else if (error.code === "auth/invalid-email") {
-        setError("Please enter a valid email address.");
-      } else if (error.code === "auth/user-disabled") {
-        setError("This account has been disabled. Please contact support.");
+      if (result.success) {
+        navigate("/dashboard");
       } else {
-        setError("Login failed. Please check your details and try again.");
+        setError(result.message || "Login failed. Please try again.");
       }
+    } catch (error) {
+      console.error("Login page error:", error);
+
+      setError("Login failed. Please try again.");
     } finally {
-      setLoginLoading(false);
+      setLoading(false);
     }
   };
 
-  // =========================================================
+  // =======================================================
   // GOOGLE LOGIN
-  // =========================================================
+  // =======================================================
 
   const handleGoogleLogin = async () => {
+    setError("");
+    setLoading(true);
+
     try {
-      setError("");
-      setGoogleLoading(true);
+      const result = await loginWithGoogle();
 
-      await signInWithGoogle();
-
-      // Google login successful
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Google Login Error:", error);
-
-      if (error.code === "auth/popup-closed-by-user") {
-        setError("Google sign-in was cancelled.");
-      } else if (error.code === "auth/popup-blocked") {
-        setError("Google sign-in popup was blocked. Please allow popups.");
-      } else if (
-        error.code === "auth/account-exists-with-different-credential"
-      ) {
-        setError(
-          "An account already exists with this email using another sign-in method.",
-        );
+      if (result.success) {
+        navigate("/dashboard");
       } else {
-        setError("Google sign-in failed. Please try again.");
+        setError(result.message || "Google sign-in failed. Please try again.");
+
+        console.error("Google login error code:", result.error);
       }
+    } catch (error) {
+      console.error("Google login page error:", error);
+
+      setError("Google sign-in failed. Please try again.");
     } finally {
-      setGoogleLoading(false);
+      setLoading(false);
     }
   };
 
-  // =========================================================
-  // UI
-  // =========================================================
+  // =======================================================
+  // GO TO REGISTER
+  // =======================================================
+
+  const handleRegister = () => {
+    navigate("/register");
+  };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12">
-      <div className="w-full max-w-md">
+    <div className="login-page">
+      {/* =================================================
+          BRAND
+      ================================================= */}
+
+      <div className="login-brand">PathWise AI</div>
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <div className="login-header">
+        <h1>Welcome Back</h1>
+
+        <p>Continue your journey toward your dream career.</p>
+      </div>
+
+      {/* =================================================
+          LOGIN CARD
+      ================================================= */}
+
+      <div className="login-card">
         {/* =================================================
-            LOGO / HEADING
+            GOOGLE BUTTON
         ================================================= */}
 
-        <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-bold text-primary-600">
-            PathWise AI
-          </Link>
+        <button
+          type="button"
+          className="google-login-button"
+          onClick={handleGoogleLogin}
+          disabled={loading}
+        >
+          <span className="google-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="#4285F4"
+                d="M21.35 12.27c0-.79-.07-1.54-.23-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42z"
+              />
 
-          <h1 className="text-3xl font-bold text-slate-900 mt-6">
-            Welcome Back
-          </h1>
+              <path
+                fill="#34A853"
+                d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"
+              />
 
-          <p className="text-slate-600 mt-2">
-            Continue your journey toward your dream career.
-          </p>
+              <path
+                fill="#FBBC05"
+                d="M6.54 13.84A5.86 5.86 0 0 1 6.23 12c0-.64.11-1.26.31-1.84V7.64H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.36l3.24-2.52z"
+              />
+
+              <path
+                fill="#EA4335"
+                d="M12 6.13c1.43 0 2.72.49 3.73 1.45l2.8-2.8C16.83 3.21 14.63 2.25 12 2.25a9.75 9.75 0 0 0-8.7 5.39l3.24 2.52C7.31 7.85 9.46 6.13 12 6.13z"
+              />
+            </svg>
+          </span>
+
+          <span>{loading ? "Signing in..." : "Continue with Google"}</span>
+        </button>
+
+        {/* =================================================
+            DIVIDER
+        ================================================= */}
+
+        <div className="login-divider">
+          <span></span>
+
+          <div>OR</div>
+
+          <span></span>
         </div>
 
         {/* =================================================
-            LOGIN CARD
+            LOGIN FORM
         ================================================= */}
 
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+        <form className="login-form" onSubmit={handleLogin}>
+          {/* EMAIL */}
+
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect
+                    x="3"
+                    y="5"
+                    width="18"
+                    height="14"
+                    rx="2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+
+                  <path
+                    d="M4 7l8 6 8-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+              </span>
+
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* PASSWORD */}
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+
+            <div className="input-wrapper">
+              <span className="input-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect
+                    x="5"
+                    y="10"
+                    width="14"
+                    height="10"
+                    rx="2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+
+                  <path
+                    d="M8 10V7a4 4 0 0 1 8 0v3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+              </span>
+
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                disabled={loading}
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M3 3l18 18"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+
+                    <path
+                      d="M10.58 10.58A2 2 0 0 0 13.4 13.4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+
+                    <path
+                      d="M9.88 5.1A10.8 10.8 0 0 1 12 4.9c5.2 0 8.5 5.1 8.5 5.1a15.8 15.8 0 0 1-3.18 3.6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+
+                    <path
+                      d="M6.42 6.42C3.9 8.1 2.5 10 2.5 10s3.3 5.1 9.5 5.1c1.02 0 1.96-.15 2.82-.4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M2.5 12s3.3-5.1 9.5-5.1S21.5 12 21.5 12 18.2 17.1 12 17.1 2.5 12 2.5 12z"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="2.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+
           {/* =================================================
-              GOOGLE LOGIN
+              ERROR
           ================================================= */}
 
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={googleLoading || loginLoading}
-            className="w-full border border-slate-300 hover:bg-slate-50 text-slate-800 font-semibold py-3 rounded-xl flex items-center justify-center gap-3 transition disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <span className="text-lg font-bold">G</span>
+          {error && <div className="login-error">{error}</div>}
 
-            {googleLoading ? "Signing in..." : "Continue with Google"}
+          {/* =================================================
+              LOGIN BUTTON
+          ================================================= */}
+
+          <button type="submit" className="login-button" disabled={loading}>
+            <span>{loading ? "Logging in..." : "Login"}</span>
+
+            {!loading && <span className="login-arrow">→</span>}
           </button>
+        </form>
 
-          {/* =================================================
-              DIVIDER
-          ================================================= */}
+        {/* =================================================
+            REGISTER
+        ================================================= */}
 
-          <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-slate-200" />
+        <div className="register-link">
+          <span>Don't have an account?</span>
 
-            <span className="text-sm text-slate-400">OR</span>
-
-            <div className="flex-1 h-px bg-slate-200" />
-          </div>
-
-          {/* =================================================
-              EMAIL/PASSWORD FORM
-          ================================================= */}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* EMAIL */}
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Email Address
-              </label>
-
-              <div className="relative">
-                <Mail
-                  size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-            </div>
-
-            {/* PASSWORD */}
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Password
-              </label>
-
-              <div className="relative">
-                <Lock
-                  size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                />
-
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  className="w-full pl-10 pr-12 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
-            {/* ERROR */}
-
-            {error && (
-              <div className="bg-red-50 text-red-600 text-sm rounded-lg p-3">
-                {error}
-              </div>
-            )}
-
-            {/* LOGIN BUTTON */}
-
-            <button
-              type="submit"
-              disabled={loginLoading || googleLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loginLoading ? (
-                "Logging in..."
-              ) : (
-                <>
-                  Login
-                  <ArrowRight size={18} />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* =================================================
-              REGISTER
-          ================================================= */}
-
-          <div className="text-center mt-6 text-sm text-slate-600">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="font-semibold text-primary-600 hover:text-primary-700"
-            >
-              Create an account
-            </Link>
-          </div>
+          <button type="button" onClick={handleRegister} disabled={loading}>
+            Create an account
+          </button>
         </div>
       </div>
     </div>

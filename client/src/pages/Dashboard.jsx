@@ -1,142 +1,39 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
-  Target,
-  TrendingUp,
-  Award,
-  Flame,
-  ArrowRight,
-  CheckCircle2,
-  Circle,
-  BookOpen,
-  Brain,
   Trophy,
-  Zap,
-  Star,
-  Medal,
+  User,
+  Brain,
+  Briefcase,
+  Map,
+  Sparkles,
+  BarChart3,
+  LogOut,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+import { useProgress } from "../context/ProgressContext";
+
 function Dashboard() {
-  /* =====================================================
-     GAMIFICATION STATE
-  ===================================================== */
+  const navigate = useNavigate();
+
   const { user, logout } = useAuth();
-  const [xp, setXp] = useState(Number(localStorage.getItem("pathwiseXP")) || 0);
 
-  const [completedSkills, setCompletedSkills] = useState(
-    Number(localStorage.getItem("pathwiseCompletedSkills")) || 0,
-  );
+  const { xp, completedSkills, getLevel } = useProgress();
 
-  const [roadmapProgress, setRoadmapProgress] = useState(0);
+  const [currentXP, setCurrentXP] = useState(xp);
 
-  const [selectedCareer, setSelectedCareer] = useState(
-    localStorage.getItem("selectedCareer") ||
-      localStorage.getItem("assessmentCareer") ||
-      "Full Stack Developer",
-  );
-
-  /* =====================================================
-     REFRESH DASHBOARD DATA
-  ===================================================== */
-
-  const refreshDashboard = () => {
-    const currentXP = Number(localStorage.getItem("pathwiseXP")) || 0;
-
-    const currentCompletedSkills =
-      Number(localStorage.getItem("pathwiseCompletedSkills")) || 0;
-
-    setXp(currentXP);
-    setCompletedSkills(currentCompletedSkills);
-
-    const career =
-      localStorage.getItem("selectedCareer") ||
-      localStorage.getItem("assessmentCareer") ||
-      "Full Stack Developer";
-
-    setSelectedCareer(career);
-
-    calculateRoadmapProgress(career);
-  };
-
-  /* =====================================================
-     CALCULATE ROADMAP PROGRESS
-  ===================================================== */
-
-  const calculateRoadmapProgress = (career) => {
-    const normalizedCareer = career.trim().toLowerCase().replace(/\s+/g, " ");
-
-    let roadmapKey = career;
-
-    if (
-      normalizedCareer.includes("ai") ||
-      normalizedCareer.includes("machine learning")
-    ) {
-      roadmapKey = "AI / ML Engineer";
-    } else if (normalizedCareer.includes("data scientist")) {
-      roadmapKey = "Data Scientist";
-    } else if (normalizedCareer.includes("cloud")) {
-      roadmapKey = "Cloud Engineer";
-    } else if (
-      normalizedCareer.includes("cyber") ||
-      normalizedCareer.includes("security")
-    ) {
-      roadmapKey = "Cybersecurity Engineer";
-    } else if (normalizedCareer.includes("devops")) {
-      roadmapKey = "DevOps Engineer";
-    } else if (normalizedCareer.includes("mobile")) {
-      roadmapKey = "Mobile App Developer";
-    } else if (
-      normalizedCareer.includes("ui/ux") ||
-      normalizedCareer.includes("designer")
-    ) {
-      roadmapKey = "UI/UX Designer";
-    } else if (
-      normalizedCareer.includes("full stack") ||
-      normalizedCareer.includes("full-stack") ||
-      normalizedCareer.includes("fullstack")
-    ) {
-      roadmapKey = "Full Stack Developer";
-    }
-
-    const storageKey = `pathwiseRoadmap_${roadmapKey}`;
-
-    const savedRoadmap = localStorage.getItem(storageKey);
-
-    if (!savedRoadmap) {
-      setRoadmapProgress(0);
-      return;
-    }
-
-    try {
-      const roadmap = JSON.parse(savedRoadmap);
-
-      const allSkills = roadmap.flatMap((phase) => phase.skills);
-
-      if (allSkills.length === 0) {
-        setRoadmapProgress(0);
-        return;
-      }
-
-      const completed = allSkills.filter((skill) => skill.completed).length;
-
-      const progress = Math.round((completed / allSkills.length) * 100);
-
-      setRoadmapProgress(progress);
-    } catch {
-      setRoadmapProgress(0);
-    }
-  };
-
-  /* =====================================================
-     LISTEN FOR ROADMAP XP UPDATES
-  ===================================================== */
+  const userName = user?.displayName || user?.email?.split("@")[0] || "User";
 
   useEffect(() => {
-    refreshDashboard();
+    setCurrentXP(xp);
+  }, [xp]);
 
+  useEffect(() => {
     const handleXPUpdate = () => {
-      refreshDashboard();
+      const savedXP = Number(localStorage.getItem("pathwiseXP") || 0);
+
+      setCurrentXP(savedXP);
     };
 
     window.addEventListener("pathwiseXPUpdated", handleXPUpdate);
@@ -150,504 +47,362 @@ function Dashboard() {
     };
   }, []);
 
-  /* =====================================================
-     LEVEL SYSTEM
-  ===================================================== */
+  const level = getLevel();
 
-  const level = Math.floor(xp / 250) + 1;
-
-  const levelNames = [
-    "Beginner",
-    "Explorer",
-    "Skill Builder",
-    "Career Ready",
-    "PathWise Pro",
-    "AI Career Master",
-  ];
-
-  const levelName = levelNames[Math.min(level - 1, levelNames.length - 1)];
-
-  const xpInsideLevel = xp % 250;
-
-  const levelProgress = Math.round((xpInsideLevel / 250) * 100);
-
-  /* =====================================================
-     STREAK
-  ===================================================== */
-
-  const [streak] = useState(() => {
-    return Number(localStorage.getItem("pathwiseStreak")) || 1;
-  });
-
-  /* =====================================================
-     LEADERBOARD
-  ===================================================== */
-
-  const leaderboard = [
-    {
-      rank: 1,
-      name: "Arjun",
-      xp: Math.max(xp + 450, 950),
-      avatar: "🧑‍💻",
-    },
-    {
-      rank: 2,
-      name: "Priya",
-      xp: Math.max(xp + 200, 700),
-      avatar: "👩‍💻",
-    },
-    {
-      rank: 3,
-      name: "You",
-      xp: xp,
-      avatar: "🚀",
-    },
-  ];
-
-  /* =====================================================
-     SKILLS
-  ===================================================== */
-
-  const skills = [
-    {
-      name: "HTML & CSS",
-      progress: 90,
-      completed: true,
-    },
-    {
-      name: "JavaScript",
-      progress: 75,
-      completed: true,
-    },
-    {
-      name: "React",
-      progress: 50,
-      completed: false,
-    },
-    {
-      name: "Node.js",
-      progress: 30,
-      completed: false,
-    },
-    {
-      name: "MongoDB",
-      progress: 20,
-      completed: false,
-    },
-  ];
-
-  /* =====================================================
-     MOTIVATIONAL QUOTES
-  ===================================================== */
-
-  const quotes = [
-    "Small progress every day creates extraordinary results. 🚀",
-    "You don't need to be perfect. You just need to keep going. 💪",
-    "Every skill you complete makes your future stronger. 🌱",
-    "Your future self will thank you for what you learn today. 🔥",
-    "One more skill. One more step. One step closer to your dream career. 🎯",
-  ];
-
-  const quote = quotes[new Date().getDate() % quotes.length];
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
 
   return (
-    <div className="py-8 space-y-8">
-      {/* =====================================================
-          WELCOME
-      ===================================================== */}
+    <div className="min-h-screen bg-slate-50">
+      {/* NAVBAR */}
 
-      <section>
-        <p className="text-primary-600 font-semibold mb-2">
-          Your Career Dashboard
-        </p>
-
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
-          Welcome back{user?.displayName ? `, ${user.displayName}` : ""}! 👋
-        </h1>
-
-        <p className="text-slate-600 mt-2">
-          Keep learning, keep growing and get closer to your dream career.
-        </p>
-      </section>
-
-      {/* =====================================================
-          CAREER GOAL
-      ===================================================== */}
-
-      <section className="bg-gradient-to-r from-primary-600 to-indigo-700 rounded-2xl p-6 md:p-8 text-white shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Target size={22} />
-
-              <span className="font-medium">Your Target Career</span>
-            </div>
-
-            <h2 className="text-2xl md:text-3xl font-bold">{selectedCareer}</h2>
-
-            <p className="text-indigo-100 mt-2">
-              Your personalized learning roadmap is ready.
-            </p>
-          </div>
-
-          <Link
-            to="/roadmap"
-            className="bg-white text-primary-700 px-5 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-50 transition"
+      <nav className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="text-2xl font-bold text-primary-600"
           >
-            Continue Roadmap
-            <ArrowRight size={18} />
-          </Link>
+            PathWise AI
+          </button>
+
+          <div className="hidden items-center gap-1 md:flex">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="rounded-lg bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-600"
+            >
+              Dashboard
+            </button>
+
+            <button
+              onClick={() => navigate("/career-exploration")}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              Careers
+            </button>
+
+            <button
+              onClick={() => navigate("/skill-assessment")}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              Skills
+            </button>
+
+            <button
+              onClick={() => navigate("/roadmap")}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              Roadmap
+            </button>
+
+            <button
+              onClick={() => navigate("/recommendations")}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              AI Recommendations
+            </button>
+
+            <button
+              onClick={() => navigate("/leaderboard")}
+              className="flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              <Trophy size={16} />
+              Leaderboard
+            </button>
+
+            <button
+              onClick={() => navigate("/profile")}
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              Profile
+            </button>
+          </div>
+
+          <button
+            onClick={() => navigate("/profile")}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-bold text-white"
+          >
+            {userName.charAt(0).toUpperCase()}
+          </button>
         </div>
-      </section>
+      </nav>
 
-      {/* =====================================================
-          GAMIFICATION HERO
-      ===================================================== */}
+      {/* MAIN */}
 
-      <section className="grid md:grid-cols-3 gap-5">
-        {/* XP */}
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        {/* WELCOME */}
 
-        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-100 rounded-2xl p-6 shadow-md">
-          <div className="flex items-center justify-between">
-            <div className="bg-yellow-100 p-3 rounded-xl">
-              <Zap className="text-yellow-600" size={25} />
-            </div>
+        <div className="mb-8">
+          <p className="text-sm font-semibold text-primary-600">
+            Welcome back 👋
+          </p>
 
-            <span className="text-sm font-bold text-yellow-700">XP</span>
-          </div>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">
+            Hello, {userName}!
+          </h1>
 
-          <p className="text-3xl font-bold text-slate-900 mt-5">{xp}</p>
-
-          <p className="text-sm text-slate-500 mt-1">Total Experience Points</p>
-
-          <div className="mt-4">
-            <div className="flex justify-between text-xs mb-2">
-              <span>Level {level}</span>
-
-              <span>{xpInsideLevel}/250 XP</span>
-            </div>
-
-            <div className="h-2 bg-white rounded-full overflow-hidden">
-              <div
-                className="h-full bg-yellow-500 rounded-full transition-all"
-                style={{
-                  width: `${levelProgress}%`,
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* LEVEL */}
-
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 shadow-md">
-          <div className="flex items-center justify-between">
-            <div className="bg-indigo-100 p-3 rounded-xl">
-              <Star className="text-indigo-600" size={25} />
-            </div>
-
-            <span className="text-sm font-bold text-indigo-600">LEVEL</span>
-          </div>
-
-          <p className="text-3xl font-bold text-slate-900 mt-5">{level}</p>
-
-          <p className="text-sm text-slate-500 mt-1">{levelName}</p>
-
-          <p className="text-xs text-indigo-600 font-semibold mt-3">
-            Keep going! 🔥
+          <p className="mt-2 text-slate-600">
+            Continue building your career path.
           </p>
         </div>
 
-        {/* STREAK */}
+        {/* XP STATS */}
 
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 rounded-2xl p-6 shadow-md">
-          <div className="flex items-center justify-between">
-            <div className="bg-orange-100 p-3 rounded-xl">
-              <Flame className="text-orange-600" size={25} />
-            </div>
-
-            <span className="text-sm font-bold text-orange-600">STREAK</span>
-          </div>
-
-          <p className="text-3xl font-bold text-slate-900 mt-5">{streak} 🔥</p>
-
-          <p className="text-sm text-slate-500 mt-1">Day learning streak</p>
-
-          <p className="text-xs text-orange-600 font-semibold mt-3">
-            Don't break the streak!
-          </p>
-        </div>
-      </section>
-
-      {/* =====================================================
-          STATISTICS
-      ===================================================== */}
-
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div className="bg-indigo-100 p-3 rounded-xl">
-              <TrendingUp className="text-primary-600" size={22} />
-            </div>
-
-            <span className="text-2xl font-bold">{roadmapProgress}%</span>
-          </div>
-
-          <p className="text-slate-500 mt-4">Roadmap Progress</p>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div className="bg-green-100 p-3 rounded-xl">
-              <CheckCircle2 className="text-green-600" size={22} />
-            </div>
-
-            <span className="text-2xl font-bold">{completedSkills}</span>
-          </div>
-
-          <p className="text-slate-500 mt-4">Skills Completed</p>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div className="bg-yellow-100 p-3 rounded-xl">
-              <Award className="text-yellow-600" size={22} />
-            </div>
-
-            <span className="text-2xl font-bold">{xp}</span>
-          </div>
-
-          <p className="text-slate-500 mt-4">XP Earned</p>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
-          <div className="flex items-center justify-between">
-            <div className="bg-orange-100 p-3 rounded-xl">
-              <Flame className="text-orange-600" size={22} />
-            </div>
-
-            <span className="text-2xl font-bold">{streak}</span>
-          </div>
-
-          <p className="text-slate-500 mt-4">Day Streak</p>
-        </div>
-      </section>
-
-      {/* =====================================================
-          MAIN CONTENT
-      ===================================================== */}
-
-      <section className="grid lg:grid-cols-3 gap-6">
-        {/* SKILLS */}
-
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900">Your Skills</h2>
-
-              <p className="text-sm text-slate-500 mt-1">
-                Track your progress toward your target career.
-              </p>
-            </div>
-
-            <Brain className="text-primary-600" size={24} />
-          </div>
-
-          <div className="space-y-5">
-            {skills.map((skill) => (
-              <div key={skill.name}>
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-2">
-                    {skill.completed ? (
-                      <CheckCircle2 size={18} className="text-green-500" />
-                    ) : (
-                      <Circle size={18} className="text-slate-300" />
-                    )}
-
-                    <span className="font-medium text-slate-700">
-                      {skill.name}
-                    </span>
-                  </div>
-
-                  <span className="text-sm font-semibold text-slate-600">
-                    {skill.progress}%
-                  </span>
-                </div>
-
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary-600 rounded-full transition-all"
-                    style={{
-                      width: `${skill.progress}%`,
-                    }}
-                  />
-                </div>
+        <div className="mb-8 grid gap-5 sm:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yellow-50">
+                ⭐
               </div>
-            ))}
+
+              <div>
+                <p className="text-sm text-slate-500">Total XP</p>
+
+                <p className="text-2xl font-bold text-slate-900">{currentXP}</p>
+              </div>
+            </div>
           </div>
 
-          <Link
-            to="/assessment"
-            className="mt-6 inline-flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
-          >
-            Take Skill Assessment
-            <ArrowRight size={17} />
-          </Link>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50">
+                🏆
+              </div>
+
+              <div>
+                <p className="text-sm text-slate-500">Level</p>
+
+                <p className="text-2xl font-bold text-slate-900">{level}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-50">
+                ✓
+              </div>
+
+              <div>
+                <p className="text-sm text-slate-500">Completed Skills</p>
+
+                <p className="text-2xl font-bold text-slate-900">
+                  {completedSkills.length}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* QUICK ACTIONS */}
 
-        <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-          <h2 className="text-xl font-bold text-slate-900">Quick Actions</h2>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <button
+            onClick={() => navigate("/career-exploration")}
+            className="group rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50">
+              <Briefcase size={25} />
+            </div>
 
-          <p className="text-sm text-slate-500 mt-1 mb-5">
-            Continue your career journey.
-          </p>
-
-          <div className="space-y-3">
-            <Link
-              to="/careers"
-              className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
-            >
-              <Target className="text-primary-600" size={21} />
-
-              <div>
-                <p className="font-semibold text-slate-800">Explore Careers</p>
-
-                <p className="text-xs text-slate-500">Find your ideal career</p>
-              </div>
-            </Link>
-
-            <Link
-              to="/assessment"
-              className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
-            >
-              <Brain className="text-primary-600" size={21} />
-
-              <div>
-                <p className="font-semibold text-slate-800">Skill Assessment</p>
-
-                <p className="text-xs text-slate-500">
-                  Identify your skill gaps
-                </p>
-              </div>
-            </Link>
-
-            <Link
-              to="/roadmap"
-              className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
-            >
-              <BookOpen className="text-primary-600" size={21} />
-
-              <div>
-                <p className="font-semibold text-slate-800">View Roadmap</p>
-
-                <p className="text-xs text-slate-500">Continue learning</p>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* =====================================================
-          LEADERBOARD
-      ===================================================== */}
-
-      <section className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-              <Trophy className="text-yellow-500" size={23} />
-              PathWise Leaderboard
+            <h2 className="text-xl font-bold text-slate-900">
+              Career Explorer
             </h2>
 
-            <p className="text-sm text-slate-500 mt-1">
-              A little friendly competition never hurts 😎
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Explore careers and discover the skills required.
             </p>
-          </div>
 
-          <Medal className="text-yellow-500" size={28} />
-        </div>
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              Explore Careers →
+            </span>
+          </button>
 
-        <div className="space-y-3">
-          {leaderboard.map((user) => (
-            <div
-              key={user.rank}
-              className={`flex items-center gap-4 p-4 rounded-xl ${
-                user.name === "You"
-                  ? "bg-indigo-50 border border-indigo-100"
-                  : "bg-slate-50"
-              }`}
-            >
-              <div className="w-10 text-center font-bold text-slate-500">
-                {user.rank === 1 ? "🥇" : user.rank === 2 ? "🥈" : "🥉"}
-              </div>
-
-              <div className="text-2xl">{user.avatar}</div>
-
-              <div className="flex-1">
-                <p className="font-semibold text-slate-800">
-                  {user.name}
-                  {user.name === "You" && (
-                    <span className="ml-2 text-xs text-primary-600">YOU</span>
-                  )}
-                </p>
-
-                <p className="text-xs text-slate-500">
-                  Level{" "}
-                  {user.name === "You" ? level : Math.floor(user.xp / 250) + 1}
-                </p>
-              </div>
-
-              <div className="font-bold text-yellow-600">⚡ {user.xp} XP</div>
+          <button
+            onClick={() => navigate("/skill-assessment")}
+            className="group rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-green-50">
+              <Brain size={25} />
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* =====================================================
-          DAILY MOTIVATION
-      ===================================================== */}
+            <h2 className="text-xl font-bold text-slate-900">
+              Skill Assessment
+            </h2>
 
-      <section className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl p-7 md:p-9 text-white shadow-xl text-center">
-        <div className="text-4xl mb-3">🧠</div>
-
-        <p className="text-xs font-bold tracking-widest text-indigo-300 mb-3">
-          DAILY MOTIVATION
-        </p>
-
-        <h2 className="text-xl md:text-2xl font-bold">“{quote}”</h2>
-
-        <p className="text-slate-300 mt-3">
-          Keep showing up. Your dream career is built one skill at a time. 🚀
-        </p>
-      </section>
-
-      {/* =====================================================
-          ACHIEVEMENT
-      ===================================================== */}
-
-      <section className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Award className="text-yellow-500" size={25} />
-
-          <div>
-            <h2 className="text-xl font-bold">Recent Achievement</h2>
-
-            <p className="text-sm text-slate-500">
-              Keep going — you're making progress!
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Assess your current skills and identify areas to improve.
             </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              Assess Skills →
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/recommendations")}
+            className="group rounded-2xl border border-primary-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50">
+              <Sparkles size={25} />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">
+              AI Recommendations
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Get personalized recommendations based on your skill gaps.
+            </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              View Recommendations →
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/roadmap")}
+            className="group rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50">
+              <Map size={25} />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">Career Roadmap</h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Follow your personalized roadmap and earn XP.
+            </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              View Roadmap →
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/results")}
+            className="group rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50">
+              <BarChart3 size={25} />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">My Results</h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Review your assessment results and skill gaps.
+            </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              View Results →
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/leaderboard")}
+            className="group rounded-2xl border border-yellow-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-50">
+              <Trophy size={25} />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">Leaderboard</h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              See your XP ranking and compete with other learners.
+            </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              View Leaderboard →
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/profile")}
+            className="group rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
+              <User size={25} />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">My Profile</h2>
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Manage your personal information and career preferences.
+            </p>
+
+            <span className="mt-5 inline-block font-semibold text-primary-600">
+              View Profile →
+            </span>
+          </button>
+        </div>
+
+        {/* LEADERBOARD CTA */}
+
+        <div className="mt-10 rounded-2xl bg-primary-600 p-6 text-white shadow-lg sm:p-8">
+          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+            <div>
+              <p className="text-sm font-semibold text-primary-100">
+                YOUR PROGRESS
+              </p>
+
+              <h2 className="mt-2 text-2xl font-bold">
+                ⭐ {currentXP} XP · Level {level}
+              </h2>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-primary-100">
+                Complete roadmap steps to earn more XP and climb the
+                leaderboard.
+              </p>
+            </div>
+
+            <button
+              onClick={() => navigate("/leaderboard")}
+              className="flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white px-6 py-3 font-semibold text-primary-600 hover:bg-slate-100"
+            >
+              <Trophy size={18} />
+              View Leaderboard
+            </button>
           </div>
         </div>
 
-        <div className="bg-yellow-50 rounded-xl p-4">
-          <p className="font-semibold text-yellow-800">🏆 First Steps</p>
+        {/* ACCOUNT */}
 
-          <p className="text-sm text-yellow-700 mt-1">
-            Completed your first career assessment.
-          </p>
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 sm:flex-row">
+          <div>
+            <p className="font-semibold text-slate-900">
+              Signed in as {user?.email || userName}
+            </p>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Manage your account from your profile.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              <User size={16} />
+              Profile
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 rounded-xl border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
         </div>
-      </section>
+      </main>
     </div>
   );
 }

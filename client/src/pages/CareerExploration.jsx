@@ -1,153 +1,153 @@
-import { Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Code2,
-  Brain,
-  Database,
-  ShieldCheck,
-  Cloud,
-  BarChart3,
-} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+const careers = [
+  {
+    title: "Full Stack Developer",
+    description:
+      "Build complete web applications using frontend and backend technologies.",
+    icon: "💻",
+  },
+  {
+    title: "Cybersecurity Engineer",
+    description:
+      "Protect systems, networks and applications from cyber threats.",
+    icon: "🔐",
+  },
+  {
+    title: "AI / ML Engineer",
+    description:
+      "Build intelligent systems using machine learning and artificial intelligence.",
+    icon: "🤖",
+  },
+  {
+    title: "Data Scientist",
+    description: "Analyze data and build models to solve real-world problems.",
+    icon: "📊",
+  },
+  {
+    title: "Backend Developer",
+    description: "Build APIs, databases and server-side applications.",
+    icon: "⚙️",
+  },
+  {
+    title: "Cloud Engineer",
+    description:
+      "Design, deploy and manage applications using cloud infrastructure.",
+    icon: "☁️",
+  },
+];
 
 function CareerExploration() {
   const navigate = useNavigate();
 
-  const careers = [
-    {
-      title: "Full Stack Developer",
-      description:
-        "Build complete web applications across frontend, backend, and databases.",
-      skills: ["React", "Node.js", "MongoDB"],
-      icon: Code2,
-    },
-    {
-      title: "AI / ML Engineer",
-      description:
-        "Build intelligent systems using machine learning and artificial intelligence.",
-      skills: ["Python", "Machine Learning", "TensorFlow"],
-      icon: Brain,
-    },
-    {
-      title: "Data Scientist",
-      description:
-        "Analyze data and build models that help organizations make better decisions.",
-      skills: ["Python", "Statistics", "Machine Learning"],
-      icon: BarChart3,
-    },
-    {
-      title: "Backend Developer",
-      description:
-        "Design APIs, databases, and server-side systems for modern applications.",
-      skills: ["Node.js", "APIs", "Databases"],
-      icon: Database,
-    },
-    {
-      title: "Cybersecurity Engineer",
-      description:
-        "Protect applications, networks, and systems from security threats.",
-      skills: ["Networking", "Linux", "Security"],
-      icon: ShieldCheck,
-    },
-    {
-      title: "Cloud Engineer",
-      description:
-        "Build and manage scalable cloud infrastructure and services.",
-      skills: ["AWS", "Docker", "Linux"],
-      icon: Cloud,
-    },
-  ];
+  const handleAssessment = (career) => {
+    // Save selected career
+    localStorage.setItem("selectedCareer", career);
+    localStorage.setItem("assessmentCareer", career);
 
-  const selectCareer = (career) => {
-    // Temporary selection.
-    // We will save this to the backend later.
-    localStorage.setItem("selectedCareer", career.title);
-
-    navigate("/assessment");
+    // Open assessment
+    navigate("/skill-assessment");
   };
 
   return (
-    <div className="py-8">
-      {/* Back */}
-      <Link
-        to="/dashboard"
-        className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600 mb-8"
-      >
-        <ArrowLeft size={18} />
-        Back to Dashboard
-      </Link>
+    <div className="min-h-screen bg-slate-50 py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* BACK */}
 
-      {/* Heading */}
-      <div className="text-center max-w-3xl mx-auto mb-10">
-        <div className="inline-flex items-center gap-2 bg-indigo-50 text-primary-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-          <Brain size={17} />
-          Career Exploration
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="mb-8 text-sm font-semibold text-slate-600 hover:text-primary-600"
+        >
+          ← Back to Dashboard
+        </button>
+
+        {/* HEADER */}
+
+        <div className="mb-10">
+          <p className="text-sm font-semibold text-primary-600">PATHWISE AI</p>
+
+          <h1 className="mt-2 text-4xl font-bold text-slate-900">
+            Career Explorer
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-slate-600">
+            Choose a career you are interested in and take a personalized skill
+            assessment to understand your current skill level.
+          </p>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
-          Choose Your Career Path
-        </h1>
+        {/* CAREERS */}
 
-        <p className="text-slate-600 mt-3">
-          Select a career you're interested in. We'll analyze the skills
-          required and create a personalized roadmap for you.
-        </p>
-      </div>
-
-      {/* Career Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {careers.map((career) => {
-          const Icon = career.icon;
-
-          return (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {careers.map((career) => (
             <div
               key={career.title}
-              className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 hover:shadow-xl hover:-translate-y-1 transition-all"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-5">
-                <Icon size={25} className="text-primary-600" />
+              {/* ICON */}
+
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary-50 text-3xl">
+                {career.icon}
               </div>
 
-              {/* Title */}
+              {/* TITLE */}
+
               <h2 className="text-xl font-bold text-slate-900">
                 {career.title}
               </h2>
 
-              {/* Description */}
-              <p className="text-slate-600 text-sm mt-3 leading-relaxed">
+              {/* DESCRIPTION */}
+
+              <p className="mt-3 min-h-[72px] text-sm leading-6 text-slate-600">
                 {career.description}
               </p>
 
-              {/* Skills */}
-              <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">
-                  Key Skills
-                </p>
+              {/* BUTTON */}
 
-                <div className="flex flex-wrap gap-2">
-                  {career.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Button */}
               <button
-                onClick={() => selectCareer(career)}
-                className="w-full mt-6 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition"
+                onClick={() => handleAssessment(career.title)}
+                className="mt-6 w-full rounded-xl bg-primary-600 px-5 py-3 font-semibold text-white transition hover:bg-primary-700"
               >
-                Choose Career
-                <ArrowRight size={18} />
+                Take Skill Assessment →
               </button>
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* INFO */}
+
+        <div className="mt-10 rounded-2xl border border-primary-100 bg-primary-50 p-6">
+          <h2 className="font-bold text-slate-900">How it works</h2>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <div>
+              <p className="font-semibold text-primary-600">
+                1. Choose a career
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Select the career you want to explore.
+              </p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-primary-600">
+                2. Take assessment
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Answer questions about your current skills.
+              </p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-primary-600">
+                3. Get your roadmap
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                See your skill gaps and recommended learning path.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

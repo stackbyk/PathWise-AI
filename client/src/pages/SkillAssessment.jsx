@@ -1,232 +1,175 @@
+// src/pages/SkillAssessment.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Brain, CheckCircle2 } from "lucide-react";
 
 const careerQuestions = {
   "Full Stack Developer": [
-    {
-      skill: "HTML & CSS",
-      question: "How comfortable are you with HTML and CSS?",
-    },
-    {
-      skill: "JavaScript",
-      question: "How comfortable are you with JavaScript?",
-    },
-    {
-      skill: "React",
-      question: "How comfortable are you with React?",
-    },
-    {
-      skill: "Node.js",
-      question: "How comfortable are you with Node.js?",
-    },
-    {
-      skill: "REST APIs",
-      question: "How comfortable are you with REST APIs?",
-    },
-    {
-      skill: "MongoDB",
-      question: "How comfortable are you with MongoDB?",
-    },
-    {
-      skill: "Git & GitHub",
-      question: "How comfortable are you with Git and GitHub?",
-    },
-    {
-      skill: "Problem Solving",
-      question: "How comfortable are you with programming problem solving?",
-    },
+    ["HTML & CSS", "How comfortable are you with HTML and CSS?"],
+    ["JavaScript", "How comfortable are you with JavaScript?"],
+    ["React", "How comfortable are you with React?"],
+    ["Node.js", "How comfortable are you with Node.js?"],
+    ["REST APIs", "How comfortable are you with REST APIs?"],
+    ["MongoDB", "How comfortable are you with MongoDB?"],
+    ["Git & GitHub", "How comfortable are you with Git and GitHub?"],
+    [
+      "Problem Solving",
+      "How comfortable are you with programming problem solving?",
+    ],
   ],
 
   "Cybersecurity Engineer": [
-    {
-      skill: "Cybersecurity Fundamentals",
-      question: "How comfortable are you with basic cybersecurity concepts?",
-    },
-    {
-      skill: "Networking",
-      question:
-        "How comfortable are you with computer networking and protocols?",
-    },
-    {
-      skill: "Linux",
-      question: "How comfortable are you with Linux systems and commands?",
-    },
-    {
-      skill: "Network Security",
-      question:
-        "How comfortable are you with firewalls, VPNs and network security?",
-    },
-    {
-      skill: "Ethical Hacking",
-      question:
-        "How comfortable are you with penetration testing and ethical hacking concepts?",
-    },
-    {
-      skill: "Threat Detection",
-      question:
-        "How comfortable are you with identifying and analyzing security threats?",
-    },
-    {
-      skill: "Python & Scripting",
-      question:
-        "How comfortable are you with Python or scripting for security tasks?",
-    },
-    {
-      skill: "Incident Response",
-      question:
-        "How comfortable are you with detecting and responding to security incidents?",
-    },
+    [
+      "Cybersecurity Fundamentals",
+      "How comfortable are you with basic cybersecurity concepts?",
+    ],
+    [
+      "Networking",
+      "How comfortable are you with computer networking and protocols?",
+    ],
+    ["Linux", "How comfortable are you with Linux systems and commands?"],
+    [
+      "Network Security",
+      "How comfortable are you with firewalls, VPNs and network security?",
+    ],
+    [
+      "Ethical Hacking",
+      "How comfortable are you with penetration testing and ethical hacking concepts?",
+    ],
+    [
+      "Threat Detection",
+      "How comfortable are you with identifying and analyzing security threats?",
+    ],
+    [
+      "Python & Scripting",
+      "How comfortable are you with Python or scripting for security tasks?",
+    ],
+    [
+      "Incident Response",
+      "How comfortable are you with detecting and responding to security incidents?",
+    ],
   ],
 
   "AI / ML Engineer": [
-    {
-      skill: "Python",
-      question: "How comfortable are you with Python programming?",
-    },
-    {
-      skill: "Mathematics",
-      question:
-        "How comfortable are you with the mathematics used in machine learning?",
-    },
-    {
-      skill: "Statistics",
-      question: "How comfortable are you with statistics and probability?",
-    },
-    {
-      skill: "Machine Learning",
-      question: "How comfortable are you with machine learning concepts?",
-    },
-    {
-      skill: "Deep Learning",
-      question:
-        "How comfortable are you with neural networks and deep learning?",
-    },
-    {
-      skill: "Data Processing",
-      question:
-        "How comfortable are you with preparing and processing datasets?",
-    },
-    {
-      skill: "Model Evaluation",
-      question:
-        "How comfortable are you with evaluating machine learning models?",
-    },
-    {
-      skill: "TensorFlow / PyTorch",
-      question:
-        "How comfortable are you with ML frameworks such as TensorFlow or PyTorch?",
-    },
+    ["Python", "How comfortable are you with Python programming?"],
+    [
+      "Mathematics",
+      "How comfortable are you with the mathematics used in machine learning?",
+    ],
+    ["Statistics", "How comfortable are you with statistics and probability?"],
+    [
+      "Machine Learning",
+      "How comfortable are you with machine learning concepts?",
+    ],
+    [
+      "Deep Learning",
+      "How comfortable are you with neural networks and deep learning?",
+    ],
+    [
+      "Data Processing",
+      "How comfortable are you with preparing and processing datasets?",
+    ],
+    [
+      "Model Evaluation",
+      "How comfortable are you with evaluating machine learning models?",
+    ],
+    [
+      "TensorFlow / PyTorch",
+      "How comfortable are you with ML frameworks such as TensorFlow or PyTorch?",
+    ],
   ],
 
   "Data Scientist": [
-    {
-      skill: "Python",
-      question: "How comfortable are you with Python for data analysis?",
-    },
-    {
-      skill: "Statistics",
-      question: "How comfortable are you with statistics and probability?",
-    },
-    {
-      skill: "SQL",
-      question: "How comfortable are you with SQL and databases?",
-    },
-    {
-      skill: "Data Analysis",
-      question: "How comfortable are you with analyzing datasets?",
-    },
-    {
-      skill: "Data Visualization",
-      question: "How comfortable are you with creating data visualizations?",
-    },
-    {
-      skill: "Machine Learning",
-      question: "How comfortable are you with machine learning algorithms?",
-    },
-    {
-      skill: "Pandas / NumPy",
-      question: "How comfortable are you with Pandas and NumPy?",
-    },
-    {
-      skill: "Problem Solving",
-      question: "How comfortable are you with solving analytical problems?",
-    },
+    ["Python", "How comfortable are you with Python for data analysis?"],
+    ["Statistics", "How comfortable are you with statistics and probability?"],
+    ["SQL", "How comfortable are you with SQL and databases?"],
+    ["Data Analysis", "How comfortable are you with analyzing datasets?"],
+    [
+      "Data Visualization",
+      "How comfortable are you with creating data visualizations?",
+    ],
+    [
+      "Machine Learning",
+      "How comfortable are you with machine learning algorithms?",
+    ],
+    ["Pandas / NumPy", "How comfortable are you with Pandas and NumPy?"],
+    [
+      "Problem Solving",
+      "How comfortable are you with solving analytical problems?",
+    ],
   ],
 
   "Backend Developer": [
-    {
-      skill: "Programming",
-      question: "How comfortable are you with backend programming?",
-    },
-    {
-      skill: "Node.js",
-      question: "How comfortable are you with Node.js?",
-    },
-    {
-      skill: "REST APIs",
-      question: "How comfortable are you with designing REST APIs?",
-    },
-    {
-      skill: "Databases",
-      question: "How comfortable are you with relational and NoSQL databases?",
-    },
-    {
-      skill: "Authentication",
-      question:
-        "How comfortable are you with authentication and authorization?",
-    },
-    {
-      skill: "Server Architecture",
-      question: "How comfortable are you with backend and server architecture?",
-    },
-    {
-      skill: "Git & GitHub",
-      question: "How comfortable are you with Git and GitHub?",
-    },
-    {
-      skill: "Problem Solving",
-      question: "How comfortable are you with backend problem solving?",
-    },
+    ["Programming", "How comfortable are you with backend programming?"],
+    ["Node.js", "How comfortable are you with Node.js?"],
+    ["REST APIs", "How comfortable are you with designing REST APIs?"],
+    [
+      "Databases",
+      "How comfortable are you with relational and NoSQL databases?",
+    ],
+    [
+      "Authentication",
+      "How comfortable are you with authentication and authorization?",
+    ],
+    [
+      "Server Architecture",
+      "How comfortable are you with backend and server architecture?",
+    ],
+    ["Git & GitHub", "How comfortable are you with Git and GitHub?"],
+    [
+      "Problem Solving",
+      "How comfortable are you with backend problem solving?",
+    ],
   ],
 
   "Cloud Engineer": [
-    {
-      skill: "Linux",
-      question: "How comfortable are you with Linux systems?",
-    },
-    {
-      skill: "Networking",
-      question: "How comfortable are you with networking concepts?",
-    },
-    {
-      skill: "AWS / Azure / GCP",
-      question:
-        "How comfortable are you with cloud platforms such as AWS, Azure or GCP?",
-    },
-    {
-      skill: "Docker",
-      question: "How comfortable are you with Docker and containers?",
-    },
-    {
-      skill: "Kubernetes",
-      question:
-        "How comfortable are you with Kubernetes and container orchestration?",
-    },
-    {
-      skill: "Cloud Security",
-      question: "How comfortable are you with cloud security concepts?",
-    },
-    {
-      skill: "CI/CD",
-      question: "How comfortable are you with CI/CD pipelines?",
-    },
-    {
-      skill: "Infrastructure",
-      question:
-        "How comfortable are you with cloud infrastructure and deployment?",
-    },
+    ["Linux", "How comfortable are you with Linux systems?"],
+    ["Networking", "How comfortable are you with networking concepts?"],
+    [
+      "AWS / Azure / GCP",
+      "How comfortable are you with cloud platforms such as AWS, Azure or GCP?",
+    ],
+    ["Docker", "How comfortable are you with Docker and containers?"],
+    [
+      "Kubernetes",
+      "How comfortable are you with Kubernetes and container orchestration?",
+    ],
+    ["Cloud Security", "How comfortable are you with cloud security concepts?"],
+    ["CI/CD", "How comfortable are you with CI/CD pipelines?"],
+    [
+      "Infrastructure",
+      "How comfortable are you with cloud infrastructure and deployment?",
+    ],
   ],
+};
+
+/*
+  Extra career aliases.
+
+  This makes the assessment work even if Career Explorer
+  saves a slightly different career name.
+*/
+
+const careerAliases = {
+  "AI/ML Engineer": "AI / ML Engineer",
+  "AI ML Engineer": "AI / ML Engineer",
+  "AI-ML Engineer": "AI / ML Engineer",
+
+  Cybersecurity: "Cybersecurity Engineer",
+  "Cyber Security": "Cybersecurity Engineer",
+  "Cyber Security Engineer": "Cybersecurity Engineer",
+
+  "Software Developer": "Full Stack Developer",
+  "Software Engineer": "Full Stack Developer",
+  "Web Developer": "Full Stack Developer",
+
+  "Data Science": "Data Scientist",
+  "Data Analyst": "Data Scientist",
+
+  Backend: "Backend Developer",
+
+  Cloud: "Cloud Engineer",
 };
 
 const levels = [
@@ -252,45 +195,141 @@ const levels = [
   },
 ];
 
+const careerOptions = Object.keys(careerQuestions);
+
 function SkillAssessment() {
   const navigate = useNavigate();
 
+  /*
+    Read the selected career.
+
+    We check both selectedCareer and assessmentCareer because
+    different pages in the current app may save either one.
+  */
+
   const storedCareer =
-    localStorage.getItem("selectedCareer") || "Full Stack Developer";
+    localStorage.getItem("selectedCareer") ||
+    localStorage.getItem("assessmentCareer") ||
+    "";
 
-  const careerAliases = {
-    "AI/ML Engineer": "AI / ML Engineer",
-    "AI ML Engineer": "AI / ML Engineer",
-    "AI-ML Engineer": "AI / ML Engineer",
+  /*
+    Convert aliases to the exact career name used by
+    careerQuestions.
+  */
 
-    "Full Stack Developer": "Full Stack Developer",
+  const initialCareer =
+    careerAliases[storedCareer] ||
+    (careerQuestions[storedCareer] ? storedCareer : "");
 
-    "Cybersecurity Engineer": "Cybersecurity Engineer",
+  /*
+    Career selection.
 
-    "Data Scientist": "Data Scientist",
+    If no career was selected before opening this page,
+    the user can choose one here.
+  */
 
-    "Backend Developer": "Backend Developer",
+  const [selectedCareer, setSelectedCareer] = useState(initialCareer);
 
-    "Cloud Engineer": "Cloud Engineer",
-  };
-
-  const selectedCareer = careerAliases[storedCareer] || storedCareer;
-
-  const questions =
-    careerQuestions[selectedCareer] || careerQuestions["Full Stack Developer"];
+  const questions = careerQuestions[selectedCareer] || [];
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
+
   const [answers, setAnswers] = useState({});
 
-  const question = questions[currentQuestion];
-  const currentAnswer = answers[question.skill];
+  /*
+    If there is no career selected, show the career selector.
+  */
 
-  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  if (!selectedCareer) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-10">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* BACK */}
+
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mb-8 inline-flex items-center gap-2 text-slate-600 hover:text-primary-600"
+          >
+            <ArrowLeft size={18} />
+            Back to Dashboard
+          </button>
+
+          {/* HEADER */}
+
+          <div className="mb-8 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
+              <Brain size={17} />
+              Skill Assessment
+            </div>
+
+            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
+              Choose Your Career
+            </h1>
+
+            <p className="mt-3 text-slate-600">
+              Select the career you want to assess your skills for.
+            </p>
+          </div>
+
+          {/* CAREER OPTIONS */}
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {careerOptions.map((career) => (
+              <button
+                key={career}
+                type="button"
+                onClick={() => {
+                  localStorage.setItem("selectedCareer", career);
+
+                  localStorage.setItem("assessmentCareer", career);
+
+                  setSelectedCareer(career);
+                  setCurrentQuestion(0);
+                  setAnswers({});
+                }}
+                className="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-2xl">
+                  {career === "Cybersecurity Engineer"
+                    ? "🔐"
+                    : career === "AI / ML Engineer"
+                      ? "🤖"
+                      : career === "Data Scientist"
+                        ? "📊"
+                        : career === "Cloud Engineer"
+                          ? "☁️"
+                          : career === "Backend Developer"
+                            ? "⚙️"
+                            : "💻"}
+                </div>
+
+                <h2 className="font-bold text-slate-900">{career}</h2>
+
+                <p className="mt-2 text-sm text-slate-500">
+                  Start skill assessment →
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const question = questions[currentQuestion];
+
+  const skill = question?.[0] || "";
+  const questionText = question?.[1] || "";
+
+  const currentAnswer = answers[skill];
+
+  const progress =
+    questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
   const handleAnswer = (value) => {
     setAnswers((previousAnswers) => ({
       ...previousAnswers,
-      [question.skill]: value,
+      [skill]: value,
     }));
   };
 
@@ -308,47 +347,189 @@ function SkillAssessment() {
     }
   };
 
+  /*
+    SAVE ASSESSMENT
+  */
+
   const handleSubmit = () => {
     if (!currentAnswer) return;
 
     const finalAnswers = {
       ...answers,
-      [question.skill]: currentAnswer,
+      [skill]: currentAnswer,
     };
+
+    /*
+      Save assessment results.
+    */
 
     localStorage.setItem("assessmentResults", JSON.stringify(finalAnswers));
 
     localStorage.setItem("assessmentCareer", selectedCareer);
 
-    // Keep the career available for Results and Roadmap
     localStorage.setItem("selectedCareer", selectedCareer);
+
+    /*
+      Convert answers into skill objects.
+    */
+
+    const assessedSkills = questions.map(([skillName]) => {
+      const score = finalAnswers[skillName] || 0;
+
+      const level = levels.find((item) => item.value === score) || levels[0];
+
+      return {
+        name: skillName,
+        progress: score,
+        level: level.label,
+        source: "assessment",
+        career: selectedCareer,
+      };
+    });
+
+    /*
+      Load Profile skills.
+    */
+
+    let existingProfileSkills = [];
+
+    const savedProfileSkills = localStorage.getItem("pathwiseProfileSkills");
+
+    if (savedProfileSkills) {
+      try {
+        const parsedSkills = JSON.parse(savedProfileSkills);
+
+        if (Array.isArray(parsedSkills)) {
+          existingProfileSkills = parsedSkills;
+        }
+      } catch (error) {
+        console.error("Failed to load profile skills:", error);
+      }
+    }
+
+    /*
+      Merge Profile + Assessment skills.
+    */
+
+    const mergedSkills = [
+      ...existingProfileSkills
+        .filter(
+          (profileSkill) =>
+            !assessedSkills.some(
+              (assessedSkill) =>
+                assessedSkill.name.toLowerCase() ===
+                String(profileSkill).toLowerCase(),
+            ),
+        )
+        .map((skillName) => ({
+          name: skillName,
+          progress: 0,
+          level: "Not Assessed",
+          source: "profile",
+        })),
+
+      ...assessedSkills,
+    ];
+
+    /*
+      Save complete skill system.
+    */
+
+    localStorage.setItem("pathwiseSkillData", JSON.stringify(mergedSkills));
+
+    /*
+      Keep profile skills compatible.
+    */
+
+    const skillNames = mergedSkills.map((item) => item.name);
+
+    localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skillNames));
+
+    /*
+      Save a simple assessment completion flag.
+    */
+
+    localStorage.setItem("skillAssessmentCompleted", "true");
+
+    /*
+      Go to results.
+    */
 
     navigate("/results");
   };
 
-  return (
-    <div className="py-8">
-      <button
-        onClick={() => navigate("/careers")}
-        className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600 mb-8"
-      >
-        <ArrowLeft size={18} />
-        Back to Careers
-      </button>
+  /*
+    Safety check.
+  */
 
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-indigo-50 text-primary-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+  if (!question) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-10">
+        <div className="mx-auto max-w-2xl px-4 text-center">
+          <h1 className="text-2xl font-bold text-slate-900">
+            No assessment questions found.
+          </h1>
+
+          <p className="mt-3 text-slate-600">Please choose a career first.</p>
+
+          <button
+            onClick={() => {
+              setSelectedCareer("");
+              setCurrentQuestion(0);
+              setAnswers({});
+            }}
+            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white"
+          >
+            Choose Career
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-8">
+      <div className="mx-auto max-w-3xl px-4">
+        {/* =========================
+            BACK
+        ========================= */}
+
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600"
+          >
+            <ArrowLeft size={18} />
+            Back to Dashboard
+          </button>
+
+          <button
+            onClick={() => {
+              setSelectedCareer("");
+              setCurrentQuestion(0);
+              setAnswers({});
+            }}
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Change Career
+          </button>
+        </div>
+
+        {/* =========================
+            HEADER
+        ========================= */}
+
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
             <Brain size={17} />
             Skill Assessment
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             Discover Your Skill Level
           </h1>
 
-          <p className="text-slate-600 mt-3">
+          <p className="mt-3 text-slate-600">
             Assessment for{" "}
             <span className="font-semibold text-primary-600">
               {selectedCareer}
@@ -356,9 +537,12 @@ function SkillAssessment() {
           </p>
         </div>
 
-        {/* Progress */}
-        <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6 mb-6">
-          <div className="flex justify-between items-center mb-3">
+        {/* =========================
+            PROGRESS
+        ========================= */}
+
+        <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
+          <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-600">
               Question {currentQuestion + 1} of {questions.length}
             </span>
@@ -368,31 +552,39 @@ function SkillAssessment() {
             </span>
           </div>
 
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
             <div
-              className="h-full bg-primary-600 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
+              className="h-full rounded-full bg-primary-600 transition-all duration-300"
+              style={{
+                width: `${progress}%`,
+              }}
             />
           </div>
         </div>
 
-        {/* Question */}
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
+        {/* =========================
+            QUESTION CARD
+        ========================= */}
+
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xl md:p-8">
           <div className="mb-8">
-            <p className="text-sm font-semibold text-primary-600 mb-2">
-              {question.skill}
+            <p className="mb-2 text-sm font-semibold text-primary-600">
+              {skill}
             </p>
 
             <h2 className="text-2xl font-bold text-slate-900">
-              {question.question}
+              {questionText}
             </h2>
 
-            <p className="text-slate-500 mt-2">
+            <p className="mt-2 text-slate-500">
               Select the option that best describes your current ability.
             </p>
           </div>
 
-          {/* Levels */}
+          {/* =========================
+              LEVELS
+          ========================= */}
+
           <div className="space-y-3">
             {levels.map((level) => {
               const isSelected = currentAnswer === level.value;
@@ -402,7 +594,7 @@ function SkillAssessment() {
                   key={level.label}
                   type="button"
                   onClick={() => handleAnswer(level.value)}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
                     isSelected
                       ? "border-primary-600 bg-indigo-50"
                       : "border-slate-200 hover:border-primary-300 hover:bg-slate-50"
@@ -410,12 +602,12 @@ function SkillAssessment() {
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
                         isSelected ? "border-primary-600" : "border-slate-300"
                       }`}
                     >
                       {isSelected && (
-                        <div className="w-3 h-3 rounded-full bg-primary-600" />
+                        <div className="h-3 w-3 rounded-full bg-primary-600" />
                       )}
                     </div>
 
@@ -438,13 +630,16 @@ function SkillAssessment() {
             })}
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
+          {/* =========================
+              NAVIGATION
+          ========================= */}
+
+          <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
             <button
               type="button"
               onClick={handlePrevious}
               disabled={currentQuestion === 0}
-              className="px-5 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl px-5 py-3 font-semibold text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ArrowLeft size={18} />
               Previous
@@ -455,7 +650,7 @@ function SkillAssessment() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={!currentAnswer}
-                className="px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Finish Assessment
                 <CheckCircle2 size={18} />
@@ -465,7 +660,7 @@ function SkillAssessment() {
                 type="button"
                 onClick={handleNext}
                 disabled={!currentAnswer}
-                className="px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
                 <ArrowRight size={18} />
@@ -474,13 +669,17 @@ function SkillAssessment() {
           </div>
         </div>
 
-        {/* Question indicators */}
-        <div className="flex justify-center gap-2 mt-6 flex-wrap">
-          {questions.map((item, index) => (
+        {/* =========================
+            QUESTION INDICATORS
+        ========================= */}
+
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          {questions.map(([skillName], index) => (
             <div
-              key={item.skill}
-              className={`w-3 h-3 rounded-full ${
-                answers[item.skill]
+              key={skillName}
+              title={skillName}
+              className={`h-3 w-3 rounded-full ${
+                answers[skillName]
                   ? "bg-green-500"
                   : index === currentQuestion
                     ? "bg-primary-600"
