@@ -3,26 +3,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
-  signOut,
-  updateProfile,
+  signOut as firebaseSignOut,
 } from "firebase/auth";
 
 import { auth } from "../firebase";
 
-// =========================================================
-// AUTH CONTEXT
-// =========================================================
-
 const AuthContext = createContext(null);
-
-// =========================================================
-// GOOGLE PROVIDER
-// =========================================================
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -30,126 +18,259 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
-// =========================================================
-// AUTH PROVIDER
-// =========================================================
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // =======================================================
-  // LISTEN TO FIREBASE AUTH STATE
-  // =======================================================
+  // =====================================================
+  // RESTORE LOGIN SESSION
+  // =====================================================
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (currentUser) => {
-        console.log("Firebase auth state:", currentUser);
+    const restoreSession = () => {
+      try {
+        const savedUser = localStorage.getItem("pathwiseUser");
+        const savedToken = localStorage.getItem("pathwiseToken");
 
-        setUser(currentUser);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Firebase auth state error:", error);
+        console.log("=================================");
+        console.log("RESTORING PATHWISE SESSION");
+        console.log("Saved user:", savedUser);
+        console.log("Token exists:", !!savedToken);
+        console.log("=================================");
+
+        /*
+          We consider the user authenticated if a valid
+          saved user exists.
+
+          This is important for Google authentication because
+          Firebase handles the Google session separately and
+          does not give us our backend JWT.
+        */
+
+        if (savedUser) {
+          try {
+            const parsedUser = JSON.parse(savedUser);
+
+            if (parsedUser && parsedUser.email) {
+              setUser(parsedUser);
+
+              console.log("Session restored successfully:", parsedUser);
+
+              return;
+            }
+          } catch (parseError) {
+            console.error("Failed to parse saved user:", parseError);
+          }
+        }
+
+        /*
+          No valid saved session.
+        */
 
         setUser(null);
-        setLoading(false);
-      },
-    );
 
-    return unsubscribe;
+        console.log("No PathWise session found.");
+      } catch (error) {
+        console.error("Session restore error:", error);
+
+        localStorage.removeItem("pathwiseToken");
+        localStorage.removeItem("pathwiseUser");
+
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
   }, []);
 
-  // =======================================================
+  // =====================================================
   // EMAIL LOGIN
-  // =======================================================
+  // =====================================================
 
   const login = async (email, password) => {
     try {
-      if (!email || !password) {
+      if (!email?.trim() || !password) {
         return {
           success: false,
-          error: "missing-fields",
           message: "Please enter your email and password.",
         };
       }
 
-      const result = await signInWithEmailAndPassword(
-        auth,
-        email.trim(),
-        password,
-      );
+      console.log("Attempting backend login...");
 
-      console.log("Email login successful:", result.user);
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
 
-      setUser(result.user);
+      const data = await response.json();
+
+      console.log("Backend login response:", data);
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: data.message || "Invalid email or password.",
+        };
+      }
+
+      if (!data.token) {
+        console.error("Backend did not return a token.");
+
+        return {
+          success: false,
+          message: "Login failed: authentication token missing.",
+        };
+      }
+
+      // =================================================
+      // CREATE USER OBJECT
+      // =================================================
+
+      const userData = {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role || "student",
+      };
+
+      // =================================================
+      // SAVE JWT
+      // =================================================
+
+      localStorage.setItem("pathwiseToken", data.token);
+
+      // =================================================
+      // SAVE USER
+      // =================================================
+
+      localStorage.setItem("pathwiseUser", JSON.stringify(userData));
+
+      // =================================================
+      // UPDATE AUTH STATE
+      // =================================================
+
+      setUser(userData);
+
+      console.log("=================================");
+      console.log("LOGIN SUCCESS");
+      console.log("User:", userData);
+      console.log("Token saved:", !!localStorage.getItem("pathwiseToken"));
+      console.log("=================================");
 
       return {
         success: true,
-        user: result.user,
+        user: userData,
+        token: data.token,
       };
     } catch (error) {
       console.error("EMAIL LOGIN ERROR:", error);
 
       return {
         success: false,
-        error: error?.code,
-        message: getFirebaseErrorMessage(error?.code),
+        message:
+          "Unable to connect to the server. Make sure the backend is running.",
       };
     }
   };
 
-  // =======================================================
+  // =====================================================
   // REGISTER
-  // =======================================================
+  // =====================================================
 
   const register = async (name, email, password) => {
     try {
-      if (!email || !password) {
+      if (!name?.trim() || !email?.trim() || !password) {
         return {
           success: false,
-          error: "missing-fields",
-          message: "Please enter your email and password.",
+          message: "Please fill in all required fields.",
         };
       }
 
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email.trim(),
-        password,
-      );
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        }),
+      });
 
-      // Save user's display name
-      if (name && name.trim()) {
-        await updateProfile(result.user, {
-          displayName: name.trim(),
-        });
+      const data = await response.json();
+
+      console.log("Backend registration response:", data);
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: data.message || "Registration failed.",
+        };
       }
 
-      console.log("Registration successful:", result.user);
+      if (!data.token) {
+        return {
+          success: false,
+          message: "Registration failed: authentication token missing.",
+        };
+      }
 
-      setUser(result.user);
+      // =================================================
+      // CREATE USER
+      // =================================================
+
+      const userData = {
+        _id: data._id,
+        name: data.name,
+        email: data.email,
+        role: data.role || "student",
+      };
+
+      // =================================================
+      // SAVE SESSION
+      // =================================================
+
+      localStorage.setItem("pathwiseToken", data.token);
+
+      localStorage.setItem("pathwiseUser", JSON.stringify(userData));
+
+      // =================================================
+      // UPDATE AUTH STATE
+      // =================================================
+
+      setUser(userData);
+
+      console.log("REGISTRATION SUCCESS:", userData);
 
       return {
         success: true,
-        user: result.user,
+        user: userData,
+        token: data.token,
       };
     } catch (error) {
       console.error("REGISTER ERROR:", error);
 
       return {
         success: false,
-        error: error?.code,
-        message: getFirebaseErrorMessage(error?.code),
+        message:
+          "Unable to connect to the server. Make sure the backend is running.",
       };
     }
   };
 
-  // =======================================================
+  // =====================================================
   // GOOGLE LOGIN
-  // =======================================================
+  // =====================================================
 
   const loginWithGoogle = async () => {
     try {
@@ -157,42 +278,117 @@ export function AuthProvider({ children }) {
 
       const result = await signInWithPopup(auth, googleProvider);
 
-      console.log("Google sign-in successful:", result.user);
+      const firebaseUser = result.user;
 
-      setUser(result.user);
+      console.log("Firebase Google login successful:", firebaseUser);
+
+      // =================================================
+      // GET FIREBASE ID TOKEN
+      // =================================================
+
+      const firebaseToken = await firebaseUser.getIdToken();
+
+      // =================================================
+      // CREATE GOOGLE USER
+      // =================================================
+
+      const googleUser = {
+        _id: firebaseUser.uid,
+
+        name:
+          firebaseUser.displayName ||
+          firebaseUser.email?.split("@")[0] ||
+          "User",
+
+        email: firebaseUser.email,
+
+        role: "student",
+
+        firebaseUid: firebaseUser.uid,
+      };
+
+      // =================================================
+      // SAVE FIREBASE TOKEN
+      // =================================================
+
+      localStorage.setItem("pathwiseToken", firebaseToken);
+
+      // =================================================
+      // SAVE USER
+      // =================================================
+
+      localStorage.setItem("pathwiseUser", JSON.stringify(googleUser));
+
+      // =================================================
+      // UPDATE REACT AUTH STATE
+      // =================================================
+
+      setUser(googleUser);
+
+      console.log("=================================");
+
+      console.log("GOOGLE LOGIN SUCCESS");
+
+      console.log("Google user:", googleUser);
+
+      console.log(
+        "Google token saved:",
+        !!localStorage.getItem("pathwiseToken"),
+      );
+
+      console.log("=================================");
 
       return {
         success: true,
-        user: result.user,
+        user: googleUser,
+        token: firebaseToken,
       };
     } catch (error) {
-      console.error("================================");
-
-      console.error("GOOGLE LOGIN ERROR");
-
-      console.error("Error code:", error?.code);
-
-      console.error("Error message:", error?.message);
-
-      console.error("Full Firebase error:", error);
-
-      console.error("================================");
+      console.error("GOOGLE LOGIN ERROR:", error);
 
       return {
         success: false,
-        error: error?.code || "unknown-error",
+        error: error?.code,
         message: getFirebaseErrorMessage(error?.code),
       };
     }
   };
 
-  // =======================================================
+  // =====================================================
   // LOGOUT
-  // =======================================================
+  // =====================================================
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      // =================================================
+      // REMOVE AUTH SESSION
+      // =================================================
+
+      localStorage.removeItem("pathwiseToken");
+
+      localStorage.removeItem("pathwiseUser");
+
+      // =================================================
+      // REMOVE PROFILE DATA
+      // =================================================
+
+      localStorage.removeItem("pathwiseProfileName");
+
+      localStorage.removeItem("pathwiseProfileSkills");
+
+      // =================================================
+      // FIREBASE LOGOUT
+      // =================================================
+
+      try {
+        await firebaseSignOut(auth);
+      } catch (firebaseError) {
+        console.log("Firebase logout skipped:", firebaseError);
+      }
+
+      // =================================================
+      // CLEAR REACT STATE
+      // =================================================
 
       setUser(null);
 
@@ -206,15 +402,14 @@ export function AuthProvider({ children }) {
 
       return {
         success: false,
-        error: error?.code,
-        message: getFirebaseErrorMessage(error?.code),
+        message: "Logout failed.",
       };
     }
   };
 
-  // =======================================================
+  // =====================================================
   // CONTEXT VALUE
-  // =======================================================
+  // =====================================================
 
   const value = {
     user,
@@ -254,10 +449,6 @@ export function useAuth() {
 
 function getFirebaseErrorMessage(code) {
   switch (code) {
-    // -----------------------------------------------------
-    // EMAIL / PASSWORD
-    // -----------------------------------------------------
-
     case "auth/invalid-email":
       return "Please enter a valid email address.";
 
@@ -276,16 +467,6 @@ function getFirebaseErrorMessage(code) {
     case "auth/weak-password":
       return "Password should be at least 6 characters.";
 
-    case "auth/missing-password":
-      return "Please enter your password.";
-
-    case "auth/missing-email":
-      return "Please enter your email address.";
-
-    // -----------------------------------------------------
-    // GOOGLE
-    // -----------------------------------------------------
-
     case "auth/popup-blocked":
       return "Google sign-in popup was blocked by your browser.";
 
@@ -301,28 +482,14 @@ function getFirebaseErrorMessage(code) {
     case "auth/operation-not-allowed":
       return "Google sign-in is not enabled in Firebase.";
 
-    case "auth/account-exists-with-different-credential":
-      return "An account already exists with this email using another sign-in method.";
-
-    // -----------------------------------------------------
-    // NETWORK
-    // -----------------------------------------------------
-
     case "auth/network-request-failed":
       return "Network error. Please check your internet connection.";
-
-    // -----------------------------------------------------
-    // OTHER
-    // -----------------------------------------------------
 
     case "auth/too-many-requests":
       return "Too many attempts. Please try again later.";
 
     case "auth/user-disabled":
       return "This account has been disabled.";
-
-    case "missing-fields":
-      return "Please fill in all required fields.";
 
     default:
       return (

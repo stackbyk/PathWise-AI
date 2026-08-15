@@ -1,505 +1,629 @@
-// ==========================================
-// PATHWISE AI
-// GAMIFICATION ENGINE
-// ==========================================
+/* =========================================================
+   PATHWISE GAMIFICATION SYSTEM
+========================================================= */
 
-// ------------------------------------------
-// XP SYSTEM
-// ------------------------------------------
+export const XP_PER_SKILL = 50;
+export const XP_PER_LEVEL = 250;
+
+/* =========================================================
+   SKILL QUEST SETTINGS
+========================================================= */
+
+export const QUEST_XP = 75;
+export const QUEST_BONUS_XP = 150;
+export const QUEST_STREAK_BONUS = 25;
+
+/* =========================================================
+   GET CURRENT XP
+========================================================= */
 
 export const getXP = () => {
-  return Number(localStorage.getItem("pathwiseXP") || 0);
+  return Number(localStorage.getItem("pathwiseXP")) || 0;
 };
 
-export const addXP = (amount) => {
-  const currentXP = getXP();
-  const newXP = currentXP + amount;
-
-  localStorage.setItem("pathwiseXP", newXP);
-
-  return newXP;
-};
-
-// ------------------------------------------
-// LEVEL SYSTEM
-// ------------------------------------------
-
-export const getLevel = (xp = getXP()) => {
-  if (xp >= 3000) return 6;
-  if (xp >= 2000) return 5;
-  if (xp >= 1200) return 4;
-  if (xp >= 600) return 3;
-  if (xp >= 250) return 2;
-
-  return 1;
-};
-
-export const getLevelName = (level = getLevel()) => {
-  const levels = {
-    1: "Beginner",
-    2: "Explorer",
-    3: "Skill Builder",
-    4: "Career Ready",
-    5: "PathWise Pro",
-    6: "PathWise Legend",
-  };
-
-  return levels[level] || "Beginner";
-};
-
-export const getLevelEmoji = (level = getLevel()) => {
-  const emojis = {
-    1: "🌱",
-    2: "🧭",
-    3: "🛠️",
-    4: "🚀",
-    5: "🏆",
-    6: "👑",
-  };
-
-  return emojis[level] || "🌱";
-};
-
-// ------------------------------------------
-// LEVEL XP
-// ------------------------------------------
-
-export const getLevelStartXP = (level = getLevel()) => {
-  const levels = {
-    1: 0,
-    2: 250,
-    3: 600,
-    4: 1200,
-    5: 2000,
-    6: 3000,
-  };
-
-  return levels[level] || 0;
-};
-
-export const getNextLevelXP = (level = getLevel()) => {
-  const levels = {
-    1: 250,
-    2: 600,
-    3: 1200,
-    4: 2000,
-    5: 3000,
-    6: 3000,
-  };
-
-  return levels[level] || 250;
-};
-
-export const getLevelProgress = (xp = getXP()) => {
-  const level = getLevel(xp);
-
-  if (level >= 6) {
-    return 100;
-  }
-
-  const startXP = getLevelStartXP(level);
-  const nextXP = getNextLevelXP(level);
-
-  const progress = ((xp - startXP) / (nextXP - startXP)) * 100;
-
-  return Math.min(100, Math.max(0, Math.round(progress)));
-};
-
-// ------------------------------------------
-// COMPLETED SKILLS
-// ------------------------------------------
+/* =========================================================
+   GET COMPLETED SKILLS
+========================================================= */
 
 export const getCompletedSkills = () => {
-  return JSON.parse(localStorage.getItem("completedSkills") || "[]");
+  return Number(localStorage.getItem("pathwiseCompletedSkills")) || 0;
 };
 
-export const getCompletedSkillCount = () => {
-  return getCompletedSkills().length;
-};
-
-// ------------------------------------------
-// COMPLETE SKILL
-// ------------------------------------------
-
-export const completeSkill = (skillName, xpReward = 50) => {
-  const completedSkills = getCompletedSkills();
-
-  // Prevent duplicate XP
-  if (completedSkills.includes(skillName)) {
-    return {
-      alreadyCompleted: true,
-      xp: getXP(),
-      reward: 0,
-    };
-  }
-
-  completedSkills.push(skillName);
-
-  localStorage.setItem("completedSkills", JSON.stringify(completedSkills));
-
-  const newXP = addXP(xpReward);
-
-  return {
-    alreadyCompleted: false,
-    xp: newXP,
-    reward: xpReward,
-  };
-};
-
-// ------------------------------------------
-// STREAK SYSTEM
-// ------------------------------------------
+/* =========================================================
+   GET STREAK
+========================================================= */
 
 export const getStreak = () => {
-  return Number(localStorage.getItem("pathwiseStreak") || 0);
+  return Number(localStorage.getItem("pathwiseStreak")) || 0;
 };
 
-export const updateStreak = () => {
-  const today = new Date().toDateString();
+/* =========================================================
+   GET LEVEL
+========================================================= */
 
-  const lastActivity = localStorage.getItem("lastActivityDate");
+export const getLevel = (xp = getXP()) => {
+  return Math.floor(xp / XP_PER_LEVEL) + 1;
+};
 
-  let streak = getStreak();
+/* =========================================================
+   GET LEVEL PROGRESS
+========================================================= */
+
+export const getLevelProgress = (xp = getXP()) => {
+  const currentXP = xp % XP_PER_LEVEL;
+
+  return Math.round((currentXP / XP_PER_LEVEL) * 100);
+};
+
+/* =========================================================
+   NOTIFY APP
+========================================================= */
+
+const notifyGamificationUpdate = () => {
+  window.dispatchEvent(new Event("pathwiseXPUpdated"));
+  window.dispatchEvent(new Event("pathwiseGamificationUpdated"));
+  window.dispatchEvent(new Event("pathwiseStreakUpdated"));
+  window.dispatchEvent(new Event("pathwiseQuestUpdated"));
+};
+
+/* =========================================================
+   GET TODAY
+========================================================= */
+
+const getToday = () => {
+  return new Date().toISOString().split("T")[0];
+};
+
+/* =========================================================
+   RECORD LEARNING ACTIVITY
+========================================================= */
+
+export const recordLearningActivity = () => {
+  const today = getToday();
+
+  const lastActivity = localStorage.getItem("pathwiseLastActivityDate");
+
+  let streak = Number(localStorage.getItem("pathwiseStreak")) || 0;
+
+  /* -------------------------------------------------------
+     FIRST EVER ACTIVITY
+  ------------------------------------------------------- */
 
   if (!lastActivity) {
     streak = 1;
-  } else {
-    const lastDate = new Date(lastActivity);
-    const currentDate = new Date(today);
 
-    const difference = Math.floor(
-      (currentDate - lastDate) / (1000 * 60 * 60 * 24),
-    );
+    localStorage.setItem("pathwiseStreak", streak);
+    localStorage.setItem("pathwiseLastActivityDate", today);
 
-    if (difference === 1) {
-      streak += 1;
-    } else if (difference > 1) {
-      streak = 1;
-    }
+    notifyGamificationUpdate();
+
+    return streak;
   }
 
-  localStorage.setItem("pathwiseStreak", streak);
+  /* -------------------------------------------------------
+     SAME DAY
+  ------------------------------------------------------- */
 
-  localStorage.setItem("lastActivityDate", today);
+  if (lastActivity === today) {
+    return streak;
+  }
+
+  /* -------------------------------------------------------
+     CALCULATE DAYS BETWEEN ACTIVITIES
+  ------------------------------------------------------- */
+
+  const previousDate = new Date(lastActivity);
+  const currentDate = new Date(today);
+
+  const difference = Math.floor(
+    (currentDate - previousDate) / (1000 * 60 * 60 * 24),
+  );
+
+  /* -------------------------------------------------------
+     NEXT DAY
+  ------------------------------------------------------- */
+
+  if (difference === 1) {
+    streak += 1;
+  }
+
+  /* -------------------------------------------------------
+     MISSED DAYS
+  ------------------------------------------------------- */
+
+  if (difference > 1) {
+    streak = 1;
+  }
+
+  /* -------------------------------------------------------
+     SAVE
+  ------------------------------------------------------- */
+
+  localStorage.setItem("pathwiseStreak", streak);
+  localStorage.setItem("pathwiseLastActivityDate", today);
+
+  notifyGamificationUpdate();
 
   return streak;
 };
 
-// ------------------------------------------
-// DAILY GOAL
-// ------------------------------------------
+/* =========================================================
+   COMPLETE ROADMAP SKILL
+========================================================= */
 
-export const getDailyGoal = () => {
-  return Number(localStorage.getItem("dailyGoal") || 2);
-};
+export const completeSkill = (career, skillId, skillName) => {
+  const completedKey = `pathwiseCompletedSkill_${career}_${skillId}`;
 
-export const getDailyProgress = () => {
-  const today = new Date().toDateString();
+  /* -------------------------------------------------------
+     PREVENT DUPLICATE XP
+  ------------------------------------------------------- */
 
-  const savedDate = localStorage.getItem("dailyGoalDate");
+  const alreadyCompleted = localStorage.getItem(completedKey);
 
-  if (savedDate !== today) {
-    localStorage.setItem("dailyGoalProgress", "0");
-
-    localStorage.setItem("dailyGoalDate", today);
-
-    return 0;
+  if (alreadyCompleted === "true") {
+    return {
+      success: false,
+      message: "Skill already completed.",
+    };
   }
 
-  return Number(localStorage.getItem("dailyGoalProgress") || 0);
-};
+  /* -------------------------------------------------------
+     MARK EXACT SKILL AS COMPLETED
+  ------------------------------------------------------- */
 
-export const incrementDailyGoal = () => {
-  const current = getDailyProgress();
+  localStorage.setItem(completedKey, "true");
 
-  const goal = getDailyGoal();
+  /* -------------------------------------------------------
+     ADD XP
+  ------------------------------------------------------- */
 
-  const newProgress = Math.min(current + 1, goal);
+  const currentXP = getXP();
+  const newXP = currentXP + XP_PER_SKILL;
 
-  localStorage.setItem("dailyGoalProgress", newProgress);
+  localStorage.setItem("pathwiseXP", newXP);
 
-  return newProgress;
-};
+  /* -------------------------------------------------------
+     ADD COMPLETED SKILL COUNT
+  ------------------------------------------------------- */
 
-// ------------------------------------------
-// BADGES
-// ------------------------------------------
+  const currentCompletedSkills = getCompletedSkills();
 
-export const getBadges = () => {
-  return JSON.parse(localStorage.getItem("pathwiseBadges") || "[]");
-};
+  const newCompletedSkills = currentCompletedSkills + 1;
 
-export const unlockBadge = (badgeId) => {
-  const badges = getBadges();
+  localStorage.setItem("pathwiseCompletedSkills", newCompletedSkills);
 
-  if (!badges.includes(badgeId)) {
-    badges.push(badgeId);
+  /* -------------------------------------------------------
+     RECORD DAILY LEARNING ACTIVITY
+  ------------------------------------------------------- */
 
-    localStorage.setItem("pathwiseBadges", JSON.stringify(badges));
+  const newStreak = recordLearningActivity();
 
-    return true;
-  }
+  /* -------------------------------------------------------
+     SAVE LAST COMPLETED SKILL
+  ------------------------------------------------------- */
 
-  return false;
-};
+  localStorage.setItem(
+    "pathwiseLastCompletedSkill",
+    JSON.stringify({
+      career,
+      skillId,
+      skillName,
+      xp: XP_PER_SKILL,
+      completedAt: new Date().toISOString(),
+    }),
+  );
 
-// ------------------------------------------
-// AVAILABLE BADGES
-// ------------------------------------------
+  /* -------------------------------------------------------
+     CHECK WHETHER THIS SKILL COMPLETES A QUEST
+  ------------------------------------------------------- */
 
-export const BADGES = [
-  {
-    id: "first-step",
-    name: "First Step",
-    emoji: "🥇",
-    description: "Complete your first skill",
-    xp: 25,
-  },
+  checkAndCompleteSkillQuest(career, skillId, skillName);
 
-  {
-    id: "skill-builder",
-    name: "Skill Builder",
-    emoji: "🛠️",
-    description: "Complete 5 skills",
-    xp: 50,
-  },
+  /* -------------------------------------------------------
+     NOTIFY DASHBOARD + ARENA
+  ------------------------------------------------------- */
 
-  {
-    id: "roadmap-starter",
-    name: "Roadmap Starter",
-    emoji: "🗺️",
-    description: "Complete 10 skills",
-    xp: 100,
-  },
+  notifyGamificationUpdate();
 
-  {
-    id: "streak-3",
-    name: "Getting Started",
-    emoji: "🔥",
-    description: "Maintain a 3-day streak",
-    xp: 50,
-  },
-
-  {
-    id: "streak-7",
-    name: "Consistency King",
-    emoji: "🔥",
-    description: "Maintain a 7-day streak",
-    xp: 150,
-  },
-
-  {
-    id: "streak-30",
-    name: "Unstoppable",
-    emoji: "⚡",
-    description: "Maintain a 30-day streak",
-    xp: 500,
-  },
-
-  {
-    id: "quiz-master",
-    name: "Quiz Master",
-    emoji: "🧠",
-    description: "Complete 5 quizzes",
-    xp: 100,
-  },
-
-  {
-    id: "career-ready",
-    name: "Career Ready",
-    emoji: "🚀",
-    description: "Reach Level 4",
-    xp: 200,
-  },
-
-  {
-    id: "pathwise-pro",
-    name: "PathWise Pro",
-    emoji: "🏆",
-    description: "Reach Level 5",
-    xp: 500,
-  },
-];
-
-// ------------------------------------------
-// MOTIVATIONAL QUOTES
-// ------------------------------------------
-
-export const MOTIVATIONAL_QUOTES = [
-  {
-    quote: "Small progress is still progress.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "Your future self will thank you for starting today.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "Consistency beats intensity.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "You don't need to know everything. You just need to keep learning.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "Every skill you learn makes your career stronger.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "Don't compare your beginning to someone else's middle.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "One completed skill today is better than ten planned for tomorrow.",
-    author: "PathWise",
-  },
-
-  {
-    quote: "Your skill gap is not a limitation. It's your learning roadmap.",
-    author: "PathWise",
-  },
-];
-
-export const getRandomQuote = () => {
-  const index = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
-
-  return MOTIVATIONAL_QUOTES[index];
-};
-
-// ------------------------------------------
-// RANK SYSTEM
-// ------------------------------------------
-
-export const getRank = (xp = getXP()) => {
-  if (xp >= 3000) return "Diamond";
-  if (xp >= 2000) return "Platinum";
-  if (xp >= 1200) return "Gold";
-  if (xp >= 600) return "Silver";
-
-  return "Bronze";
-};
-
-export const getRankEmoji = (rank = getRank()) => {
-  const ranks = {
-    Bronze: "🥉",
-    Silver: "🥈",
-    Gold: "🥇",
-    Platinum: "💎",
-    Diamond: "👑",
+  return {
+    success: true,
+    xp: getXP(),
+    completedSkills: newCompletedSkills,
+    streak: newStreak,
+    level: getLevel(getXP()),
   };
-
-  return ranks[rank] || "🥉";
 };
 
-// ------------------------------------------
-// DAILY CHALLENGES
-// ------------------------------------------
+/* =========================================================
+   CHECK WHETHER SKILL ALREADY COMPLETED
+========================================================= */
 
-export const DAILY_CHALLENGES = [
-  {
-    id: "challenge-1",
-    title: "Skill Sprint",
-    description: "Complete 2 roadmap skills today.",
-    reward: 100,
-    emoji: "⚡",
-  },
+export const isSkillCompleted = (career, skillId) => {
+  const completedKey = `pathwiseCompletedSkill_${career}_${skillId}`;
 
-  {
-    id: "challenge-2",
-    title: "Knowledge Boost",
-    description: "Complete one difficult skill gap.",
-    reward: 75,
-    emoji: "🧠",
-  },
+  return localStorage.getItem(completedKey) === "true";
+};
 
-  {
-    id: "challenge-3",
-    title: "Consistency Challenge",
-    description: "Keep your learning streak alive today.",
-    reward: 50,
-    emoji: "🔥",
-  },
+/* =========================================================
+   ADD XP
+========================================================= */
 
-  {
-    id: "challenge-4",
-    title: "Career Builder",
-    description: "Spend at least 20 minutes learning today.",
-    reward: 75,
-    emoji: "🚀",
-  },
-];
+export const addXP = (amount) => {
+  const currentXP = getXP();
 
-// ------------------------------------------
-// LEADERBOARD DEMO DATA
-// ------------------------------------------
+  const newXP = currentXP + Number(amount);
 
-// Temporary frontend leaderboard.
-// Later this will come from MongoDB.
+  localStorage.setItem("pathwiseXP", newXP);
 
-export const getLeaderboard = () => {
-  const userXP = getXP();
+  notifyGamificationUpdate();
 
-  const leaderboard = [
+  return newXP;
+};
+
+/* =========================================================
+   SET XP
+========================================================= */
+
+export const setXP = (amount) => {
+  const newXP = Math.max(0, Number(amount));
+
+  localStorage.setItem("pathwiseXP", newXP);
+
+  notifyGamificationUpdate();
+
+  return newXP;
+};
+
+/* =========================================================
+   SKILL QUEST DATA
+========================================================= */
+
+/*
+  Quest types:
+
+  1. Daily Skill Quest
+  2. Streak Quest
+  3. XP Quest
+  4. Skill Completion Quest
+*/
+
+export const getSkillQuests = () => {
+  return [
     {
-      name: "Alex",
-      xp: 2450,
-      avatar: "🧑‍💻",
+      id: "daily-skill",
+      title: "Daily Skill Hunter",
+      description: "Complete 1 roadmap skill today.",
+      icon: "🎯",
+      xp: QUEST_XP,
+      type: "daily",
     },
 
     {
-      name: "Priya",
-      xp: 2120,
-      avatar: "👩‍💻",
+      id: "skill-master",
+      title: "Skill Master",
+      description: "Complete 3 roadmap skills.",
+      icon: "⚡",
+      xp: QUEST_BONUS_XP,
+      type: "milestone",
     },
 
     {
-      name: "Rahul",
-      xp: 790,
-      avatar: "👨‍💻",
+      id: "streak-builder",
+      title: "Streak Builder",
+      description: "Build a learning streak of 3 days.",
+      icon: "🔥",
+      xp: QUEST_BONUS_XP,
+      type: "streak",
     },
 
     {
-      name: "Sara",
-      xp: 650,
-      avatar: "👩‍🎓",
+      id: "xp-hunter",
+      title: "XP Hunter",
+      description: "Earn 250 XP.",
+      icon: "💎",
+      xp: QUEST_BONUS_XP,
+      type: "xp",
+    },
+
+    {
+      id: "career-climber",
+      title: "Career Climber",
+      description: "Complete 5 roadmap skills.",
+      icon: "🚀",
+      xp: QUEST_BONUS_XP,
+      type: "milestone",
     },
   ];
-
-  leaderboard.push({
-    name: "You",
-    xp: userXP,
-    avatar: "🚀",
-  });
-
-  return leaderboard
-    .sort((a, b) => b.xp - a.xp)
-    .map((user, index) => ({
-      ...user,
-      rank: index + 1,
-    }));
 };
 
-// ------------------------------------------
-// COMPLETE LEARNING ACTIVITY
-// ------------------------------------------
+/* =========================================================
+   GET QUEST STATE
+========================================================= */
 
-export const recordLearningActivity = (skillName, xpReward = 50) => {
-  const result = completeSkill(skillName, xpReward);
+export const getQuestState = () => {
+  try {
+    const saved = localStorage.getItem("pathwiseSkillQuestState");
 
-  if (result.alreadyCompleted) {
-    return result;
+    if (!saved) {
+      return {};
+    }
+
+    const parsed = JSON.parse(saved);
+
+    if (parsed && typeof parsed === "object") {
+      return parsed;
+    }
+
+    return {};
+  } catch (error) {
+    console.error("Failed to load quest state:", error);
+
+    return {};
+  }
+};
+
+/* =========================================================
+   SAVE QUEST STATE
+========================================================= */
+
+const saveQuestState = (state) => {
+  localStorage.setItem("pathwiseSkillQuestState", JSON.stringify(state));
+};
+
+/* =========================================================
+   CHECK QUEST COMPLETION
+========================================================= */
+
+export const isQuestCompleted = (questId) => {
+  const state = getQuestState();
+
+  return state[questId]?.completed === true;
+};
+
+/* =========================================================
+   GET COMPLETED QUEST COUNT
+========================================================= */
+
+export const getCompletedQuestCount = () => {
+  const state = getQuestState();
+
+  return Object.values(state).filter((quest) => quest?.completed === true)
+    .length;
+};
+
+/* =========================================================
+   COMPLETE QUEST
+========================================================= */
+
+export const completeQuest = (questId) => {
+  const quests = getSkillQuests();
+
+  const quest = quests.find((item) => item.id === questId);
+
+  if (!quest) {
+    return {
+      success: false,
+      message: "Quest not found.",
+    };
   }
 
-  updateStreak();
+  const state = getQuestState();
 
-  incrementDailyGoal();
+  /* -------------------------------------------------------
+     PREVENT DUPLICATE QUEST XP
+  ------------------------------------------------------- */
 
-  return result;
+  if (state[questId]?.completed === true) {
+    return {
+      success: false,
+      message: "Quest already completed.",
+    };
+  }
+
+  /* -------------------------------------------------------
+     ADD QUEST XP
+  ------------------------------------------------------- */
+
+  const currentXP = getXP();
+
+  const newXP = currentXP + quest.xp;
+
+  localStorage.setItem("pathwiseXP", newXP);
+
+  /* -------------------------------------------------------
+     SAVE QUEST
+  ------------------------------------------------------- */
+
+  state[questId] = {
+    completed: true,
+    completedAt: new Date().toISOString(),
+    xp: quest.xp,
+  };
+
+  saveQuestState(state);
+
+  /* -------------------------------------------------------
+     RECORD ACTIVITY
+  ------------------------------------------------------- */
+
+  recordLearningActivity();
+
+  /* -------------------------------------------------------
+     NOTIFY APP
+  ------------------------------------------------------- */
+
+  notifyGamificationUpdate();
+
+  return {
+    success: true,
+    questId,
+    xpEarned: quest.xp,
+    totalXP: newXP,
+    level: getLevel(newXP),
+  };
+};
+
+/* =========================================================
+   CHECK DAILY SKILL QUEST
+========================================================= */
+
+const checkAndCompleteSkillQuest = (career, skillId, skillName) => {
+  const today = getToday();
+
+  const dailyKey = "pathwiseDailySkillQuest";
+
+  let dailyQuest = null;
+
+  try {
+    const saved = localStorage.getItem(dailyKey);
+
+    if (saved) {
+      dailyQuest = JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error("Failed to load daily quest:", error);
+  }
+
+  /* -------------------------------------------------------
+     CREATE TODAY'S QUEST
+  ------------------------------------------------------- */
+
+  if (!dailyQuest || dailyQuest.date !== today) {
+    dailyQuest = {
+      date: today,
+      completed: false,
+      career,
+      skillId,
+      skillName,
+    };
+
+    localStorage.setItem(dailyKey, JSON.stringify(dailyQuest));
+  }
+
+  /* -------------------------------------------------------
+     COMPLETE DAILY QUEST
+  ------------------------------------------------------- */
+
+  if (!dailyQuest.completed) {
+    dailyQuest.completed = true;
+    dailyQuest.completedAt = new Date().toISOString();
+
+    localStorage.setItem(dailyKey, JSON.stringify(dailyQuest));
+
+    /*
+      IMPORTANT:
+
+      We don't automatically give QUEST_XP here.
+
+      The quest reward is claimed separately through
+      completeQuest("daily-skill").
+
+      This prevents accidental duplicate XP.
+    */
+
+    notifyGamificationUpdate();
+  }
+};
+
+/* =========================================================
+   GET TODAY'S DAILY QUEST
+========================================================= */
+
+export const getDailyQuest = () => {
+  const today = getToday();
+
+  try {
+    const saved = localStorage.getItem("pathwiseDailySkillQuest");
+
+    if (!saved) {
+      return {
+        date: today,
+        completed: false,
+      };
+    }
+
+    const quest = JSON.parse(saved);
+
+    /* -----------------------------------------------------
+       RESET WHEN NEW DAY STARTS
+    ----------------------------------------------------- */
+
+    if (quest.date !== today) {
+      return {
+        date: today,
+        completed: false,
+      };
+    }
+
+    return quest;
+  } catch (error) {
+    console.error("Failed to load daily quest:", error);
+
+    return {
+      date: today,
+      completed: false,
+    };
+  }
+};
+
+/* =========================================================
+   GET QUEST PROGRESS
+========================================================= */
+
+export const getQuestProgress = () => {
+  const completedSkills = getCompletedSkills();
+  const xp = getXP();
+  const streak = getStreak();
+
+  return {
+    dailySkill: {
+      current: getDailyQuest().completed ? 1 : 0,
+      target: 1,
+      completed: getDailyQuest().completed,
+    },
+
+    skillMaster: {
+      current: Math.min(completedSkills, 3),
+      target: 3,
+      completed: completedSkills >= 3,
+    },
+
+    streakBuilder: {
+      current: Math.min(streak, 3),
+      target: 3,
+      completed: streak >= 3,
+    },
+
+    xpHunter: {
+      current: Math.min(xp, 250),
+      target: 250,
+      completed: xp >= 250,
+    },
+
+    careerClimber: {
+      current: Math.min(completedSkills, 5),
+      target: 5,
+      completed: completedSkills >= 5,
+    },
+  };
+};
+
+/* =========================================================
+   GET GAMIFICATION SUMMARY
+========================================================= */
+
+export const getGamificationSummary = () => {
+  const xp = getXP();
+
+  return {
+    xp,
+    completedSkills: getCompletedSkills(),
+    level: getLevel(xp),
+    levelProgress: getLevelProgress(xp),
+    streak: getStreak(),
+
+    /* NEW */
+    completedQuests: getCompletedQuestCount(),
+    questProgress: getQuestProgress(),
+  };
 };

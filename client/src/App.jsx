@@ -1,43 +1,130 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-import { AuthProvider } from "./context/AuthContext";
 
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import CareerExploration from "./pages/CareerExploration";
 import SkillAssessment from "./pages/SkillAssessment";
 import Results from "./pages/Results";
 import PersonalizedRoadmap from "./pages/PersonalizedRoadmap";
+import Recommendations from "./pages/Recommendations";
+import Arena from "./pages/Arena";
+
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Landing */}
-          <Route path="/" element={<LandingPage />} />
+    <Router>
+      <Routes>
+        {/* =================================================
+            PUBLIC ROUTES
+        ================================================= */}
 
-          {/* Authentication */}
-          <Route path="/login" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
 
-          <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
 
-          {/* Main Application */}
-          <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/register" element={<Register />} />
 
-          <Route path="/career-exploration" element={<CareerExploration />} />
+        {/* =================================================
+            PROTECTED ROUTES
+        ================================================= */}
 
-          <Route path="/skill-assessment" element={<SkillAssessment />} />
+        {/* DASHBOARD */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route path="/results" element={<Results />} />
+        {/* PROFILE */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route path="/roadmap" element={<PersonalizedRoadmap />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+        {/* CAREER EXPLORATION */}
+        <Route
+          path="/career-exploration"
+          element={
+            <ProtectedRoute>
+              <CareerExploration />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* SKILL ASSESSMENT */}
+        <Route
+          path="/skill-assessment"
+          element={
+            <ProtectedRoute>
+              <SkillAssessment />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* RESULTS */}
+        <Route
+          path="/results"
+          element={
+            <ProtectedRoute>
+              <Results />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* PERSONALIZED ROADMAP */}
+        <Route
+          path="/roadmap"
+          element={
+            <ProtectedRoute>
+              <PersonalizedRoadmap />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* =================================================
+            AI RECOMMENDATIONS
+        ================================================= */}
+
+        <Route
+          path="/recommendations"
+          element={
+            <ProtectedRoute>
+              <Recommendations />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* =================================================
+            PATHWISE ARENA
+        ================================================= */}
+
+        <Route
+          path="/arena"
+          element={
+            <ProtectedRoute>
+              <Arena />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* =================================================
+            FALLBACK
+        ================================================= */}
+
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    </Router>
   );
 }
 

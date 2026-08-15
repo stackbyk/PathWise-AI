@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Brain, CheckCircle2 } from "lucide-react";
 
+/* =========================================================
+   CAREER QUESTIONS
+========================================================= */
+
 const careerQuestions = {
   "Full Stack Developer": [
     ["HTML & CSS", "How comfortable are you with HTML and CSS?"],
@@ -16,38 +20,6 @@ const careerQuestions = {
     [
       "Problem Solving",
       "How comfortable are you with programming problem solving?",
-    ],
-  ],
-
-  "Cybersecurity Engineer": [
-    [
-      "Cybersecurity Fundamentals",
-      "How comfortable are you with basic cybersecurity concepts?",
-    ],
-    [
-      "Networking",
-      "How comfortable are you with computer networking and protocols?",
-    ],
-    ["Linux", "How comfortable are you with Linux systems and commands?"],
-    [
-      "Network Security",
-      "How comfortable are you with firewalls, VPNs and network security?",
-    ],
-    [
-      "Ethical Hacking",
-      "How comfortable are you with penetration testing and ethical hacking concepts?",
-    ],
-    [
-      "Threat Detection",
-      "How comfortable are you with identifying and analyzing security threats?",
-    ],
-    [
-      "Python & Scripting",
-      "How comfortable are you with Python or scripting for security tasks?",
-    ],
-    [
-      "Incident Response",
-      "How comfortable are you with detecting and responding to security incidents?",
     ],
   ],
 
@@ -100,29 +72,6 @@ const careerQuestions = {
     ],
   ],
 
-  "Backend Developer": [
-    ["Programming", "How comfortable are you with backend programming?"],
-    ["Node.js", "How comfortable are you with Node.js?"],
-    ["REST APIs", "How comfortable are you with designing REST APIs?"],
-    [
-      "Databases",
-      "How comfortable are you with relational and NoSQL databases?",
-    ],
-    [
-      "Authentication",
-      "How comfortable are you with authentication and authorization?",
-    ],
-    [
-      "Server Architecture",
-      "How comfortable are you with backend and server architecture?",
-    ],
-    ["Git & GitHub", "How comfortable are you with Git and GitHub?"],
-    [
-      "Problem Solving",
-      "How comfortable are you with backend problem solving?",
-    ],
-  ],
-
   "Cloud Engineer": [
     ["Linux", "How comfortable are you with Linux systems?"],
     ["Networking", "How comfortable are you with networking concepts?"],
@@ -142,14 +91,88 @@ const careerQuestions = {
       "How comfortable are you with cloud infrastructure and deployment?",
     ],
   ],
+
+  "Cybersecurity Engineer": [
+    [
+      "Cybersecurity Fundamentals",
+      "How comfortable are you with basic cybersecurity concepts?",
+    ],
+    [
+      "Networking",
+      "How comfortable are you with computer networking and protocols?",
+    ],
+    ["Linux", "How comfortable are you with Linux systems and commands?"],
+    [
+      "Network Security",
+      "How comfortable are you with firewalls, VPNs and network security?",
+    ],
+    [
+      "Ethical Hacking",
+      "How comfortable are you with penetration testing and ethical hacking concepts?",
+    ],
+    [
+      "Threat Detection",
+      "How comfortable are you with identifying and analyzing security threats?",
+    ],
+    [
+      "Python & Scripting",
+      "How comfortable are you with Python or scripting for security tasks?",
+    ],
+    [
+      "Incident Response",
+      "How comfortable are you with detecting and responding to security incidents?",
+    ],
+  ],
+
+  "DevOps Engineer": [
+    ["Linux", "How comfortable are you with Linux systems?"],
+    ["Networking", "How comfortable are you with networking concepts?"],
+    ["Git", "How comfortable are you with Git and version control?"],
+    ["Docker", "How comfortable are you with Docker and containers?"],
+    ["Kubernetes", "How comfortable are you with Kubernetes?"],
+    ["CI/CD", "How comfortable are you with CI/CD pipelines?"],
+    ["AWS", "How comfortable are you with AWS or cloud platforms?"],
+    [
+      "Infrastructure as Code",
+      "How comfortable are you with Terraform or infrastructure as code?",
+    ],
+  ],
+
+  "Mobile App Developer": [
+    [
+      "Programming Fundamentals",
+      "How comfortable are you with programming fundamentals?",
+    ],
+    ["React Native", "How comfortable are you with React Native?"],
+    ["Mobile UI", "How comfortable are you with mobile UI development?"],
+    [
+      "Mobile Navigation",
+      "How comfortable are you with navigation between mobile screens?",
+    ],
+    ["REST APIs", "How comfortable are you with consuming REST APIs?"],
+    ["Authentication", "How comfortable are you with mobile authentication?"],
+    ["Testing", "How comfortable are you with testing mobile applications?"],
+    [
+      "App Deployment",
+      "How comfortable are you with deploying mobile applications?",
+    ],
+  ],
+
+  "UI/UX Designer": [
+    ["Design Principles", "How comfortable are you with design principles?"],
+    ["Color Theory", "How comfortable are you with color theory?"],
+    ["Typography", "How comfortable are you with typography?"],
+    ["User Research", "How comfortable are you with user research?"],
+    ["User Personas", "How comfortable are you with creating user personas?"],
+    ["Wireframing", "How comfortable are you with wireframing?"],
+    ["Prototyping", "How comfortable are you with prototyping?"],
+    ["Usability Testing", "How comfortable are you with usability testing?"],
+  ],
 };
 
-/*
-  Extra career aliases.
-
-  This makes the assessment work even if Career Explorer
-  saves a slightly different career name.
-*/
+/* =========================================================
+   CAREER ALIASES
+========================================================= */
 
 const careerAliases = {
   "AI/ML Engineer": "AI / ML Engineer",
@@ -167,10 +190,25 @@ const careerAliases = {
   "Data Science": "Data Scientist",
   "Data Analyst": "Data Scientist",
 
-  Backend: "Backend Developer",
+  Backend: "Full Stack Developer",
+  "Backend Developer": "Full Stack Developer",
 
   Cloud: "Cloud Engineer",
+
+  DevOps: "DevOps Engineer",
+  "DevOps Developer": "DevOps Engineer",
+
+  "Mobile Developer": "Mobile App Developer",
+  "App Developer": "Mobile App Developer",
+
+  Designer: "UI/UX Designer",
+  "UX Designer": "UI/UX Designer",
+  "UI Designer": "UI/UX Designer",
 };
+
+/* =========================================================
+   LEVELS
+========================================================= */
 
 const levels = [
   {
@@ -195,57 +233,78 @@ const levels = [
   },
 ];
 
+/* =========================================================
+   CAREER OPTIONS
+========================================================= */
+
 const careerOptions = Object.keys(careerQuestions);
+
+/* =========================================================
+   NORMALIZE CAREER
+========================================================= */
+
+const normalizeCareer = (career) => {
+  const rawCareer = String(career || "").trim();
+
+  if (careerAliases[rawCareer]) {
+    return careerAliases[rawCareer];
+  }
+
+  if (careerQuestions[rawCareer]) {
+    return rawCareer;
+  }
+
+  const lowerCareer = rawCareer.toLowerCase();
+
+  const matchingCareer = careerOptions.find(
+    (careerOption) => careerOption.toLowerCase() === lowerCareer,
+  );
+
+  return matchingCareer || "";
+};
+
+/* =========================================================
+   COMPONENT
+========================================================= */
 
 function SkillAssessment() {
   const navigate = useNavigate();
 
-  /*
-    Read the selected career.
-
-    We check both selectedCareer and assessmentCareer because
-    different pages in the current app may save either one.
-  */
+  /* =======================================================
+     GET STORED CAREER
+  ======================================================= */
 
   const storedCareer =
     localStorage.getItem("selectedCareer") ||
     localStorage.getItem("assessmentCareer") ||
     "";
 
-  /*
-    Convert aliases to the exact career name used by
-    careerQuestions.
-  */
+  const initialCareer = normalizeCareer(storedCareer);
 
-  const initialCareer =
-    careerAliases[storedCareer] ||
-    (careerQuestions[storedCareer] ? storedCareer : "");
-
-  /*
-    Career selection.
-
-    If no career was selected before opening this page,
-    the user can choose one here.
-  */
+  /* =======================================================
+     STATE
+  ======================================================= */
 
   const [selectedCareer, setSelectedCareer] = useState(initialCareer);
-
-  const questions = careerQuestions[selectedCareer] || [];
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const [answers, setAnswers] = useState({});
 
-  /*
-    If there is no career selected, show the career selector.
-  */
+  /* =======================================================
+     QUESTIONS
+  ======================================================= */
+
+  const questions = careerQuestions[selectedCareer] || [];
+
+  /* =======================================================
+     CAREER SELECTOR
+  ======================================================= */
 
   if (!selectedCareer) {
     return (
       <div className="min-h-screen bg-slate-50 py-10">
         <div className="mx-auto max-w-4xl px-4">
-          {/* BACK */}
-
           <button
             onClick={() => navigate("/dashboard")}
             className="mb-8 inline-flex items-center gap-2 text-slate-600 hover:text-primary-600"
@@ -253,8 +312,6 @@ function SkillAssessment() {
             <ArrowLeft size={18} />
             Back to Dashboard
           </button>
-
-          {/* HEADER */}
 
           <div className="mb-8 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
@@ -271,8 +328,6 @@ function SkillAssessment() {
             </p>
           </div>
 
-          {/* CAREER OPTIONS */}
-
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {careerOptions.map((career) => (
               <button
@@ -280,7 +335,6 @@ function SkillAssessment() {
                 type="button"
                 onClick={() => {
                   localStorage.setItem("selectedCareer", career);
-
                   localStorage.setItem("assessmentCareer", career);
 
                   setSelectedCareer(career);
@@ -298,9 +352,13 @@ function SkillAssessment() {
                         ? "📊"
                         : career === "Cloud Engineer"
                           ? "☁️"
-                          : career === "Backend Developer"
+                          : career === "DevOps Engineer"
                             ? "⚙️"
-                            : "💻"}
+                            : career === "Mobile App Developer"
+                              ? "📱"
+                              : career === "UI/UX Designer"
+                                ? "🎨"
+                                : "💻"}
                 </div>
 
                 <h2 className="font-bold text-slate-900">{career}</h2>
@@ -316,15 +374,59 @@ function SkillAssessment() {
     );
   }
 
+  /* =======================================================
+     SAFETY CHECK
+  ======================================================= */
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-10">
+        <div className="mx-auto max-w-2xl px-4 text-center">
+          <h1 className="text-2xl font-bold text-slate-900">
+            No assessment questions found.
+          </h1>
+
+          <p className="mt-3 text-slate-600">
+            Please choose a supported career.
+          </p>
+
+          <button
+            onClick={() => {
+              setSelectedCareer("");
+              setCurrentQuestion(0);
+              setAnswers({});
+            }}
+            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white"
+          >
+            Choose Career
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* =======================================================
+     CURRENT QUESTION
+  ======================================================= */
+
   const question = questions[currentQuestion];
 
   const skill = question?.[0] || "";
+
   const questionText = question?.[1] || "";
 
   const currentAnswer = answers[skill];
 
+  /* =======================================================
+     PROGRESS
+  ======================================================= */
+
   const progress =
     questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
+
+  /* =======================================================
+     ANSWER
+  ======================================================= */
 
   const handleAnswer = (value) => {
     setAnswers((previousAnswers) => ({
@@ -333,13 +435,23 @@ function SkillAssessment() {
     }));
   };
 
+  /* =======================================================
+     NEXT
+  ======================================================= */
+
   const handleNext = () => {
-    if (!currentAnswer) return;
+    if (!currentAnswer) {
+      return;
+    }
 
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((previous) => previous + 1);
     }
   };
+
+  /* =======================================================
+     PREVIOUS
+  ======================================================= */
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
@@ -347,21 +459,23 @@ function SkillAssessment() {
     }
   };
 
-  /*
-    SAVE ASSESSMENT
-  */
+  /* =======================================================
+     SUBMIT ASSESSMENT
+  ======================================================= */
 
   const handleSubmit = () => {
-    if (!currentAnswer) return;
+    if (!currentAnswer) {
+      return;
+    }
 
     const finalAnswers = {
       ...answers,
       [skill]: currentAnswer,
     };
 
-    /*
-      Save assessment results.
-    */
+    /* -----------------------------------------------------
+       SAVE RAW ASSESSMENT
+    ----------------------------------------------------- */
 
     localStorage.setItem("assessmentResults", JSON.stringify(finalAnswers));
 
@@ -369,9 +483,9 @@ function SkillAssessment() {
 
     localStorage.setItem("selectedCareer", selectedCareer);
 
-    /*
-      Convert answers into skill objects.
-    */
+    /* -----------------------------------------------------
+       CREATE ASSESSED SKILLS
+    ----------------------------------------------------- */
 
     const assessedSkills = questions.map(([skillName]) => {
       const score = finalAnswers[skillName] || 0;
@@ -387,9 +501,9 @@ function SkillAssessment() {
       };
     });
 
-    /*
-      Load Profile skills.
-    */
+    /* -----------------------------------------------------
+       LOAD EXISTING PROFILE SKILLS
+    ----------------------------------------------------- */
 
     let existingProfileSkills = [];
 
@@ -407,9 +521,9 @@ function SkillAssessment() {
       }
     }
 
-    /*
-      Merge Profile + Assessment skills.
-    */
+    /* -----------------------------------------------------
+       MERGE PROFILE + ASSESSMENT SKILLS
+    ----------------------------------------------------- */
 
     const mergedSkills = [
       ...existingProfileSkills
@@ -431,68 +545,52 @@ function SkillAssessment() {
       ...assessedSkills,
     ];
 
-    /*
-      Save complete skill system.
-    */
+    /* -----------------------------------------------------
+       SAVE COMPLETE SKILL DATA
+    ----------------------------------------------------- */
 
     localStorage.setItem("pathwiseSkillData", JSON.stringify(mergedSkills));
 
-    /*
-      Keep profile skills compatible.
-    */
+    /* -----------------------------------------------------
+       SAVE PROFILE SKILL NAMES
+    ----------------------------------------------------- */
 
     const skillNames = mergedSkills.map((item) => item.name);
 
     localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skillNames));
 
-    /*
-      Save a simple assessment completion flag.
-    */
+    /* -----------------------------------------------------
+       COMPLETION FLAG
+    ----------------------------------------------------- */
 
     localStorage.setItem("skillAssessmentCompleted", "true");
 
-    /*
-      Go to results.
-    */
+    /* -----------------------------------------------------
+       SAVE ASSESSMENT TIMESTAMP
+    ----------------------------------------------------- */
+
+    localStorage.setItem(
+      "skillAssessmentCompletedAt",
+      new Date().toISOString(),
+    );
+
+    /* -----------------------------------------------------
+       GO TO RESULTS
+    ----------------------------------------------------- */
 
     navigate("/results");
   };
 
-  /*
-    Safety check.
-  */
-
-  if (!question) {
-    return (
-      <div className="min-h-screen bg-slate-50 py-10">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">
-            No assessment questions found.
-          </h1>
-
-          <p className="mt-3 text-slate-600">Please choose a career first.</p>
-
-          <button
-            onClick={() => {
-              setSelectedCareer("");
-              setCurrentQuestion(0);
-              setAnswers({});
-            }}
-            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white"
-          >
-            Choose Career
-          </button>
-        </div>
-      </div>
-    );
-  }
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="mx-auto max-w-3xl px-4">
-        {/* =========================
-            BACK
-        ========================= */}
+        {/* =================================================
+            TOP NAVIGATION
+        ================================================= */}
 
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <button
@@ -515,9 +613,9 @@ function SkillAssessment() {
           </button>
         </div>
 
-        {/* =========================
+        {/* =================================================
             HEADER
-        ========================= */}
+        ================================================= */}
 
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
@@ -537,9 +635,9 @@ function SkillAssessment() {
           </p>
         </div>
 
-        {/* =========================
+        {/* =================================================
             PROGRESS
-        ========================= */}
+        ================================================= */}
 
         <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
           <div className="mb-3 flex items-center justify-between">
@@ -562,9 +660,9 @@ function SkillAssessment() {
           </div>
         </div>
 
-        {/* =========================
+        {/* =================================================
             QUESTION CARD
-        ========================= */}
+        ================================================= */}
 
         <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xl md:p-8">
           <div className="mb-8">
@@ -581,9 +679,9 @@ function SkillAssessment() {
             </p>
           </div>
 
-          {/* =========================
-              LEVELS
-          ========================= */}
+          {/* =================================================
+              LEVEL OPTIONS
+          ================================================= */}
 
           <div className="space-y-3">
             {levels.map((level) => {
@@ -630,9 +728,9 @@ function SkillAssessment() {
             })}
           </div>
 
-          {/* =========================
+          {/* =================================================
               NAVIGATION
-          ========================= */}
+          ================================================= */}
 
           <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
             <button
@@ -669,9 +767,9 @@ function SkillAssessment() {
           </div>
         </div>
 
-        {/* =========================
+        {/* =================================================
             QUESTION INDICATORS
-        ========================= */}
+        ================================================= */}
 
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           {questions.map(([skillName], index) => (

@@ -7,7 +7,7 @@ function ProtectedRoute({ children }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading PathWise AI...</p>
+        <p className="text-slate-600 font-medium">Loading PathWise AI...</p>
       </div>
     );
   }

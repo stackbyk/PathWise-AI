@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Target,
   TrendingUp,
+  Zap,
 } from "lucide-react";
 
 function Results() {
@@ -21,16 +22,6 @@ function Results() {
 
   /* =====================================================
      LOAD SKILL DATA
-     
-     New format:
-     [
-       {
-         name: "React",
-         progress: 75,
-         level: "Intermediate",
-         source: "assessment"
-       }
-     ]
   ===================================================== */
 
   let skillData = [];
@@ -51,8 +42,6 @@ function Results() {
 
   /* =====================================================
      FALLBACK TO OLD ASSESSMENT DATA
-     
-     This prevents breaking existing assessments.
   ===================================================== */
 
   if (skillData.length === 0) {
@@ -74,7 +63,7 @@ function Results() {
 
         return {
           name,
-          progress,
+          progress: Number(progress),
           level,
           source: "assessment",
         };
@@ -111,25 +100,157 @@ function Results() {
      STRONG SKILLS
   ===================================================== */
 
-  const strongSkills = assessedSkills.filter((skill) => skill.progress >= 75);
+  const strongSkills = assessedSkills.filter(
+    (skill) => Number(skill.progress) >= 75,
+  );
 
   /* =====================================================
      SKILL GAPS
   ===================================================== */
 
-  const skillGaps = assessedSkills.filter((skill) => skill.progress < 75);
+  const skillGaps = assessedSkills.filter(
+    (skill) => Number(skill.progress) < 75,
+  );
+
+  /* =====================================================
+     PRIORITY SKILLS
+  ===================================================== */
+
+  const prioritySkills = [...skillGaps].sort(
+    (a, b) => Number(a.progress || 0) - Number(b.progress || 0),
+  );
+
+  /* =====================================================
+     SAVE PERSONALIZATION DATA
+  ===================================================== */
+
+  const saveAssessmentPersonalization = () => {
+    try {
+      localStorage.setItem(
+        "pathwiseAssessmentSummary",
+        JSON.stringify({
+          career: selectedCareer,
+          overallScore,
+          strongSkills: strongSkills.map((skill) => ({
+            name: skill.name,
+            progress: Number(skill.progress || 0),
+            level: skill.level || getLevel(Number(skill.progress || 0)),
+          })),
+          skillGaps: skillGaps.map((skill) => ({
+            name: skill.name,
+            progress: Number(skill.progress || 0),
+            level: skill.level || getLevel(Number(skill.progress || 0)),
+          })),
+          prioritySkills: prioritySkills.map((skill) => ({
+            name: skill.name,
+            progress: Number(skill.progress || 0),
+          })),
+          updatedAt: new Date().toISOString(),
+        }),
+      );
+
+      localStorage.setItem(
+        "pathwiseSkillGaps",
+        JSON.stringify(
+          skillGaps.map((skill) => ({
+            name: skill.name,
+            progress: Number(skill.progress || 0),
+          })),
+        ),
+      );
+
+      localStorage.setItem(
+        "pathwiseStrongSkills",
+        JSON.stringify(
+          strongSkills.map((skill) => ({
+            name: skill.name,
+            progress: Number(skill.progress || 0),
+          })),
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to save assessment personalization:", error);
+    }
+  };
+
+  /* =====================================================
+     GENERATE ROADMAP
+  ===================================================== */
+
+  const handleGenerateRoadmap = () => {
+    /* -----------------------------------------------------
+       SAVE CAREER
+    ----------------------------------------------------- */
+
+    localStorage.setItem("selectedCareer", selectedCareer);
+
+    localStorage.setItem("assessmentCareer", selectedCareer);
+
+    localStorage.setItem("recommendedCareer", selectedCareer);
+
+    /* -----------------------------------------------------
+       SAVE CAREER RECOMMENDATION
+    ----------------------------------------------------- */
+
+    localStorage.setItem(
+      "careerRecommendation",
+      JSON.stringify({
+        career: selectedCareer,
+        score: overallScore,
+        source: "skill-assessment",
+        createdAt: new Date().toISOString(),
+      }),
+    );
+
+    /* -----------------------------------------------------
+       SAVE PERSONALIZATION
+    ----------------------------------------------------- */
+
+    saveAssessmentPersonalization();
+
+    /* -----------------------------------------------------
+       SAVE COMPLETE ASSESSMENT SUMMARY
+    ----------------------------------------------------- */
+
+    localStorage.setItem(
+      "pathwiseAssessmentResults",
+      JSON.stringify({
+        career: selectedCareer,
+        overallScore,
+        assessedSkills,
+        strongSkills,
+        skillGaps,
+        prioritySkills,
+        completedAt: new Date().toISOString(),
+      }),
+    );
+
+    /* -----------------------------------------------------
+       OPEN ROADMAP
+    ----------------------------------------------------- */
+
+    window.location.href = "/roadmap";
+  };
 
   /* =====================================================
      LEVEL
   ===================================================== */
 
-  const getLevel = (score) => {
-    if (score >= 100) return "Advanced";
-    if (score >= 75) return "Intermediate";
-    if (score >= 50) return "Basic";
+  function getLevel(score) {
+    if (score >= 100) {
+      return "Advanced";
+    }
+
+    if (score >= 75) {
+      return "Intermediate";
+    }
+
+    if (score >= 50) {
+      return "Basic";
+    }
 
     return "Beginner";
-  };
+  }
 
   /* =====================================================
      BAR COLOR
@@ -225,6 +346,53 @@ function Results() {
       </div>
 
       {/* =================================================
+          PERSONALIZED FOCUS
+      ================================================= */}
+
+      {prioritySkills.length > 0 && (
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md border border-primary-100 p-6 md:p-8 mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
+              <Zap size={21} className="text-primary-600" />
+            </div>
+
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">
+                Your Learning Focus
+              </h2>
+
+              <p className="text-sm text-slate-500">
+                These skills should receive the most attention on your roadmap.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {prioritySkills.slice(0, 4).map((skill, index) => (
+              <div
+                key={skill.name}
+                className="flex items-center justify-between rounded-xl bg-primary-50 px-4 py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white">
+                    {index + 1}
+                  </span>
+
+                  <span className="font-semibold text-slate-800">
+                    {skill.name}
+                  </span>
+                </div>
+
+                <span className="font-bold text-primary-600">
+                  {skill.progress}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* =================================================
           SKILL BREAKDOWN
       ================================================= */}
 
@@ -294,9 +462,7 @@ function Results() {
       ================================================= */}
 
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 mb-8">
-        {/* =================================================
-            STRENGTHS
-        ================================================= */}
+        {/* STRENGTHS */}
 
         <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -335,9 +501,7 @@ function Results() {
           )}
         </div>
 
-        {/* =================================================
-            GAPS
-        ================================================= */}
+        {/* GAPS */}
 
         <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
           <div className="flex items-center gap-3 mb-5">
@@ -387,16 +551,17 @@ function Results() {
         </h2>
 
         <p className="text-slate-300 mt-2 mb-6">
-          We'll turn your skill gaps into a step-by-step learning path.
+          Your assessment results will be used to personalize your learning
+          focus.
         </p>
 
-        <Link
-          to="/roadmap"
+        <button
+          onClick={handleGenerateRoadmap}
           className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-500 px-6 py-3 rounded-xl font-semibold transition"
         >
           Generate My Roadmap
           <ArrowRight size={18} />
-        </Link>
+        </button>
       </div>
     </div>
   );

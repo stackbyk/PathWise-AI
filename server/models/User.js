@@ -64,10 +64,19 @@ const userSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Skill",
         },
+
         proficiency: {
           type: String,
           enum: ["Beginner", "Intermediate", "Advanced"],
+          default: "Beginner",
         },
+      },
+    ],
+
+    courses: [
+      {
+        type: String,
+        trim: true,
       },
     ],
 
@@ -92,7 +101,9 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  if (!this.password) return false;
+  if (!this.password) {
+    return false;
+  }
 
   return await bcrypt.compare(enteredPassword, this.password);
 };

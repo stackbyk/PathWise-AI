@@ -40,13 +40,40 @@ const careers = [
 function CareerExploration() {
   const navigate = useNavigate();
 
-  const handleAssessment = (career) => {
+  // =========================================================
+  // SELECT CAREER
+  // =========================================================
+
+  const handleCareerSelection = (career) => {
     // Save selected career
     localStorage.setItem("selectedCareer", career);
+
+    // Keep this for compatibility with the assessment flow
     localStorage.setItem("assessmentCareer", career);
 
-    // Open assessment
+    // Save timestamp so we know when the career was selected
+    localStorage.setItem("selectedCareerUpdatedAt", new Date().toISOString());
+
+    // Go to skill assessment
     navigate("/skill-assessment");
+  };
+
+  // =========================================================
+  // OPEN ROADMAP DIRECTLY
+  // =========================================================
+
+  const handleRoadmap = (career) => {
+    // Save selected career
+    localStorage.setItem("selectedCareer", career);
+
+    // Keep assessment career synchronized
+    localStorage.setItem("assessmentCareer", career);
+
+    // Save timestamp
+    localStorage.setItem("selectedCareerUpdatedAt", new Date().toISOString());
+
+    // Go directly to roadmap
+    navigate("/roadmap");
   };
 
   return (
@@ -102,13 +129,22 @@ function CareerExploration() {
                 {career.description}
               </p>
 
-              {/* BUTTON */}
+              {/* ASSESSMENT BUTTON */}
 
               <button
-                onClick={() => handleAssessment(career.title)}
+                onClick={() => handleCareerSelection(career.title)}
                 className="mt-6 w-full rounded-xl bg-primary-600 px-5 py-3 font-semibold text-white transition hover:bg-primary-700"
               >
                 Take Skill Assessment →
+              </button>
+
+              {/* ROADMAP BUTTON */}
+
+              <button
+                onClick={() => handleRoadmap(career.title)}
+                className="mt-3 w-full rounded-xl border border-primary-200 bg-white px-5 py-3 font-semibold text-primary-600 transition hover:bg-primary-50"
+              >
+                View Roadmap
               </button>
             </div>
           ))}
@@ -124,6 +160,7 @@ function CareerExploration() {
               <p className="font-semibold text-primary-600">
                 1. Choose a career
               </p>
+
               <p className="mt-1 text-sm text-slate-600">
                 Select the career you want to explore.
               </p>
@@ -133,6 +170,7 @@ function CareerExploration() {
               <p className="font-semibold text-primary-600">
                 2. Take assessment
               </p>
+
               <p className="mt-1 text-sm text-slate-600">
                 Answer questions about your current skills.
               </p>
@@ -142,6 +180,7 @@ function CareerExploration() {
               <p className="font-semibold text-primary-600">
                 3. Get your roadmap
               </p>
+
               <p className="mt-1 text-sm text-slate-600">
                 See your skill gaps and recommended learning path.
               </p>

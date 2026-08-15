@@ -1,6 +1,4 @@
-// src/pages/Profile.jsx
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,290 +8,528 @@ function Profile() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
   const [skills, setSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState("");
+  const [courses, setCourses] = useState([]);
+
+  const [newSkill, setNewSkill] = useState("");
+  const [newCourse, setNewCourse] = useState("");
+
+  const [saving, setSaving] = useState(false);
+
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  // =====================================================
+  // LOAD PROFILE
+  // =====================================================
 
   useEffect(() => {
-    const savedName =
-      localStorage.getItem("pathwiseProfileName") ||
-      user?.displayName ||
-      user?.email?.split("@")[0] ||
-      "";
+    if (!user) {
+      return;
+    }
+
+    setName(user.name || "");
+    setEmail(user.email || "");
+
+    // Load locally saved profile information
+    const savedName = localStorage.getItem("pathwiseProfileName");
 
     const savedSkills = localStorage.getItem("pathwiseProfileSkills");
 
-    setName(savedName);
-    setEmail(user?.email || "");
+    const savedCourses = localStorage.getItem("pathwiseProfileCourses");
+
+    if (savedName) {
+      setName(savedName);
+    }
 
     if (savedSkills) {
       try {
-        const parsed = JSON.parse(savedSkills);
+        const parsedSkills = JSON.parse(savedSkills);
 
-        if (Array.isArray(parsed)) {
-          setSkills(parsed);
+        if (Array.isArray(parsedSkills)) {
+          setSkills(parsedSkills);
         }
-      } catch {
-        setSkills([]);
+      } catch (err) {
+        console.error("Failed to load saved skills:", err);
+      }
+    }
+
+    if (savedCourses) {
+      try {
+        const parsedCourses = JSON.parse(savedCourses);
+
+        if (Array.isArray(parsedCourses)) {
+          setCourses(parsedCourses);
+        }
+      } catch (err) {
+        console.error("Failed to load saved courses:", err);
       }
     }
   }, [user]);
 
-  const addSkill = () => {
-    const newSkill = skillInput.trim();
+  // =====================================================
+  // ADD SKILL
+  // =====================================================
 
-    if (!newSkill) return;
+  const handleAddSkill = () => {
+    const skill = newSkill.trim();
 
-    const exists = skills.some(
-      (skill) => skill.toLowerCase() === newSkill.toLowerCase(),
-    );
-
-    if (exists) {
-      setSkillInput("");
+    if (!skill) {
       return;
     }
 
-    const updatedSkills = [...skills, newSkill];
-
-    setSkills(updatedSkills);
-    setSkillInput("");
-
-    localStorage.setItem(
-      "pathwiseProfileSkills",
-      JSON.stringify(updatedSkills),
+    const alreadyExists = skills.some(
+      (item) => item.toLowerCase() === skill.toLowerCase(),
     );
+
+    if (alreadyExists) {
+      setNewSkill("");
+      return;
+    }
+
+    setSkills((prev) => [...prev, skill]);
+
+    setNewSkill("");
+    setMessage("");
+    setError("");
   };
 
-  const removeSkill = (skillToRemove) => {
-    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
+  // =====================================================
+  // REMOVE SKILL
+  // =====================================================
 
-    setSkills(updatedSkills);
+  const handleRemoveSkill = (skillToRemove) => {
+    setSkills((prev) => prev.filter((skill) => skill !== skillToRemove));
 
-    localStorage.setItem(
-      "pathwiseProfileSkills",
-      JSON.stringify(updatedSkills),
+    setMessage("");
+    setError("");
+  };
+
+  // =====================================================
+  // ADD COURSE
+  // =====================================================
+
+  const handleAddCourse = () => {
+    const course = newCourse.trim();
+
+    if (!course) {
+      return;
+    }
+
+    const alreadyExists = courses.some(
+      (item) => item.toLowerCase() === course.toLowerCase(),
     );
+
+    if (alreadyExists) {
+      setNewCourse("");
+      return;
+    }
+
+    setCourses((prev) => [...prev, course]);
+
+    setNewCourse("");
+    setMessage("");
+    setError("");
   };
 
-  const saveProfile = () => {
-    localStorage.setItem("pathwiseProfileName", name.trim());
+  // =====================================================
+  // REMOVE COURSE
+  // =====================================================
 
-    localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skills));
+  const handleRemoveCourse = (courseToRemove) => {
+    setCourses((prev) => prev.filter((course) => course !== courseToRemove));
 
-    setMessage("Profile saved successfully.");
-
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
+    setMessage("");
+    setError("");
   };
+
+  // =====================================================
+  // ENTER KEY
+  // =====================================================
+
+  const handleSkillKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleAddSkill();
+    }
+  };
+
+  const handleCourseKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleAddCourse();
+    }
+  };
+
+  // =====================================================
+  // SAVE PROFILE
+  // =====================================================
+
+  const handleSaveProfile = async () => {
+    setMessage("");
+    setError("");
+
+    const trimmedName = name.trim();
+
+    if (!trimmedName) {
+      setError("Please enter your name.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      // =================================================
+      // SAVE NAME LOCALLY
+      // =================================================
+
+      localStorage.setItem("pathwiseProfileName", trimmedName);
+
+      // =================================================
+      // SAVE SKILLS LOCALLY
+      // =================================================
+
+      localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skills));
+
+      // =================================================
+      // SAVE COURSES LOCALLY
+      // =================================================
+
+      localStorage.setItem("pathwiseProfileCourses", JSON.stringify(courses));
+
+      // =================================================
+      // UPDATE SAVED USER
+      // =================================================
+
+      const savedUser = JSON.parse(localStorage.getItem("pathwiseUser")) || {};
+
+      const updatedUser = {
+        ...savedUser,
+        ...user,
+        name: trimmedName,
+        email: email || user.email,
+        skills,
+        courses,
+      };
+
+      localStorage.setItem("pathwiseUser", JSON.stringify(updatedUser));
+
+      // =================================================
+      // NOTIFY OTHER PAGES
+      // =================================================
+
+      window.dispatchEvent(
+        new CustomEvent("pathwiseProfileUpdated", {
+          detail: {
+            name: trimmedName,
+            skills,
+            courses,
+          },
+        }),
+      );
+
+      // =================================================
+      // SUCCESS
+      // =================================================
+
+      setMessage("Profile updated successfully!");
+
+      // =================================================
+      // GO TO DASHBOARD
+      // =================================================
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 700);
+    } catch (err) {
+      console.error("PROFILE SAVE ERROR:", err);
+
+      setError("Unable to save profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // =====================================================
+  // CANCEL
+  // =====================================================
+
+  const handleCancel = () => {
+    navigate("/dashboard");
+  };
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
   const handleLogout = async () => {
     try {
       await logout();
       navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch (err) {
+      console.error("Logout failed:", err);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* NAVBAR */}
-      <nav className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-3"
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 font-bold text-white">
-              P
-            </div>
+  // =====================================================
+  // NOT LOGGED IN
+  // =====================================================
 
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              PathWise
-            </span>
-          </button>
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-md p-8 text-center">
+          <p className="text-slate-600">Please log in to view your profile.</p>
 
           <button
-            type="button"
-            onClick={() => navigate("/dashboard")}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20"
+            onClick={() => navigate("/login")}
+            className="mt-4 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition"
           >
-            ← Dashboard
+            Go to Login
           </button>
         </div>
-      </nav>
+      </div>
+    );
+  }
 
-      {/* CONTENT */}
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <p className="text-sm font-semibold text-primary-600 dark:text-primary-400">
-            Account
-          </p>
+  // =====================================================
+  // AVATAR
+  // =====================================================
 
-          <h1 className="mt-1 text-3xl font-bold text-slate-900 dark:text-white">
-            My Profile
-          </h1>
+  const avatarLetter = name.trim().charAt(0).toUpperCase() || "U";
 
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Manage your profile information and skills.
-          </p>
+  // =====================================================
+  // PAGE
+  // =====================================================
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* HEADER */}
+
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">My Profile</h1>
+
+            <p className="text-slate-500 mt-1">
+              Manage your PathWise AI profile.
+            </p>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            disabled={saving}
+            className="px-4 py-2 rounded-xl border border-red-200 text-red-600 font-semibold hover:bg-red-50 transition disabled:opacity-50"
+          >
+            Logout
+          </button>
         </div>
 
         {/* PROFILE CARD */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
-          {/* AVATAR */}
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-600 text-3xl font-bold text-white">
-              {(name || user?.email || "U").charAt(0).toUpperCase()}
+
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+          {/* PROFILE HEADER */}
+
+          <div className="flex items-center gap-5 mb-8">
+            <div className="w-20 h-20 rounded-full bg-indigo-600 text-white flex items-center justify-center text-3xl font-bold shadow-sm">
+              {avatarLetter}
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                {name || "Your Profile"}
+              <h2 className="text-2xl font-bold text-slate-900">
+                {name || "Your Name"}
               </h2>
 
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {email || "No email available"}
-              </p>
+              <p className="text-slate-500">PathWise AI Student</p>
             </div>
           </div>
 
-          {/* NAME */}
+          {/* FULL NAME */}
+
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Name
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Full Name
             </label>
 
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => {
+                setName(event.target.value);
+                setMessage("");
+                setError("");
+              }}
               placeholder="Enter your name"
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              disabled={saving}
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           {/* EMAIL */}
+
           <div className="mb-6">
-            <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Email
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Email Address
             </label>
 
             <input
               type="email"
               value={email}
               disabled
-              className="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500"
             />
 
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-              Your email is managed by your authentication account.
+            <p className="text-xs text-slate-400 mt-2">
+              Email cannot be changed from your profile.
             </p>
           </div>
 
           {/* SKILLS */}
+
           <div className="mb-8">
-            <label className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Skills
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Your Skills
             </label>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <input
                 type="text"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addSkill();
-                  }
-                }}
-                placeholder="Add a skill"
-                className="min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                value={newSkill}
+                onChange={(event) => setNewSkill(event.target.value)}
+                onKeyDown={handleSkillKeyDown}
+                placeholder="e.g. Java, React, MongoDB"
+                disabled={saving}
+                className="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
 
               <button
                 type="button"
-                onClick={addSkill}
-                className="rounded-xl bg-primary-600 px-5 py-3 font-semibold text-white transition hover:bg-primary-700"
+                onClick={handleAddSkill}
+                disabled={saving}
+                className="px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
               >
                 Add
               </button>
             </div>
 
-            {skills.length > 0 ? (
-              <div className="mt-4 flex flex-wrap gap-2">
+            {skills.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
                 {skills.map((skill) => (
                   <div
                     key={skill}
-                    className="flex items-center gap-2 rounded-full bg-primary-50 px-3 py-2 text-sm font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                    className="flex items-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg"
                   >
-                    <span>{skill}</span>
+                    <span className="font-medium">{skill}</span>
 
                     <button
                       type="button"
-                      onClick={() => removeSkill(skill)}
-                      className="font-bold text-primary-500 hover:text-red-600"
-                      aria-label={`Remove ${skill}`}
+                      onClick={() => handleRemoveSkill(skill)}
+                      disabled={saving}
+                      className="text-indigo-500 hover:text-red-500 font-bold"
                     >
                       ×
                     </button>
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                No skills added yet.
-              </p>
             )}
           </div>
 
-          {/* MESSAGE */}
+          {/* COURSES / CERTIFICATIONS */}
+
+          <div className="mb-8">
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Courses / Certifications
+            </label>
+
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={newCourse}
+                onChange={(event) => setNewCourse(event.target.value)}
+                onKeyDown={handleCourseKeyDown}
+                placeholder="e.g. React, Java DSA, AWS"
+                disabled={saving}
+                className="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+
+              <button
+                type="button"
+                onClick={handleAddCourse}
+                disabled={saving}
+                className="px-5 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                Add
+              </button>
+            </div>
+
+            {courses.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {courses.map((course) => (
+                  <div
+                    key={course}
+                    className="flex items-center gap-2 px-3 py-2 bg-purple-50 text-purple-700 rounded-lg"
+                  >
+                    <span className="font-medium">{course}</span>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCourse(course)}
+                      disabled={saving}
+                      className="text-purple-500 hover:text-red-500 font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="text-xs text-slate-400 mt-2">
+              Saved locally for now. We'll connect this to MongoDB later.
+            </p>
+          </div>
+
+          {/* SUCCESS */}
+
           {message && (
-            <div className="mb-5 rounded-xl bg-green-50 p-3 text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+            <div className="mb-5 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
               {message}
             </div>
           )}
 
-          {/* ACTIONS */}
-          <div className="flex flex-col gap-3 sm:flex-row">
+          {/* ERROR */}
+
+          {error && (
+            <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 font-medium">
+              {error}
+            </div>
+          )}
+
+          {/* BUTTONS */}
+
+          <div className="flex gap-3">
             <button
               type="button"
-              onClick={saveProfile}
-              className="flex-1 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white transition hover:bg-primary-700"
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-50 transition"
             >
-              Save Profile
+              {saving ? "Saving..." : "Save Profile"}
             </button>
 
             <button
               type="button"
-              onClick={() => navigate("/dashboard")}
-              className="flex-1 rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              onClick={handleCancel}
+              disabled={saving}
+              className="px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition"
             >
               Cancel
             </button>
           </div>
         </div>
-
-        {/* LOGOUT */}
-        <div className="mt-6 rounded-2xl border border-red-200 bg-white p-6 dark:border-red-900/50 dark:bg-slate-900">
-          <h3 className="font-bold text-slate-900 dark:text-white">Account</h3>
-
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Sign out of your PathWise account.
-          </p>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="mt-4 rounded-xl border border-red-200 px-5 py-3 font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
-          >
-            Logout
-          </button>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
