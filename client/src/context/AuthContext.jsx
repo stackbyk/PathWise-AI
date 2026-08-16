@@ -8,7 +8,7 @@ import {
   signOut as firebaseSignOut,
 } from "firebase/auth";
 
-import { auth } from "../firebase";
+import { auth } from "../services/firebase";
 
 const AuthContext = createContext(null);
 
@@ -24,7 +24,7 @@ API BASE URL
 =========================================================
 
 Development:
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=https://pathwise-ai-backend-psug.onrender.com
 
 Production:
 VITE_API_URL=https://YOUR-RENDER-BACKEND-URL.onrender.com
