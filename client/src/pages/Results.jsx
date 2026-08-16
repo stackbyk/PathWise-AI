@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   ArrowLeft,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 function Results() {
+  const navigate = useNavigate();
   /* =====================================================
      LOAD CAREER
   ===================================================== */
@@ -229,7 +230,7 @@ function Results() {
        OPEN ROADMAP
     ----------------------------------------------------- */
 
-    window.location.href = "/roadmap";
+    navigate("/roadmap");
   };
 
   /* =====================================================
