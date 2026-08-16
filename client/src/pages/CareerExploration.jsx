@@ -45,16 +45,10 @@ function CareerExploration() {
   // =========================================================
 
   const handleCareerSelection = (career) => {
-    // Save selected career
     localStorage.setItem("selectedCareer", career);
-
-    // Keep this for compatibility with the assessment flow
     localStorage.setItem("assessmentCareer", career);
-
-    // Save timestamp so we know when the career was selected
     localStorage.setItem("selectedCareerUpdatedAt", new Date().toISOString());
 
-    // Go to skill assessment
     navigate("/skill-assessment");
   };
 
@@ -63,16 +57,10 @@ function CareerExploration() {
   // =========================================================
 
   const handleRoadmap = (career) => {
-    // Save selected career
     localStorage.setItem("selectedCareer", career);
-
-    // Keep assessment career synchronized
     localStorage.setItem("assessmentCareer", career);
-
-    // Save timestamp
     localStorage.setItem("selectedCareerUpdatedAt", new Date().toISOString());
 
-    // Go directly to roadmap
     navigate("/roadmap");
   };
 

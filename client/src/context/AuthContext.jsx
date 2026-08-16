@@ -18,6 +18,23 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
+/*
+=========================================================
+API BASE URL
+=========================================================
+
+Development:
+VITE_API_URL=http://localhost:5000
+
+Production:
+VITE_API_URL=https://YOUR-RENDER-BACKEND-URL.onrender.com
+
+If VITE_API_URL is not provided, localhost:5000 is used
+so the project continues to work locally.
+*/
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,15 +55,6 @@ export function AuthProvider({ children }) {
         console.log("Token exists:", !!savedToken);
         console.log("=================================");
 
-        /*
-          We consider the user authenticated if a valid
-          saved user exists.
-
-          This is important for Google authentication because
-          Firebase handles the Google session separately and
-          does not give us our backend JWT.
-        */
-
         if (savedUser) {
           try {
             const parsedUser = JSON.parse(savedUser);
@@ -62,10 +70,6 @@ export function AuthProvider({ children }) {
             console.error("Failed to parse saved user:", parseError);
           }
         }
-
-        /*
-          No valid saved session.
-        */
 
         setUser(null);
 
@@ -99,12 +103,15 @@ export function AuthProvider({ children }) {
       }
 
       console.log("Attempting backend login...");
+      console.log("API URL:", `${API_BASE_URL}/api/auth/login`);
 
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           email: email.trim(),
           password,
@@ -195,11 +202,16 @@ export function AuthProvider({ children }) {
         };
       }
 
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      console.log("Attempting backend registration...");
+      console.log("API URL:", `${API_BASE_URL}/api/auth/register`);
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
@@ -326,9 +338,7 @@ export function AuthProvider({ children }) {
       setUser(googleUser);
 
       console.log("=================================");
-
       console.log("GOOGLE LOGIN SUCCESS");
-
       console.log("Google user:", googleUser);
 
       console.log(

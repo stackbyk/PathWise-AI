@@ -1,121 +1,285 @@
-const Roadmap = require('../models/Roadmap');
-const Career = require('../models/Career');
-const User = require('../models/User');
-const Resource = require('../models/Resource');
-const axios = require('axios');
+const Roadmap = require("../models/Roadmap");
+const Career = require("../models/Career");
+const User = require("../models/User");
+const Resource = require("../models/Resource");
+const axios = require("axios");
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8000";
 
+// =========================================================
+// GENERATE ROADMAP
+// =========================================================
 const generateRoadmap = async (req, res) => {
   try {
+    console.log("========== GENERATE ROADMAP ==========");
+
+    // Get career ID from request
     const { careerId } = req.body;
+
+    // Get logged-in user from JWT
     const userId = req.user._id;
 
-    const user = await User.findById(userId).populate('skills.skillId');
-    const career = await Career.findById(careerId).populate('requiredSkills.skillId');
+    console.log("User ID:", userId);
+    console.log("Career ID:", careerId);
 
-    if (!user || !career) {
-      return res.status(404).json({ message: 'User or Career not found' });
+    // Validate careerId
+    if (!careerId) {
+      return res.status(400).json({
+        message: "careerId is required",
+      });
     }
 
-    // Format for ML service
-    const userSkills = user.skills.map(s => ({
-      skillId: s.skillId._id.toString(),
-      proficiency: s.proficiency
-    }));
+    // =====================================================
+    // FIND USER
+    // =====================================================
+    const currentUser = await User.findById(userId).populate("skills.skillId");
 
-    const requiredSkills = career.requiredSkills.map(s => ({
-      skillId: s.skillId._id.toString(),
-      minProficiency: s.minProficiency
-    }));
+    if (!currentUser) {
+      console.log("USER NOT FOUND:", userId);
 
-    // 1. Get Skill Gap
+      return res.status(404).json({
+        message: "User not found",
+        userId: userId.toString(),
+      });
+    }
+
+    console.log("User found:", currentUser.email);
+
+    // =====================================================
+    // FIND CAREER
+    // =====================================================
+    const career = await Career.findById(careerId).populate(
+      "requiredSkills.skillId",
+    );
+
+    if (!career) {
+      console.log("CAREER NOT FOUND:", careerId);
+
+      return res.status(404).json({
+        message: "Career not found",
+        careerId,
+      });
+    }
+
+    console.log("Career found:", career.title);
+
+    // =====================================================
+    // USER SKILLS
+    // =====================================================
+    const userSkills = (currentUser.skills || [])
+      .filter((skill) => skill.skillId)
+      .map((skill) => ({
+        skillId: skill.skillId._id.toString(),
+        proficiency: skill.proficiency || 0,
+      }));
+
+    // =====================================================
+    // REQUIRED CAREER SKILLS
+    // =====================================================
+    const requiredSkills = (career.requiredSkills || [])
+      .filter((skill) => skill.skillId)
+      .map((skill) => ({
+        skillId: skill.skillId._id.toString(),
+        minProficiency: skill.minProficiency || 1,
+      }));
+
+    console.log("User skills:", userSkills);
+    console.log("Required skills:", requiredSkills);
+
+    // If career has no required skills
+    if (requiredSkills.length === 0) {
+      return res.status(400).json({
+        message: "This career has no required skills",
+      });
+    }
+
+    // =====================================================
+    // 1. SKILL GAP ANALYSIS
+    // =====================================================
+    console.log("Calling ML skill-gap service...");
+
     const gapResponse = await axios.post(`${ML_SERVICE_URL}/api/ml/skill-gap`, {
       required_skills: requiredSkills,
-      user_skills: userSkills
+      user_skills: userSkills,
     });
-    const missingSkills = gapResponse.data.missing_skills;
 
-    // If no missing skills, they are ready!
+    const missingSkills = gapResponse.data.missing_skills || [];
+
+    console.log("Missing skills:", missingSkills);
+
+    // =====================================================
+    // USER ALREADY READY
+    // =====================================================
     if (missingSkills.length === 0) {
-      return res.json({ message: 'You already have all required skills!', nodes: [] });
+      currentUser.currentCareer = career._id;
+      await currentUser.save();
+
+      return res.status(200).json({
+        message: "You already have all required skills!",
+        nodes: [],
+        careerId: career._id,
+      });
     }
 
-    const missingSkillIds = missingSkills.map(m => m.skillId);
+    const missingSkillIds = missingSkills.map((skill) => skill.skillId);
 
-    // 2. Get Topological Order
-    const topoResponse = await axios.post(`${ML_SERVICE_URL}/api/ml/topological-order`, {
-      missing_skills: missingSkillIds
-    });
-    
-    // Some skills in topo sort might be prerequisites they already have. Filter to only missing skills.
-    const order = topoResponse.data.order;
-    const sortedMissingSkills = order.filter(id => missingSkillIds.includes(id));
+    // =====================================================
+    // 2. TOPOLOGICAL ORDER
+    // =====================================================
+    console.log("Calling ML topological-order service...");
 
-    // Fallback if DAG fails or doesn't cover all nodes: append remaining
-    const remaining = missingSkillIds.filter(id => !sortedMissingSkills.includes(id));
-    const finalOrder = [...sortedMissingSkills, ...remaining];
+    let finalOrder = [];
 
-    // 3. Create Roadmap Nodes
-    const nodes = [];
+    try {
+      const topoResponse = await axios.post(
+        `${ML_SERVICE_URL}/api/ml/topological-order`,
+        {
+          missing_skills: missingSkillIds,
+        },
+      );
+
+      const order = topoResponse.data.order || [];
+
+      const sortedMissingSkills = order.filter((id) =>
+        missingSkillIds.includes(id),
+      );
+
+      const remaining = missingSkillIds.filter(
+        (id) => !sortedMissingSkills.includes(id),
+      );
+
+      finalOrder = [...sortedMissingSkills, ...remaining];
+    } catch (mlError) {
+      console.log("Topological ordering failed. Using fallback order.");
+
+      finalOrder = missingSkillIds;
+    }
+
+    console.log("Final skill order:", finalOrder);
+
+    // =====================================================
+    // 3. LOAD RESOURCES
+    // =====================================================
     const allResources = await Resource.find({});
-    const resourcesData = allResources.map(r => ({
-      id: r._id.toString(),
-      text: `${r.title} ${r.description || ''} ${r.tags.join(' ')}`,
-      skillId: r.skillId.toString()
+
+    const resourcesData = allResources.map((resource) => ({
+      id: resource._id.toString(),
+      text: `${resource.title} ${
+        resource.description || ""
+      } ${(resource.tags || []).join(" ")}`,
+      skillId: resource.skillId ? resource.skillId.toString() : null,
     }));
 
+    // =====================================================
+    // 4. CREATE ROADMAP NODES
+    // =====================================================
+    const nodes = [];
+
     for (let i = 0; i < finalOrder.length; i++) {
-      const sId = finalOrder[i];
-      const gapInfo = missingSkills.find(m => m.skillId === sId);
-      
-      // Get recommendations
-      const recResponse = await axios.post(`${ML_SERVICE_URL}/api/ml/recommend-resources`, {
-        user_needs: `I need to learn this skill to proficiency ${gapInfo.requiredProficiency}`,
-        resources: resourcesData.filter(r => r.skillId === sId)
-      });
-      
-      const recommendedResources = recResponse.data.recommendations.map(r => r.id);
+      const skillId = finalOrder[i];
+
+      const gapInfo = missingSkills.find((skill) => skill.skillId === skillId);
+
+      let recommendedResources = [];
+
+      try {
+        const skillResources = resourcesData.filter(
+          (resource) => resource.skillId === skillId,
+        );
+
+        if (skillResources.length > 0) {
+          const recResponse = await axios.post(
+            `${ML_SERVICE_URL}/api/ml/recommend-resources`,
+            {
+              user_needs: `I need to learn this skill to proficiency ${
+                gapInfo?.requiredProficiency || 1
+              }`,
+              resources: skillResources,
+            },
+          );
+
+          recommendedResources = (recResponse.data.recommendations || []).map(
+            (resource) => resource.id,
+          );
+        }
+      } catch (resourceError) {
+        console.log(`Resource recommendation failed for skill ${skillId}`);
+      }
 
       nodes.push({
-        skillId: sId,
-        status: i === 0 ? 'Available' : 'Locked', // First one is available
+        skillId,
+        status: i === 0 ? "Available" : "Locked",
         priority: i,
-        recommendedResources
+        recommendedResources,
       });
     }
 
-    // Save to DB
+    // =====================================================
+    // 5. SAVE ROADMAP
+    // =====================================================
     const newRoadmap = await Roadmap.create({
-      userId,
-      careerId,
+      userId: currentUser._id,
+      careerId: career._id,
       nodes,
-      edges: [] // Edges can be populated later if needed for frontend graph
+      edges: [],
     });
 
-    user.currentCareer = careerId;
-    await user.save();
+    // =====================================================
+    // 6. UPDATE USER CAREER
+    // =====================================================
+    currentUser.currentCareer = career._id;
+    await currentUser.save();
 
-    res.status(201).json(newRoadmap);
+    console.log("Roadmap created:", newRoadmap._id);
 
+    // =====================================================
+    // RESPONSE
+    // =====================================================
+    return res.status(201).json(newRoadmap);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    console.error("GENERATE ROADMAP ERROR:", error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
+// =========================================================
+// GET MY ROADMAP
+// =========================================================
 const getMyRoadmap = async (req, res) => {
   try {
-    const roadmap = await Roadmap.findOne({ userId: req.user._id })
+    console.log("========== GET MY ROADMAP ==========");
+
+    const userId = req.user._id;
+
+    console.log("User ID:", userId);
+
+    const roadmap = await Roadmap.findOne({
+      userId,
+    })
       .sort({ createdAt: -1 })
-      .populate('nodes.skillId')
-      .populate('nodes.recommendedResources');
-      
-    if (!roadmap) return res.status(404).json({ message: 'No roadmap found' });
-    res.json(roadmap);
+      .populate("nodes.skillId")
+      .populate("nodes.recommendedResources");
+
+    if (!roadmap) {
+      return res.status(404).json({
+        message: "No roadmap found",
+      });
+    }
+
+    return res.status(200).json(roadmap);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("GET ROADMAP ERROR:", error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-module.exports = { generateRoadmap, getMyRoadmap };
+module.exports = {
+  generateRoadmap,
+  getMyRoadmap,
+};

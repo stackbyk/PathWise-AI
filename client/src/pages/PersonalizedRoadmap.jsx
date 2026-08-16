@@ -26,6 +26,10 @@ import "./PersonalizedRoadmap.css";
 ========================================================= */
 
 const ROADMAPS = {
+  /* =======================================================
+     FULL STACK DEVELOPER
+  ======================================================= */
+
   "Full Stack Developer": [
     {
       id: 1,
@@ -65,7 +69,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Frontend Development",
@@ -96,7 +99,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 3,
       title: "Backend Development",
@@ -125,7 +127,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 4,
       title: "Databases & Authentication",
@@ -156,7 +157,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 5,
       title: "Version Control & Deployment",
@@ -187,6 +187,169 @@ const ROADMAPS = {
       ],
     },
   ],
+
+  /* =======================================================
+     BACKEND DEVELOPER
+     NEW ROADMAP
+  ======================================================= */
+
+  "Backend Developer": [
+    {
+      id: 1,
+      title: "Backend Foundations",
+      description:
+        "Build a strong foundation in server-side programming and backend development.",
+      duration: "3 Weeks",
+      skills: [
+        {
+          id: "backend-javascript",
+          name: "JavaScript",
+          description:
+            "Strengthen JavaScript fundamentals required for server-side development.",
+          resource: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+        },
+        {
+          id: "backend-nodejs",
+          name: "Node.js",
+          description:
+            "Learn how to run JavaScript outside the browser and build backend applications.",
+          resource: "https://nodejs.org/en/learn",
+        },
+        {
+          id: "npm",
+          name: "NPM",
+          description:
+            "Learn how to manage packages and dependencies in Node.js projects.",
+          resource: "https://docs.npmjs.com/",
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: "Express & REST APIs",
+      description:
+        "Learn how to build scalable backend servers and RESTful APIs.",
+      duration: "3 Weeks",
+      skills: [
+        {
+          id: "backend-expressjs",
+          name: "Express.js",
+          description:
+            "Build backend servers, routes and middleware using Express.js.",
+          resource: "https://expressjs.com/",
+        },
+        {
+          id: "backend-rest-apis",
+          name: "REST APIs",
+          description:
+            "Understand HTTP methods, endpoints, requests, responses and REST API design.",
+          resource: "https://developer.mozilla.org/en-US/docs/Glossary/REST",
+        },
+        {
+          id: "middleware",
+          name: "Middleware",
+          description:
+            "Understand middleware functions and how they process backend requests.",
+          resource: "https://expressjs.com/en/guide/using-middleware.html",
+        },
+      ],
+    },
+    {
+      id: 3,
+      title: "Databases",
+      description:
+        "Learn how backend applications store, query and manage application data.",
+      duration: "3 Weeks",
+      skills: [
+        {
+          id: "mongodb",
+          name: "MongoDB",
+          description:
+            "Learn how to store and query application data using MongoDB.",
+          resource: "https://www.mongodb.com/docs/",
+        },
+        {
+          id: "sql",
+          name: "SQL",
+          description:
+            "Learn relational databases, tables, queries, joins and data manipulation.",
+          resource: "https://www.w3schools.com/sql/",
+        },
+        {
+          id: "database-design",
+          name: "Database Design",
+          description:
+            "Learn how to structure databases efficiently for backend applications.",
+          resource: "https://www.mongodb.com/docs/manual/data-modeling/",
+        },
+      ],
+    },
+    {
+      id: 4,
+      title: "Authentication & Security",
+      description:
+        "Build secure backend systems with authentication and authorization.",
+      duration: "3 Weeks",
+      skills: [
+        {
+          id: "backend-authentication",
+          name: "Authentication",
+          description:
+            "Understand login systems, authentication and user identity management.",
+          resource:
+            "https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication",
+        },
+        {
+          id: "jwt",
+          name: "JWT",
+          description:
+            "Learn how JSON Web Tokens can be used for stateless authentication.",
+          resource: "https://jwt.io/introduction",
+        },
+        {
+          id: "backend-security",
+          name: "Backend Security",
+          description:
+            "Learn common backend security practices including validation and secure API design.",
+          resource: "https://owasp.org/www-project-api-security/",
+        },
+      ],
+    },
+    {
+      id: 5,
+      title: "Backend Projects & Deployment",
+      description:
+        "Build, deploy and demonstrate production-ready backend applications.",
+      duration: "3 Weeks",
+      skills: [
+        {
+          id: "backend-project",
+          name: "Backend Project",
+          description:
+            "Build a complete backend application with APIs, database and authentication.",
+          resource: "https://github.com/",
+        },
+        {
+          id: "backend-git-github",
+          name: "Git & GitHub",
+          description:
+            "Track backend project changes and collaborate using Git and GitHub.",
+          resource: "https://docs.github.com/en/get-started",
+        },
+        {
+          id: "backend-deployment",
+          name: "Deployment",
+          description:
+            "Learn how to deploy backend applications to production environments.",
+          resource: "https://render.com/",
+        },
+      ],
+    },
+  ],
+
+  /* =======================================================
+     AI / ML ENGINEER
+  ======================================================= */
 
   "AI / ML Engineer": [
     {
@@ -226,7 +389,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Data Science Foundations",
@@ -255,7 +417,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 3,
       title: "Machine Learning",
@@ -287,7 +448,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 4,
       title: "Deep Learning",
@@ -319,6 +479,10 @@ const ROADMAPS = {
     },
   ],
 
+  /* =======================================================
+     DATA SCIENTIST
+  ======================================================= */
+
   "Data Scientist": [
     {
       id: 1,
@@ -328,21 +492,21 @@ const ROADMAPS = {
       duration: "3 Weeks",
       skills: [
         {
-          id: "python",
+          id: "ds-python",
           name: "Python",
           description:
             "Learn Python programming for data analysis and automation.",
           resource: "https://docs.python.org/3/tutorial/",
         },
         {
-          id: "statistics",
+          id: "ds-statistics",
           name: "Statistics",
           description:
             "Learn descriptive statistics, probability and statistical reasoning.",
           resource: "https://www.khanacademy.org/math/statistics-probability",
         },
         {
-          id: "linear-algebra",
+          id: "ds-linear-algebra",
           name: "Linear Algebra",
           description:
             "Understand vectors and matrices used in data science and ML.",
@@ -350,7 +514,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Data Analysis",
@@ -359,13 +522,13 @@ const ROADMAPS = {
       duration: "3 Weeks",
       skills: [
         {
-          id: "numpy",
+          id: "ds-numpy",
           name: "NumPy",
           description: "Perform numerical computation and array operations.",
           resource: "https://numpy.org/learn/",
         },
         {
-          id: "pandas",
+          id: "ds-pandas",
           name: "Pandas",
           description: "Clean, transform and analyze structured data.",
           resource: "https://pandas.pydata.org/docs/",
@@ -379,7 +542,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 3,
       title: "Machine Learning",
@@ -387,13 +549,13 @@ const ROADMAPS = {
       duration: "4 Weeks",
       skills: [
         {
-          id: "supervised-learning",
+          id: "ds-supervised-learning",
           name: "Supervised Learning",
           description: "Learn regression and classification algorithms.",
           resource: "https://scikit-learn.org/stable/supervised_learning.html",
         },
         {
-          id: "unsupervised-learning",
+          id: "ds-unsupervised-learning",
           name: "Unsupervised Learning",
           description:
             "Discover patterns using clustering and dimensionality reduction.",
@@ -401,7 +563,7 @@ const ROADMAPS = {
             "https://scikit-learn.org/stable/unsupervised_learning.html",
         },
         {
-          id: "scikit-learn",
+          id: "ds-scikit-learn",
           name: "Scikit-learn",
           description: "Build machine learning models using Python.",
           resource: "https://scikit-learn.org/",
@@ -409,6 +571,10 @@ const ROADMAPS = {
       ],
     },
   ],
+
+  /* =======================================================
+     CLOUD ENGINEER
+  ======================================================= */
 
   "Cloud Engineer": [
     {
@@ -442,7 +608,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "AWS Core Services",
@@ -471,7 +636,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 3,
       title: "Infrastructure & Deployment",
@@ -479,13 +643,13 @@ const ROADMAPS = {
       duration: "4 Weeks",
       skills: [
         {
-          id: "docker",
+          id: "cloud-docker",
           name: "Docker",
           description: "Package applications into portable containers.",
           resource: "https://docs.docker.com/get-started/",
         },
         {
-          id: "terraform",
+          id: "cloud-terraform",
           name: "Terraform",
           description:
             "Manage infrastructure using infrastructure-as-code principles.",
@@ -502,6 +666,10 @@ const ROADMAPS = {
     },
   ],
 
+  /* =======================================================
+     DEVOPS ENGINEER
+  ======================================================= */
+
   "DevOps Engineer": [
     {
       id: 1,
@@ -511,7 +679,7 @@ const ROADMAPS = {
       duration: "3 Weeks",
       skills: [
         {
-          id: "linux",
+          id: "devops-linux",
           name: "Linux",
           description:
             "Learn Linux commands, processes, permissions and server administration.",
@@ -525,7 +693,7 @@ const ROADMAPS = {
           resource: "https://git-scm.com/docs",
         },
         {
-          id: "networking",
+          id: "devops-networking",
           name: "Networking",
           description:
             "Understand networking fundamentals used in infrastructure.",
@@ -534,7 +702,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Containers & Orchestration",
@@ -542,7 +709,7 @@ const ROADMAPS = {
       duration: "4 Weeks",
       skills: [
         {
-          id: "docker",
+          id: "devops-docker",
           name: "Docker",
           description: "Build and run applications using containers.",
           resource: "https://docs.docker.com/get-started/",
@@ -555,7 +722,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 3,
       title: "CI/CD & Infrastructure",
@@ -570,7 +736,7 @@ const ROADMAPS = {
           resource: "https://docs.github.com/en/actions",
         },
         {
-          id: "terraform",
+          id: "devops-terraform",
           name: "Terraform",
           description: "Manage infrastructure as code.",
           resource: "https://developer.hashicorp.com/terraform/docs",
@@ -578,6 +744,10 @@ const ROADMAPS = {
       ],
     },
   ],
+
+  /* =======================================================
+     CYBERSECURITY ENGINEER
+  ======================================================= */
 
   "Cybersecurity Engineer": [
     {
@@ -588,14 +758,14 @@ const ROADMAPS = {
       duration: "3 Weeks",
       skills: [
         {
-          id: "linux",
+          id: "cyber-linux",
           name: "Linux",
           description:
             "Learn Linux administration and command-line fundamentals.",
           resource: "https://ubuntu.com/tutorials/command-line-for-beginners",
         },
         {
-          id: "networking",
+          id: "cyber-networking",
           name: "Networking",
           description:
             "Understand protocols, DNS, IP addressing and network communication.",
@@ -611,7 +781,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Security Monitoring",
@@ -627,14 +796,13 @@ const ROADMAPS = {
           resource: "https://www.ibm.com/topics/siem",
         },
         {
-          id: "cloud-security",
+          id: "cyber-cloud-security",
           name: "Cloud Security",
           description: "Learn security principles for cloud infrastructure.",
           resource: "https://aws.amazon.com/security/",
         },
       ],
     },
-
     {
       id: 3,
       title: "Application Security",
@@ -659,6 +827,10 @@ const ROADMAPS = {
     },
   ],
 
+  /* =======================================================
+     MOBILE APP DEVELOPER
+  ======================================================= */
+
   "Mobile App Developer": [
     {
       id: 1,
@@ -668,14 +840,14 @@ const ROADMAPS = {
       duration: "3 Weeks",
       skills: [
         {
-          id: "javascript",
+          id: "mobile-javascript",
           name: "JavaScript",
           description:
             "Build a strong JavaScript foundation before moving into mobile development.",
           resource: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
         },
         {
-          id: "react",
+          id: "mobile-react",
           name: "React",
           description: "Learn components, props, state and hooks.",
           resource: "https://react.dev/learn",
@@ -689,7 +861,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "Mobile UI & Navigation",
@@ -704,7 +875,7 @@ const ROADMAPS = {
           resource: "https://reactnavigation.org/docs/getting-started",
         },
         {
-          id: "responsive-ui",
+          id: "mobile-responsive-ui",
           name: "Responsive UI",
           description:
             "Create interfaces that adapt to different screen sizes.",
@@ -713,6 +884,10 @@ const ROADMAPS = {
       ],
     },
   ],
+
+  /* =======================================================
+     UI / UX DESIGNER
+  ======================================================= */
 
   "UI/UX Designer": [
     {
@@ -743,7 +918,6 @@ const ROADMAPS = {
         },
       ],
     },
-
     {
       id: 2,
       title: "User Experience",
@@ -780,43 +954,25 @@ const normalizeCareer = (career) => {
     .toLowerCase()
     .replace(/\s+/g, " ");
 
-  if (
-    normalizedCareer.includes("ai") ||
-    normalizedCareer.includes("machine learning")
-  ) {
-    return "AI / ML Engineer";
-  }
-
-  if (normalizedCareer.includes("data scientist")) {
-    return "Data Scientist";
-  }
-
-  if (normalizedCareer.includes("cloud")) {
-    return "Cloud Engineer";
-  }
+  /* =======================================================
+     BACKEND
+     IMPORTANT: THIS MUST COME BEFORE FULL STACK
+  ======================================================= */
 
   if (
-    normalizedCareer.includes("cyber") ||
-    normalizedCareer.includes("security")
+    normalizedCareer.includes("backend") ||
+    normalizedCareer.includes("back end") ||
+    normalizedCareer.includes("back-end") ||
+    normalizedCareer.includes("backend engineer") ||
+    normalizedCareer.includes("server side") ||
+    normalizedCareer.includes("server-side")
   ) {
-    return "Cybersecurity Engineer";
+    return "Backend Developer";
   }
 
-  if (normalizedCareer.includes("devops")) {
-    return "DevOps Engineer";
-  }
-
-  if (normalizedCareer.includes("mobile")) {
-    return "Mobile App Developer";
-  }
-
-  if (
-    normalizedCareer.includes("ui/ux") ||
-    normalizedCareer.includes("ui ux") ||
-    normalizedCareer.includes("designer")
-  ) {
-    return "UI/UX Designer";
-  }
+  /* =======================================================
+     FULL STACK
+  ======================================================= */
 
   if (
     normalizedCareer.includes("full stack") ||
@@ -826,9 +982,121 @@ const normalizeCareer = (career) => {
     return "Full Stack Developer";
   }
 
-  if (ROADMAPS[career]) {
-    return career;
+  /* =======================================================
+     FRONTEND
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("frontend") ||
+    normalizedCareer.includes("front end") ||
+    normalizedCareer.includes("front-end")
+  ) {
+    return "Full Stack Developer";
   }
+
+  /* =======================================================
+     AI / ML
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("artificial intelligence") ||
+    normalizedCareer.includes("machine learning") ||
+    normalizedCareer.includes("ai/ml") ||
+    normalizedCareer.includes("ai ml") ||
+    normalizedCareer.includes("ai engineer") ||
+    normalizedCareer === "ai"
+  ) {
+    return "AI / ML Engineer";
+  }
+
+  /* =======================================================
+     DATA SCIENTIST
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("data scientist") ||
+    normalizedCareer.includes("data science")
+  ) {
+    return "Data Scientist";
+  }
+
+  /* =======================================================
+     CLOUD
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("cloud engineer") ||
+    normalizedCareer === "cloud" ||
+    normalizedCareer.includes("cloud")
+  ) {
+    return "Cloud Engineer";
+  }
+
+  /* =======================================================
+     DEVOPS
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("devops") ||
+    normalizedCareer.includes("dev ops")
+  ) {
+    return "DevOps Engineer";
+  }
+
+  /* =======================================================
+     CYBERSECURITY
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("cybersecurity") ||
+    normalizedCareer.includes("cyber security") ||
+    normalizedCareer.includes("cyber") ||
+    normalizedCareer.includes("security engineer")
+  ) {
+    return "Cybersecurity Engineer";
+  }
+
+  /* =======================================================
+     MOBILE
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("mobile") ||
+    normalizedCareer.includes("android") ||
+    normalizedCareer.includes("ios")
+  ) {
+    return "Mobile App Developer";
+  }
+
+  /* =======================================================
+     UI / UX
+  ======================================================= */
+
+  if (
+    normalizedCareer.includes("ui/ux") ||
+    normalizedCareer.includes("ui ux") ||
+    normalizedCareer.includes("ux designer") ||
+    normalizedCareer.includes("ui designer") ||
+    normalizedCareer.includes("designer")
+  ) {
+    return "UI/UX Designer";
+  }
+
+  /* =======================================================
+     EXACT ROADMAP MATCH
+  ======================================================= */
+
+  const exactCareer = Object.keys(ROADMAPS).find(
+    (roadmapCareer) => roadmapCareer.toLowerCase().trim() === normalizedCareer,
+  );
+
+  if (exactCareer) {
+    return exactCareer;
+  }
+
+  /* =======================================================
+     SAFE FALLBACK
+  ======================================================= */
 
   return "Full Stack Developer";
 };
@@ -841,9 +1109,7 @@ const getCompletedSkills = (career) => {
   try {
     const stored = localStorage.getItem(`pathwiseCompletedSkills_${career}`);
 
-    if (!stored) {
-      return {};
-    }
+    if (!stored) return {};
 
     const parsed = JSON.parse(stored);
 
@@ -872,7 +1138,7 @@ const saveSkillCompleted = (career, skillId) => {
 };
 
 /* =========================================================
-   XP / GAMIFICATION STORAGE
+   XP STORAGE
 ========================================================= */
 
 const getStoredXP = () => {
@@ -892,12 +1158,7 @@ const getStoredXP = () => {
 const saveXP = (xp) => {
   const safeXP = Math.max(0, Number(xp) || 0);
 
-  /* Main XP key */
-
   localStorage.setItem("pathwiseXP", String(safeXP));
-
-  /* Compatibility keys */
-
   localStorage.setItem("xp", String(safeXP));
   localStorage.setItem("totalXP", String(safeXP));
   localStorage.setItem("userXP", String(safeXP));
@@ -907,7 +1168,6 @@ const saveXP = (xp) => {
 
 const addXP = (amount) => {
   const currentXP = getStoredXP();
-
   const newXP = currentXP + Number(amount || 0);
 
   return saveXP(newXP);
@@ -921,9 +1181,7 @@ const getLevelData = (xp) => {
   const safeXP = Math.max(0, Number(xp) || 0);
 
   const level = Math.floor(safeXP / 250) + 1;
-
   const currentLevelXP = safeXP % 250;
-
   const progress = Math.min(100, Math.round((currentLevelXP / 250) * 100));
 
   return {
@@ -960,14 +1218,13 @@ const prepareRoadmap = (roadmap, career) => {
 
     skills: (phase.skills || []).map((skill) => ({
       ...skill,
-
       completed: skill.completed === true || isSkillCompleted(career, skill.id),
     })),
   }));
 };
 
 /* =========================================================
-   SKILL QUEST DATA
+   SKILL QUEST BANK
 ========================================================= */
 
 const QUEST_BANK = {
@@ -1075,18 +1332,23 @@ const QUEST_BANK = {
       "Databases store and organize information so applications can retrieve and manage it.",
   },
 
-  Firebase: {
-    question:
-      "Which Firebase service is commonly used to store application documents?",
+  MongoDB: {
+    question: "What type of database is MongoDB?",
     options: [
-      "Firestore",
-      "Firebase Hosting only",
-      "Firebase Analytics",
-      "Crashlytics",
+      "Document database",
+      "Graphical database only",
+      "Operating system",
+      "Programming language",
     ],
     answer: 0,
-    explanation:
-      "Cloud Firestore is a Firebase database designed to store application data as documents and collections.",
+    explanation: "MongoDB is a NoSQL document-oriented database.",
+  },
+
+  SQL: {
+    question: "Which SQL command is commonly used to retrieve data?",
+    options: ["SELECT", "PUSH", "DISPLAY", "FETCHALL"],
+    answer: 0,
+    explanation: "SELECT is used to retrieve data from database tables.",
   },
 
   Authentication: {
@@ -1099,6 +1361,32 @@ const QUEST_BANK = {
     ],
     answer: 0,
     explanation: "Authentication verifies the identity of a user.",
+  },
+
+  JWT: {
+    question: "What is JWT commonly used for?",
+    options: [
+      "Authentication and securely transmitting claims",
+      "CSS styling",
+      "Image editing",
+      "Database indexing",
+    ],
+    answer: 0,
+    explanation:
+      "JSON Web Tokens are commonly used for authentication and securely transmitting claims.",
+  },
+
+  Middleware: {
+    question: "What is middleware commonly used for in Express?",
+    options: [
+      "Processing requests before the final handler",
+      "Creating database tables",
+      "Designing logos",
+      "Compiling HTML",
+    ],
+    answer: 0,
+    explanation:
+      "Express middleware functions can process requests and responses before the final route handler.",
   },
 
   Python: {
@@ -1347,6 +1635,18 @@ const QUEST_BANK = {
       "Kubernetes automates deployment, scaling and management of containerized applications.",
   },
 
+  Git: {
+    question: "What does a Git commit represent?",
+    options: [
+      "A recorded set of changes",
+      "A database server",
+      "A CSS selector",
+      "A browser extension",
+    ],
+    answer: 0,
+    explanation: "A Git commit records a snapshot of changes in a repository.",
+  },
+
   "Git & GitHub": {
     question: "What is Git primarily used for?",
     options: [
@@ -1358,18 +1658,6 @@ const QUEST_BANK = {
     answer: 0,
     explanation:
       "Git is a distributed version control system used to track changes in projects.",
-  },
-
-  Git: {
-    question: "What does a Git commit represent?",
-    options: [
-      "A recorded set of changes",
-      "A database server",
-      "A CSS selector",
-      "A browser extension",
-    ],
-    answer: 0,
-    explanation: "A Git commit records a snapshot of changes in a repository.",
   },
 
   "CI/CD": {
@@ -1605,6 +1893,45 @@ const QUEST_BANK = {
     explanation:
       "A full stack application commonly includes a frontend, backend and data layer.",
   },
+
+  "Backend Project": {
+    question: "What does a backend project typically contain?",
+    options: [
+      "APIs, server logic, database and authentication",
+      "Only CSS",
+      "Only images",
+      "Only HTML headings",
+    ],
+    answer: 0,
+    explanation:
+      "A backend project commonly combines server-side logic, APIs, data storage and authentication.",
+  },
+
+  NPM: {
+    question: "What is NPM commonly used for?",
+    options: [
+      "Managing JavaScript packages",
+      "Designing websites visually",
+      "Creating operating systems",
+      "Editing videos",
+    ],
+    answer: 0,
+    explanation:
+      "NPM is used to install and manage JavaScript packages and project dependencies.",
+  },
+
+  "Backend Security": {
+    question: "What is an important goal of backend security?",
+    options: [
+      "Protect APIs, data and server resources",
+      "Increase font size",
+      "Change monitor brightness",
+      "Create UI animations",
+    ],
+    answer: 0,
+    explanation:
+      "Backend security protects APIs, application data and server-side resources.",
+  },
 };
 
 /* =========================================================
@@ -1639,21 +1966,23 @@ function PersonalizedRoadmap() {
   const navigate = useNavigate();
 
   /* =======================================================
-     CAREER
+     INITIAL CAREER
   ======================================================= */
 
-  const storedCareer =
-    localStorage.getItem("selectedCareer") ||
-    localStorage.getItem("assessmentCareer") ||
-    "Full Stack Developer";
+  const getInitialCareer = () => {
+    const storedCareer =
+      localStorage.getItem("selectedCareer") ||
+      localStorage.getItem("assessmentCareer") ||
+      "Full Stack Developer";
 
-  const normalizedStoredCareer = normalizeCareer(storedCareer);
+    return normalizeCareer(storedCareer);
+  };
 
   /* =======================================================
      STATE
   ======================================================= */
 
-  const [selectedCareer, setSelectedCareer] = useState(normalizedStoredCareer);
+  const [selectedCareer, setSelectedCareer] = useState(getInitialCareer);
 
   const [roadmap, setRoadmap] = useState([]);
 
@@ -1661,33 +1990,25 @@ function PersonalizedRoadmap() {
 
   const [lastCompletedSkill, setLastCompletedSkill] = useState(null);
 
-  /* =======================================================
-     QUEST STATE
-  ======================================================= */
+  /* QUEST STATE */
 
   const [questOpen, setQuestOpen] = useState(false);
-
   const [activeQuest, setActiveQuest] = useState(null);
-
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-
   const [questResult, setQuestResult] = useState(null);
 
-  /* =======================================================
-     LOAD ROADMAP
-  ======================================================= */
+  /* =========================================================
+     LOAD CAREER ROADMAP
+  ========================================================= */
 
   useEffect(() => {
-    const career = normalizeCareer(
-      localStorage.getItem("selectedCareer") ||
-        localStorage.getItem("assessmentCareer") ||
-        "Full Stack Developer",
-    );
+    const career = getInitialCareer();
 
     setSelectedCareer(career);
 
-    const storageKey = `pathwiseRoadmap_${career}`;
+    localStorage.setItem("selectedCareer", career);
 
+    const storageKey = `pathwiseRoadmap_${career}`;
     const savedRoadmap = localStorage.getItem(storageKey);
 
     if (savedRoadmap) {
@@ -1709,6 +2030,8 @@ function PersonalizedRoadmap() {
         }
       } catch (error) {
         console.error("Failed to load saved roadmap:", error);
+
+        localStorage.removeItem(storageKey);
       }
     }
 
@@ -1727,9 +2050,9 @@ function PersonalizedRoadmap() {
     localStorage.setItem(storageKey, JSON.stringify(preparedRoadmap));
   }, []);
 
-  /* =======================================================
+  /* =========================================================
      SAVE ROADMAP
-  ======================================================= */
+  ========================================================= */
 
   useEffect(() => {
     if (!selectedCareer || roadmap.length === 0) {
@@ -1742,25 +2065,25 @@ function PersonalizedRoadmap() {
     );
   }, [roadmap, selectedCareer]);
 
-  /* =======================================================
+  /* =========================================================
      ALL SKILLS
-  ======================================================= */
+  ========================================================= */
 
   const allSkills = useMemo(() => {
     return roadmap.flatMap((phase) => phase.skills || []);
   }, [roadmap]);
 
-  /* =======================================================
+  /* =========================================================
      COMPLETED SKILLS
-  ======================================================= */
+  ========================================================= */
 
   const completedSkills = useMemo(() => {
     return allSkills.filter((skill) => skill.completed);
   }, [allSkills]);
 
-  /* =======================================================
+  /* =========================================================
      PROGRESS
-  ======================================================= */
+  ========================================================= */
 
   const progress = useMemo(() => {
     if (allSkills.length === 0) {
@@ -1770,9 +2093,9 @@ function PersonalizedRoadmap() {
     return Math.round((completedSkills.length / allSkills.length) * 100);
   }, [allSkills.length, completedSkills.length]);
 
-  /* =======================================================
+  /* =========================================================
      CURRENT PHASE
-  ======================================================= */
+  ========================================================= */
 
   const currentPhaseIndex = useMemo(() => {
     return roadmap.findIndex((phase) =>
@@ -1780,22 +2103,18 @@ function PersonalizedRoadmap() {
     );
   }, [roadmap]);
 
-  /* =======================================================
+  /* =========================================================
      OPEN SKILL QUEST
-  ======================================================= */
+  ========================================================= */
 
   const handleSkillComplete = (phaseId, skillId) => {
     const phase = roadmap.find((item) => item.id === phaseId);
 
-    if (!phase) {
-      return;
-    }
+    if (!phase) return;
 
     const skill = phase.skills.find((item) => item.id === skillId);
 
-    if (!skill || skill.completed) {
-      return;
-    }
+    if (!skill || skill.completed) return;
 
     const quest = getSkillQuest(skill);
 
@@ -1811,9 +2130,9 @@ function PersonalizedRoadmap() {
     setQuestOpen(true);
   };
 
-  /* =======================================================
+  /* =========================================================
      CLOSE QUEST
-  ======================================================= */
+  ========================================================= */
 
   const closeQuest = () => {
     setQuestOpen(false);
@@ -1822,48 +2141,31 @@ function PersonalizedRoadmap() {
     setQuestResult(null);
   };
 
-  /* =======================================================
-     COMPLETE ROADMAP SKILL + AWARD XP
-  ======================================================= */
+  /* =========================================================
+     COMPLETE ROADMAP SKILL
+  ========================================================= */
 
   const completeRoadmapSkill = (phaseId, skillId) => {
-    if (!selectedCareer) {
-      return;
-    }
+    if (!selectedCareer) return;
 
     const phase = roadmap.find((item) => item.id === phaseId);
 
-    if (!phase) {
-      return;
-    }
+    if (!phase) return;
 
     const skill = phase.skills.find((item) => item.id === skillId);
 
-    if (!skill || skill.completed) {
-      return;
-    }
-
-    /* =====================================================
-       1. SAVE SKILL COMPLETION
-    ===================================================== */
+    if (!skill || skill.completed) return;
 
     saveSkillCompleted(selectedCareer, skill.id);
 
-    /* =====================================================
-       2. UPDATE ROADMAP
-    ===================================================== */
-
-    let updatedRoadmap = [];
-
     setRoadmap((currentRoadmap) => {
-      updatedRoadmap = currentRoadmap.map((currentPhase) => {
+      const updatedRoadmap = currentRoadmap.map((currentPhase) => {
         if (currentPhase.id !== phaseId) {
           return currentPhase;
         }
 
         return {
           ...currentPhase,
-
           skills: currentPhase.skills.map((currentSkill) => {
             if (currentSkill.id !== skillId) {
               return currentSkill;
@@ -1885,17 +2187,12 @@ function PersonalizedRoadmap() {
       return updatedRoadmap;
     });
 
-    /* =====================================================
-       3. AWARD +50 XP
-    ===================================================== */
+    /* XP */
 
     const XP_REWARD = 50;
-
     const newXP = addXP(XP_REWARD);
 
-    /* =====================================================
-       4. SAVE GAMIFICATION DATA
-    ===================================================== */
+    /* GAMIFICATION */
 
     const completedCount = getTotalCompletedSkills();
 
@@ -1910,9 +2207,7 @@ function PersonalizedRoadmap() {
 
     localStorage.setItem("pathwiseLastXPTime", String(Date.now()));
 
-    /* =====================================================
-       5. LEVEL DATA
-    ===================================================== */
+    /* LEVEL */
 
     const levelData = getLevelData(newXP);
 
@@ -1922,9 +2217,7 @@ function PersonalizedRoadmap() {
 
     localStorage.setItem("pathwiseLevelProgress", String(levelData.progress));
 
-    /* =====================================================
-       6. XP NOTIFICATION
-    ===================================================== */
+    /* NOTIFICATION */
 
     setLastCompletedSkill({
       name: skill.name,
@@ -1933,9 +2226,7 @@ function PersonalizedRoadmap() {
       level: levelData.level,
     });
 
-    /* =====================================================
-       7. NOTIFY DASHBOARD / OTHER COMPONENTS
-    ===================================================== */
+    /* EVENTS */
 
     window.dispatchEvent(
       new CustomEvent("pathwiseXPUpdated", {
@@ -1969,10 +2260,6 @@ function PersonalizedRoadmap() {
       }),
     );
 
-    /* =====================================================
-       8. STORAGE EVENT COMPATIBILITY
-    ===================================================== */
-
     window.dispatchEvent(
       new StorageEvent("storage", {
         key: "pathwiseXP",
@@ -1982,18 +2269,14 @@ function PersonalizedRoadmap() {
       }),
     );
 
-    /* =====================================================
-       9. CLOSE MODAL AFTER SUCCESS
-    ===================================================== */
-
     setTimeout(() => {
       closeQuest();
     }, 1200);
   };
 
-  /* =======================================================
+  /* =========================================================
      SUBMIT QUEST
-  ======================================================= */
+  ========================================================= */
 
   const handleQuestSubmit = () => {
     if (!activeQuest || selectedAnswer === null) {
@@ -2017,29 +2300,27 @@ function PersonalizedRoadmap() {
     }
   };
 
-  /* =======================================================
+  /* =========================================================
      TOGGLE PHASE
-  ======================================================= */
+  ========================================================= */
 
   const togglePhase = (phaseId) => {
     setExpandedPhase((current) => (current === phaseId ? null : phaseId));
   };
 
-  /* =======================================================
+  /* =========================================================
      OPEN RESOURCE
-  ======================================================= */
+  ========================================================= */
 
   const openResource = (url) => {
-    if (!url) {
-      return;
-    }
+    if (!url) return;
 
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  /* =======================================================
+  /* =========================================================
      CHANGE CAREER
-  ======================================================= */
+  ========================================================= */
 
   const handleCareerChange = (career) => {
     const normalized = normalizeCareer(career);
@@ -2071,6 +2352,8 @@ function PersonalizedRoadmap() {
         }
       } catch (error) {
         console.error("Failed to load career roadmap:", error);
+
+        localStorage.removeItem(storageKey);
       }
     }
 
@@ -2090,9 +2373,9 @@ function PersonalizedRoadmap() {
     localStorage.setItem(storageKey, JSON.stringify(preparedRoadmap));
   };
 
-  /* =======================================================
+  /* =========================================================
      CONTINUE
-  ======================================================= */
+  ========================================================= */
 
   const handleContinue = () => {
     if (currentPhaseIndex === -1) {
@@ -2117,9 +2400,9 @@ function PersonalizedRoadmap() {
     }, 150);
   };
 
-  /* =======================================================
+  /* =========================================================
      LOADING
-  ======================================================= */
+  ========================================================= */
 
   if (roadmap.length === 0) {
     return (
@@ -2135,34 +2418,35 @@ function PersonalizedRoadmap() {
     );
   }
 
-  /* =======================================================
+  /* =========================================================
      RENDER
-  ======================================================= */
+  ========================================================= */
 
   return (
     <div className="roadmap-page">
-      {/* ===================================================
-          TOP NAVIGATION
-      =================================================== */}
+      {/* TOP NAVIGATION */}
 
       <div className="roadmap-topbar">
         <button
           className="roadmap-back-button"
           onClick={() => navigate("/dashboard")}
+          type="button"
         >
           <ArrowLeft size={18} />
           Dashboard
         </button>
 
-        <button className="arena-button" onClick={() => navigate("/arena")}>
+        <button
+          className="arena-button"
+          onClick={() => navigate("/arena")}
+          type="button"
+        >
           <Trophy size={18} />
           PathWise Arena
         </button>
       </div>
 
-      {/* ===================================================
-          HERO
-      =================================================== */}
+      {/* HERO */}
 
       <section className="roadmap-hero">
         <div className="roadmap-hero-content">
@@ -2197,9 +2481,7 @@ function PersonalizedRoadmap() {
         <div className="roadmap-hero-icon">🗺️</div>
       </section>
 
-      {/* ===================================================
-          PROGRESS
-      =================================================== */}
+      {/* PROGRESS */}
 
       <section className="roadmap-progress-card">
         <div className="roadmap-progress-top">
@@ -2240,9 +2522,7 @@ function PersonalizedRoadmap() {
         </div>
       </section>
 
-      {/* ===================================================
-          XP NOTIFICATION
-      =================================================== */}
+      {/* XP NOTIFICATION */}
 
       {lastCompletedSkill && (
         <div className="xp-success-message">
@@ -2263,15 +2543,14 @@ function PersonalizedRoadmap() {
           <button
             onClick={() => setLastCompletedSkill(null)}
             aria-label="Close notification"
+            type="button"
           >
             ×
           </button>
         </div>
       )}
 
-      {/* ===================================================
-          ROADMAP HEADER
-      =================================================== */}
+      {/* ROADMAP HEADER */}
 
       <section className="roadmap-heading">
         <div>
@@ -2291,9 +2570,7 @@ function PersonalizedRoadmap() {
         </div>
       </section>
 
-      {/* ===================================================
-          PHASES
-      =================================================== */}
+      {/* PHASES */}
 
       <section className="roadmap-phases">
         {roadmap.map((phase, phaseIndex) => {
@@ -2365,8 +2642,6 @@ function PersonalizedRoadmap() {
                         skill.completed ? "skill-completed" : ""
                       }`}
                     >
-                      {/* SKILL NUMBER */}
-
                       <div className="skill-number">
                         {skill.completed ? (
                           <CheckCircle2 size={21} />
@@ -2374,8 +2649,6 @@ function PersonalizedRoadmap() {
                           skillIndex + 1
                         )}
                       </div>
-
-                      {/* SKILL INFORMATION */}
 
                       <div className="skill-content">
                         <div className="skill-title-row">
@@ -2400,8 +2673,6 @@ function PersonalizedRoadmap() {
                           </button>
                         )}
                       </div>
-
-                      {/* SKILL ACTION */}
 
                       <div className="skill-action">
                         {skill.completed ? (
@@ -2436,9 +2707,7 @@ function PersonalizedRoadmap() {
         })}
       </section>
 
-      {/* ===================================================
-          NEXT STEP
-      =================================================== */}
+      {/* NEXT STEP */}
 
       {currentPhaseIndex !== -1 && (
         <section className="next-phase-card">
@@ -2462,9 +2731,7 @@ function PersonalizedRoadmap() {
         </section>
       )}
 
-      {/* ===================================================
-          COMPLETED ROADMAP
-      =================================================== */}
+      {/* COMPLETED ROADMAP */}
 
       {progress === 100 && (
         <section className="roadmap-complete-card">
@@ -2497,9 +2764,7 @@ function PersonalizedRoadmap() {
         </section>
       )}
 
-      {/* ===================================================
-          FOOTER MOTIVATION
-      =================================================== */}
+      {/* MOTIVATION */}
 
       <section className="roadmap-motivation">
         <div className="motivation-icon">🚀</div>
@@ -2516,9 +2781,9 @@ function PersonalizedRoadmap() {
         </div>
       </section>
 
-      {/* ===================================================
+      {/* =====================================================
           SKILL QUEST MODAL
-      =================================================== */}
+      ===================================================== */}
 
       {questOpen && activeQuest && (
         <div

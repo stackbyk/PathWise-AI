@@ -291,7 +291,7 @@ function Results() {
       ================================================= */}
 
       <Link
-        to="/assessment"
+        to="/skill-assessment"
         className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600 mb-8"
       >
         <ArrowLeft size={18} />

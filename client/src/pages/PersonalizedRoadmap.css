@@ -862,7 +862,7 @@
 }
 
 /* =========================================================
-   SKILL QUEST
+   SKILL QUEST OVERLAY
 ========================================================= */
 
 .skill-quest-overlay {
@@ -877,11 +877,9 @@
   animation: questOverlayIn 0.2s ease;
 }
 
-/*
-  Intentionally no backdrop-filter here.
-  This avoids the CSS warning shown in VS Code while
-  keeping the same dark modal-overlay effect.
-*/
+/* =========================================================
+   SKILL QUEST MODAL
+========================================================= */
 
 .skill-quest-modal {
   width: min(620px, 100%);
@@ -987,11 +985,11 @@
 ========================================================= */
 
 .skill-quest-question {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .skill-quest-question-label {
-  margin-bottom: 7px;
+  margin-bottom: 8px;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -1002,47 +1000,138 @@
 .skill-quest-question h3 {
   margin: 0;
   font-size: 20px;
-  line-height: 1.4;
+  line-height: 1.45;
   font-weight: 800;
   color: #0f172a;
 }
 
 /* =========================================================
-   QUEST OPTIONS
+   QUEST OPTIONS - FIXED
 ========================================================= */
 
 .skill-quest-options {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 
 .skill-quest-option {
   width: 100%;
-  padding: 14px 16px;
+  min-height: 58px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 15px 17px;
+
   border: 1px solid #e2e8f0;
-  border-radius: 13px;
+  border-radius: 14px;
+
   background: #ffffff;
   color: #334155;
+
   text-align: left;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.5;
+
   cursor: pointer;
+
+  box-sizing: border-box;
+
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Letter A / B / C / D */
+.skill-quest-option > span:first-child {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #f1f5f9;
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  line-height: 1;
+}
+
+/* Answer text */
+.skill-quest-option > span:not(:first-child) {
+  flex: 1;
+  min-width: 0;
+
+  display: block;
+
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* If answer text is wrapped in div/p instead of span */
+.skill-quest-option > div,
+.skill-quest-option > p {
+  flex: 1;
+  min-width: 0;
+
+  margin: 0;
+
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .skill-quest-option:hover {
   transform: translateY(-1px);
   border-color: #a5b4fc;
   background: #f8faff;
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.08);
 }
 
+.skill-quest-option:hover > span:first-child {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+/* SELECTED OPTION */
 .skill-quest-option.selected {
   border-color: #6366f1;
   background: #eef2ff;
   color: #4338ca;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08);
+}
+
+.skill-quest-option.selected > span:first-child {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.skill-quest-option.selected > span:not(:first-child),
+.skill-quest-option.selected > div,
+.skill-quest-option.selected > p {
+  color: #312e81;
 }
 
 /* =========================================================
@@ -1053,9 +1142,11 @@
   margin-top: 24px;
   padding-top: 18px;
   border-top: 1px solid #f1f5f9;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 12px;
 }
 
@@ -1064,16 +1155,25 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
+
   border: none;
   border-radius: 11px;
+
   padding: 11px 17px;
+
+  font-family: inherit;
   font-weight: 700;
+
   cursor: pointer;
 }
 
 .skill-quest-back {
   background: #f1f5f9;
   color: #475569;
+}
+
+.skill-quest-back:hover {
+  background: #e2e8f0;
 }
 
 .skill-quest-next {
@@ -1097,10 +1197,13 @@
 .skill-quest-reward {
   margin-top: 20px;
   padding: 15px;
+
   border-radius: 14px;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   background: #fffbeb;
   border: 1px solid #fde68a;
 }
@@ -1134,12 +1237,17 @@
 .skill-quest-complete-icon {
   width: 78px;
   height: 78px;
+
   margin: 0 auto 16px;
+
   border-radius: 24px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   background: #dcfce7;
+
   font-size: 42px;
 }
 
@@ -1160,10 +1268,14 @@
 .skill-quest-xp {
   margin: 20px auto;
   width: fit-content;
+
   padding: 10px 16px;
+
   border-radius: 999px;
+
   background: #fef3c7;
   color: #92400e;
+
   font-weight: 800;
 }
 
@@ -1217,7 +1329,7 @@
 }
 
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -1301,7 +1413,15 @@
     padding: 22px;
     border-radius: 20px;
   }
+
+  .skill-quest-option {
+    padding: 14px;
+  }
 }
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+========================================================= */
 
 @media (max-width: 520px) {
   .roadmap-topbar {
@@ -1389,6 +1509,25 @@
 
   .skill-quest-question h3 {
     font-size: 18px;
+  }
+
+  .skill-quest-option {
+    gap: 12px;
+    padding: 13px 14px;
+    min-height: 54px;
+    font-size: 13px;
+  }
+
+  .skill-quest-option > span:first-child {
+    flex-basis: 26px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .skill-quest-option > span:not(:first-child),
+  .skill-quest-option > div,
+  .skill-quest-option > p {
+    font-size: 13px;
   }
 
   .skill-quest-footer {
