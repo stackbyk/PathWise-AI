@@ -2,16 +2,17 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 // =========================================================
-// FIREBASE CONFIG
+// FIREBASE CONFIGURATION
 // =========================================================
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  authDomain: "pathwise-ai-85e68.firebaseapp.com",
+  projectId: "pathwise-ai-85e68",
+  storageBucket: "pathwise-ai-85e68.firebasestorage.app",
+  messagingSenderId: "653446986168",
+  appId: "1:653446986168:web:02e074c843f635e1c0f74d",
+  measurementId: "G-C15X29Z57D",
 };
 
 // =========================================================
@@ -20,7 +21,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Firebase Authentication
+// =========================================================
+// FIREBASE AUTHENTICATION
+// =========================================================
+
 export const auth = getAuth(app);
 
 export default app;
