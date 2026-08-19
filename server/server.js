@@ -81,6 +81,8 @@ app.use("/api/roadmaps", require("./routes/roadmapRoutes"));
 
 app.use("/api/skills", require("./routes/skillRoutes"));
 
+app.use("/api/chat", require("./routes/chatRoutes"));
+
 // Future Routes
 // app.use("/api/ml", require("./routes/mlRoutes"));
 
