@@ -66,8 +66,9 @@ const chatWithAI = async (req, res) => {
     }
 
     // Send personalized context to Groq
+    console.log("GROQ MODEL:", "openai/gpt-oss-20b");
     const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-20b",
 
       messages: [
         {

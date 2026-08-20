@@ -9,3 +9,4 @@ __pycache__/
 
 .env
 server/firebase-service-account.json
+archive.zip

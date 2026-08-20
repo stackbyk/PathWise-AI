@@ -2,32 +2,21 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
-// Load environment variables
+const challengeRoutes = require("./routes/challengeRoutes");
+
 dotenv.config({ path: ".env" });
 
-// MongoDB
 const connectDB = require("./config/db");
-
-// Neo4j
 const neo4jDriver = require("./config/neo4j");
 
-// Authentication middleware
 const { protect } = require("./middleware/authMiddleware");
-
-// Profile controller
 const { updateUserProfile } = require("./controllers/authController");
 
-// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-// =========================================================
-// MIDDLEWARE
-// =========================================================
-
 app.use(cors());
-
 app.use(express.json());
 
 // =========================================================
@@ -42,6 +31,13 @@ app.get("/test-route", (req, res) => {
   res.send("TEST ROUTE WORKS!");
 });
 
+app.get("/test-challenge", (req, res) => {
+  res.json({
+    success: true,
+    message: "Challenge test route works!",
+  });
+});
+
 // =========================================================
 // AUTH ROUTES
 // =========================================================
@@ -49,22 +45,13 @@ app.get("/test-route", (req, res) => {
 app.use("/api/auth", require("./routes/authRoutes"));
 
 // =========================================================
-// DIRECT PROFILE UPDATE ROUTE
+// DAILY CHALLENGE ROUTES
 // =========================================================
-//
-// IMPORTANT:
-// This route is intentionally registered directly here
-// instead of depending on authRoutes.js.
-//
-// Frontend:
-// POST /api/auth/update-profile
-//
-// Authentication:
-// protect middleware
-//
-// Controller:
-// updateUserProfile
-//
+
+app.use("/api/challenges", challengeRoutes);
+
+// =========================================================
+// PROFILE UPDATE
 // =========================================================
 
 app.post("/api/auth/update-profile", protect, updateUserProfile);
@@ -83,11 +70,8 @@ app.use("/api/skills", require("./routes/skillRoutes"));
 
 app.use("/api/chat", require("./routes/chatRoutes"));
 
-// Future Routes
-// app.use("/api/ml", require("./routes/mlRoutes"));
-
 // =========================================================
-// TEST NEO4J CONNECTION
+// NEO4J TEST
 // =========================================================
 
 async function testNeo4jConnection() {
@@ -95,7 +79,6 @@ async function testNeo4jConnection() {
 
   try {
     await session.run("RETURN 1");
-
     console.log("Neo4j connected successfully!");
   } catch (error) {
     console.error("Neo4j connection failed:", error.message);
@@ -111,9 +94,23 @@ async function testNeo4jConnection() {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, async () => {
+  console.log("----------------------------------------");
   console.log(`Server running on port ${PORT}`);
+  console.log("----------------------------------------");
 
-  console.log("Profile update route: POST /api/auth/update-profile");
+  console.log("Basic routes:");
+  console.log("GET  /");
+  console.log("GET  /test-route");
+  console.log("GET  /test-challenge");
+
+  console.log("----------------------------------------");
+
+  console.log("API routes:");
+  console.log("POST /api/auth/update-profile");
+  console.log("GET  /api/challenges/daily");
+  console.log("POST /api/challenges/daily/complete");
+
+  console.log("----------------------------------------");
 
   await testNeo4jConnection();
 });
