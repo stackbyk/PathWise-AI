@@ -1,209 +1,48 @@
-// src/pages/SkillAssessment.jsx
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Brain, CheckCircle2 } from "lucide-react";
-
-/* =========================================================
-   CAREER QUESTIONS
-========================================================= */
-
-const careerQuestions = {
-  "Full Stack Developer": [
-    ["HTML & CSS", "How comfortable are you with HTML and CSS?"],
-    ["JavaScript", "How comfortable are you with JavaScript?"],
-    ["React", "How comfortable are you with React?"],
-    ["Node.js", "How comfortable are you with Node.js?"],
-    ["REST APIs", "How comfortable are you with REST APIs?"],
-    ["MongoDB", "How comfortable are you with MongoDB?"],
-    ["Git & GitHub", "How comfortable are you with Git and GitHub?"],
-    [
-      "Problem Solving",
-      "How comfortable are you with programming problem solving?",
-    ],
-  ],
-
-  "AI / ML Engineer": [
-    ["Python", "How comfortable are you with Python programming?"],
-    [
-      "Mathematics",
-      "How comfortable are you with the mathematics used in machine learning?",
-    ],
-    ["Statistics", "How comfortable are you with statistics and probability?"],
-    [
-      "Machine Learning",
-      "How comfortable are you with machine learning concepts?",
-    ],
-    [
-      "Deep Learning",
-      "How comfortable are you with neural networks and deep learning?",
-    ],
-    [
-      "Data Processing",
-      "How comfortable are you with preparing and processing datasets?",
-    ],
-    [
-      "Model Evaluation",
-      "How comfortable are you with evaluating machine learning models?",
-    ],
-    [
-      "TensorFlow / PyTorch",
-      "How comfortable are you with ML frameworks such as TensorFlow or PyTorch?",
-    ],
-  ],
-
-  "Data Scientist": [
-    ["Python", "How comfortable are you with Python for data analysis?"],
-    ["Statistics", "How comfortable are you with statistics and probability?"],
-    ["SQL", "How comfortable are you with SQL and databases?"],
-    ["Data Analysis", "How comfortable are you with analyzing datasets?"],
-    [
-      "Data Visualization",
-      "How comfortable are you with creating data visualizations?",
-    ],
-    [
-      "Machine Learning",
-      "How comfortable are you with machine learning algorithms?",
-    ],
-    ["Pandas / NumPy", "How comfortable are you with Pandas and NumPy?"],
-    [
-      "Problem Solving",
-      "How comfortable are you with solving analytical problems?",
-    ],
-  ],
-
-  "Cloud Engineer": [
-    ["Linux", "How comfortable are you with Linux systems?"],
-    ["Networking", "How comfortable are you with networking concepts?"],
-    [
-      "AWS / Azure / GCP",
-      "How comfortable are you with cloud platforms such as AWS, Azure or GCP?",
-    ],
-    ["Docker", "How comfortable are you with Docker and containers?"],
-    [
-      "Kubernetes",
-      "How comfortable are you with Kubernetes and container orchestration?",
-    ],
-    ["Cloud Security", "How comfortable are you with cloud security concepts?"],
-    ["CI/CD", "How comfortable are you with CI/CD pipelines?"],
-    [
-      "Infrastructure",
-      "How comfortable are you with cloud infrastructure and deployment?",
-    ],
-  ],
-
-  "Cybersecurity Engineer": [
-    [
-      "Cybersecurity Fundamentals",
-      "How comfortable are you with basic cybersecurity concepts?",
-    ],
-    [
-      "Networking",
-      "How comfortable are you with computer networking and protocols?",
-    ],
-    ["Linux", "How comfortable are you with Linux systems and commands?"],
-    [
-      "Network Security",
-      "How comfortable are you with firewalls, VPNs and network security?",
-    ],
-    [
-      "Ethical Hacking",
-      "How comfortable are you with penetration testing and ethical hacking concepts?",
-    ],
-    [
-      "Threat Detection",
-      "How comfortable are you with identifying and analyzing security threats?",
-    ],
-    [
-      "Python & Scripting",
-      "How comfortable are you with Python or scripting for security tasks?",
-    ],
-    [
-      "Incident Response",
-      "How comfortable are you with detecting and responding to security incidents?",
-    ],
-  ],
-
-  "DevOps Engineer": [
-    ["Linux", "How comfortable are you with Linux systems?"],
-    ["Networking", "How comfortable are you with networking concepts?"],
-    ["Git", "How comfortable are you with Git and version control?"],
-    ["Docker", "How comfortable are you with Docker and containers?"],
-    ["Kubernetes", "How comfortable are you with Kubernetes?"],
-    ["CI/CD", "How comfortable are you with CI/CD pipelines?"],
-    ["AWS", "How comfortable are you with AWS or cloud platforms?"],
-    [
-      "Infrastructure as Code",
-      "How comfortable are you with Terraform or infrastructure as code?",
-    ],
-  ],
-
-  "Mobile App Developer": [
-    [
-      "Programming Fundamentals",
-      "How comfortable are you with programming fundamentals?",
-    ],
-    ["React Native", "How comfortable are you with React Native?"],
-    ["Mobile UI", "How comfortable are you with mobile UI development?"],
-    [
-      "Mobile Navigation",
-      "How comfortable are you with navigation between mobile screens?",
-    ],
-    ["REST APIs", "How comfortable are you with consuming REST APIs?"],
-    ["Authentication", "How comfortable are you with mobile authentication?"],
-    ["Testing", "How comfortable are you with testing mobile applications?"],
-    [
-      "App Deployment",
-      "How comfortable are you with deploying mobile applications?",
-    ],
-  ],
-
-  "UI/UX Designer": [
-    ["Design Principles", "How comfortable are you with design principles?"],
-    ["Color Theory", "How comfortable are you with color theory?"],
-    ["Typography", "How comfortable are you with typography?"],
-    ["User Research", "How comfortable are you with user research?"],
-    ["User Personas", "How comfortable are you with creating user personas?"],
-    ["Wireframing", "How comfortable are you with wireframing?"],
-    ["Prototyping", "How comfortable are you with prototyping?"],
-    ["Usability Testing", "How comfortable are you with usability testing?"],
-  ],
-};
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Brain,
+  CheckCircle2,
+  Clock3,
+  RotateCcw,
+  Target,
+  Trophy,
+} from "lucide-react";
 
 /* =========================================================
    CAREER ALIASES
 ========================================================= */
 
-const careerAliases = {
-  "AI/ML Engineer": "AI / ML Engineer",
-  "AI ML Engineer": "AI / ML Engineer",
-  "AI-ML Engineer": "AI / ML Engineer",
+const CAREER_ALIASES = {
+  "AI/ML Engineer": "AI/ML Engineer",
+  "AI ML Engineer": "AI/ML Engineer",
+  "AI & ML Engineer": "AI/ML Engineer",
+  "Artificial Intelligence Engineer": "AI/ML Engineer",
+  "Machine Learning Engineer": "AI/ML Engineer",
 
-  Cybersecurity: "Cybersecurity Engineer",
-  "Cyber Security": "Cybersecurity Engineer",
+  "Full Stack Developer": "Full Stack Developer",
+  "Full-Stack Developer": "Full Stack Developer",
+  "Fullstack Developer": "Full Stack Developer",
+
+  "Frontend Developer": "Frontend Developer",
+  "Front End Developer": "Frontend Developer",
+  "Front-End Developer": "Frontend Developer",
+
+  "Backend Developer": "Backend Developer",
+  "Back End Developer": "Backend Developer",
+  "Back-End Developer": "Backend Developer",
+
+  "Cloud Engineer": "Cloud Engineer",
+  "Cloud Developer": "Cloud Engineer",
+
+  "Cybersecurity Engineer": "Cybersecurity Engineer",
   "Cyber Security Engineer": "Cybersecurity Engineer",
+  "Cybersecurity Developer": "Cybersecurity Engineer",
 
-  "Software Developer": "Full Stack Developer",
-  "Software Engineer": "Full Stack Developer",
-  "Web Developer": "Full Stack Developer",
-
+  "Data Scientist": "Data Scientist",
   "Data Science": "Data Scientist",
-  "Data Analyst": "Data Scientist",
-
-  Backend: "Full Stack Developer",
-  "Backend Developer": "Full Stack Developer",
-
-  Cloud: "Cloud Engineer",
-
-  DevOps: "DevOps Engineer",
-  "DevOps Developer": "DevOps Engineer",
-
-  "Mobile Developer": "Mobile App Developer",
-  "App Developer": "Mobile App Developer",
-
-  Designer: "UI/UX Designer",
-  "UX Designer": "UI/UX Designer",
-  "UI Designer": "UI/UX Designer",
 };
 
 /* =========================================================
@@ -214,53 +53,378 @@ const levels = [
   {
     label: "Beginner",
     value: 25,
-    description: "I am just starting",
+    description: "I'm just starting",
+    detail: "I have little or no experience with this skill.",
   },
   {
     label: "Basic",
     value: 50,
     description: "I know the fundamentals",
+    detail: "I understand the basics and can follow simple examples.",
   },
   {
     label: "Intermediate",
     value: 75,
     description: "I can build projects",
+    detail: "I can use this skill independently in practical projects.",
   },
   {
     label: "Advanced",
     value: 100,
-    description: "I am highly confident",
+    description: "I'm highly confident",
+    detail:
+      "I can solve complex problems and work confidently with this skill.",
   },
 ];
 
 /* =========================================================
-   CAREER OPTIONS
+   CAREER SKILLS
 ========================================================= */
 
-const careerOptions = Object.keys(careerQuestions);
+const CAREER_SKILLS = {
+  /* =======================================================
+     AI / ML ENGINEER
+  ======================================================= */
+
+  "AI/ML Engineer": [
+    {
+      name: "Python",
+      description: "Programming fundamentals and Python development",
+    },
+    {
+      name: "Mathematics for Machine Learning",
+      description: "Linear algebra, calculus and mathematical foundations",
+    },
+    {
+      name: "Statistics & Probability",
+      description: "Probability, distributions, statistics and inference",
+    },
+    {
+      name: "Machine Learning",
+      description: "Supervised, unsupervised and classical ML algorithms",
+    },
+    {
+      name: "Deep Learning",
+      description: "Neural networks and deep learning architectures",
+    },
+    {
+      name: "Data Handling",
+      description: "Data cleaning, preprocessing and feature engineering",
+    },
+    {
+      name: "Model Evaluation",
+      description: "Metrics, validation, tuning and model comparison",
+    },
+  ],
+
+  /* =======================================================
+     FULL STACK
+  ======================================================= */
+
+  "Full Stack Developer": [
+    {
+      name: "HTML & CSS",
+      description: "Web structure, styling and responsive layouts",
+    },
+    {
+      name: "JavaScript",
+      description: "Modern JavaScript programming",
+    },
+    {
+      name: "React",
+      description: "Building modern frontend applications",
+    },
+    {
+      name: "Node.js",
+      description: "Server-side JavaScript development",
+    },
+    {
+      name: "REST APIs",
+      description: "Designing and consuming web APIs",
+    },
+    {
+      name: "MongoDB",
+      description: "Document-oriented database development",
+    },
+    {
+      name: "Git & GitHub",
+      description: "Version control and collaborative development",
+    },
+    {
+      name: "Problem Solving",
+      description: "Algorithms, data structures and logical thinking",
+    },
+  ],
+
+  /* =======================================================
+     FRONTEND
+  ======================================================= */
+
+  "Frontend Developer": [
+    {
+      name: "HTML & CSS",
+      description: "Web structure, styling and responsive design",
+    },
+    {
+      name: "JavaScript",
+      description: "Modern JavaScript programming",
+    },
+    {
+      name: "React",
+      description: "Building component-based interfaces",
+    },
+    {
+      name: "API Integration",
+      description: "Connecting frontend applications with APIs",
+    },
+    {
+      name: "Problem Solving",
+      description: "Logical thinking and frontend problem solving",
+    },
+  ],
+
+  /* =======================================================
+     BACKEND
+  ======================================================= */
+
+  "Backend Developer": [
+    {
+      name: "JavaScript",
+      description: "Modern JavaScript programming",
+    },
+    {
+      name: "Node.js",
+      description: "Server-side JavaScript development",
+    },
+    {
+      name: "REST APIs",
+      description: "Backend API development",
+    },
+    {
+      name: "Databases",
+      description: "Database design and data management",
+    },
+    {
+      name: "Authentication & Security",
+      description: "Authentication, authorization and backend security",
+    },
+    {
+      name: "Problem Solving",
+      description: "Algorithms and backend problem solving",
+    },
+  ],
+
+  /* =======================================================
+     CLOUD
+  ======================================================= */
+
+  "Cloud Engineer": [
+    {
+      name: "Python",
+      description: "Programming and cloud automation",
+    },
+    {
+      name: "Linux",
+      description: "Linux administration and command-line skills",
+    },
+    {
+      name: "Networking",
+      description: "Networking fundamentals and cloud networking",
+    },
+    {
+      name: "Cloud Platforms",
+      description: "Cloud infrastructure and services",
+    },
+    {
+      name: "Docker",
+      description: "Containerization and application deployment",
+    },
+    {
+      name: "Kubernetes",
+      description: "Container orchestration",
+    },
+    {
+      name: "CI/CD & DevOps",
+      description: "Automation, deployment and DevOps practices",
+    },
+  ],
+
+  /* =======================================================
+     CYBERSECURITY
+  ======================================================= */
+
+  "Cybersecurity Engineer": [
+    {
+      name: "Networking",
+      description: "Network architecture and protocols",
+    },
+    {
+      name: "Linux",
+      description: "Linux systems and administration",
+    },
+    {
+      name: "Cybersecurity Fundamentals",
+      description: "Core security concepts and principles",
+    },
+    {
+      name: "Cryptography",
+      description: "Encryption, hashing and cryptographic concepts",
+    },
+    {
+      name: "Security Tools",
+      description: "Security monitoring and analysis tools",
+    },
+    {
+      name: "Web Security",
+      description: "Web vulnerabilities and application security",
+    },
+    {
+      name: "Incident Response",
+      description: "Detecting, containing and responding to incidents",
+    },
+  ],
+
+  /* =======================================================
+     DATA SCIENTIST
+  ======================================================= */
+
+  "Data Scientist": [
+    {
+      name: "Python",
+      description: "Programming and data analysis with Python",
+    },
+    {
+      name: "Statistics & Probability",
+      description: "Statistical reasoning and probability",
+    },
+    {
+      name: "Data Analysis",
+      description: "Exploring and analyzing datasets",
+    },
+    {
+      name: "Machine Learning",
+      description: "Machine learning algorithms and workflows",
+    },
+    {
+      name: "Data Visualization",
+      description: "Communicating insights visually",
+    },
+    {
+      name: "SQL",
+      description: "Querying and managing structured data",
+    },
+  ],
+};
 
 /* =========================================================
    NORMALIZE CAREER
 ========================================================= */
 
 const normalizeCareer = (career) => {
-  const rawCareer = String(career || "").trim();
-
-  if (careerAliases[rawCareer]) {
-    return careerAliases[rawCareer];
+  if (!career) {
+    return null;
   }
 
-  if (careerQuestions[rawCareer]) {
-    return rawCareer;
+  const cleaned = String(career).trim();
+
+  if (CAREER_ALIASES[cleaned]) {
+    return CAREER_ALIASES[cleaned];
   }
 
-  const lowerCareer = rawCareer.toLowerCase();
-
-  const matchingCareer = careerOptions.find(
-    (careerOption) => careerOption.toLowerCase() === lowerCareer,
+  const matchedKey = Object.keys(CAREER_ALIASES).find(
+    (key) => key.toLowerCase() === cleaned.toLowerCase(),
   );
 
-  return matchingCareer || "";
+  if (matchedKey) {
+    return CAREER_ALIASES[matchedKey];
+  }
+
+  return cleaned;
+};
+
+/* =========================================================
+   GET CAREER FROM ALL POSSIBLE SOURCES
+========================================================= */
+
+const getCareerFromStorage = () => {
+  const possibleKeys = ["assessmentCareer", "selectedCareer", "career"];
+
+  for (const key of possibleKeys) {
+    const value = localStorage.getItem(key);
+
+    if (value && value.trim()) {
+      return normalizeCareer(value);
+    }
+  }
+
+  return null;
+};
+
+/* =========================================================
+   LOAD EXISTING ANSWERS
+========================================================= */
+
+const loadExistingAnswers = () => {
+  try {
+    const stored = localStorage.getItem("selfAssessmentAnswers");
+
+    if (!stored) {
+      return {};
+    }
+
+    const parsed = JSON.parse(stored);
+
+    if (!parsed || typeof parsed !== "object") {
+      return {};
+    }
+
+    /*
+      Supports either:
+
+      {
+        Python: 75,
+        React: 50
+      }
+
+      OR
+
+      {
+        "AI/ML Engineer": {
+          Python: 75
+        }
+      }
+    */
+
+    if (
+      parsed.skillScores &&
+      typeof parsed.skillScores === "object" &&
+      !Array.isArray(parsed.skillScores)
+    ) {
+      return parsed.skillScores;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error("Failed to load existing assessment answers:", error);
+
+    return {};
+  }
+};
+
+/* =========================================================
+   BUILD SKILL SCORES
+========================================================= */
+
+const buildSkillScores = (skills, answers) => {
+  const result = {};
+
+  skills.forEach((skill) => {
+    const value = Number(answers[skill.name]);
+
+    result[skill.name] = Number.isFinite(value) && value > 0 ? value : 25;
+  });
+
+  return result;
 };
 
 /* =========================================================
@@ -269,134 +433,361 @@ const normalizeCareer = (career) => {
 
 function SkillAssessment() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   /* =======================================================
-     GET STORED CAREER
+     CAREER
   ======================================================= */
 
-  const storedCareer =
-    localStorage.getItem("selectedCareer") ||
-    localStorage.getItem("assessmentCareer") ||
-    "";
-
-  const initialCareer = normalizeCareer(storedCareer);
+  const [career, setCareer] = useState(() => {
+    return normalizeCareer(
+      location.state?.career ||
+        localStorage.getItem("assessmentCareer") ||
+        localStorage.getItem("selectedCareer") ||
+        localStorage.getItem("career"),
+    );
+  });
 
   /* =======================================================
-     STATE
+     CURRENT QUESTION
   ======================================================= */
 
-  const [selectedCareer, setSelectedCareer] = useState(initialCareer);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  /* =======================================================
+     ANSWERS
+  ======================================================= */
 
   const [answers, setAnswers] = useState({});
 
   /* =======================================================
-     QUESTIONS
+     COMPLETION
   ======================================================= */
 
-  const questions = careerQuestions[selectedCareer] || [];
+  const [completed, setCompleted] = useState(false);
 
   /* =======================================================
-     CAREER SELECTOR
+     INITIALIZE CAREER
   ======================================================= */
 
-  if (!selectedCareer) {
-    return (
-      <div className="min-h-screen bg-slate-50 py-10">
-        <div className="mx-auto max-w-4xl px-4">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="mb-8 inline-flex items-center gap-2 text-slate-600 hover:text-primary-600"
-          >
-            <ArrowLeft size={18} />
-            Back to Dashboard
-          </button>
+  useEffect(() => {
+    const stateCareer = normalizeCareer(location.state?.career);
 
-          <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
-              <Brain size={17} />
-              Skill Assessment
-            </div>
+    if (stateCareer) {
+      setCareer(stateCareer);
 
-            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
-              Choose Your Career
-            </h1>
+      localStorage.setItem("assessmentCareer", stateCareer);
 
-            <p className="mt-3 text-slate-600">
-              Select the career you want to assess your skills for.
-            </p>
-          </div>
+      localStorage.setItem("selectedCareer", stateCareer);
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {careerOptions.map((career) => (
-              <button
-                key={career}
-                type="button"
-                onClick={() => {
-                  localStorage.setItem("selectedCareer", career);
-                  localStorage.setItem("assessmentCareer", career);
+      localStorage.setItem("career", stateCareer);
 
-                  setSelectedCareer(career);
-                  setCurrentQuestion(0);
-                  setAnswers({});
-                }}
-                className="rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-2xl">
-                  {career === "Cybersecurity Engineer"
-                    ? "🔐"
-                    : career === "AI / ML Engineer"
-                      ? "🤖"
-                      : career === "Data Scientist"
-                        ? "📊"
-                        : career === "Cloud Engineer"
-                          ? "☁️"
-                          : career === "DevOps Engineer"
-                            ? "⚙️"
-                            : career === "Mobile App Developer"
-                              ? "📱"
-                              : career === "UI/UX Designer"
-                                ? "🎨"
-                                : "💻"}
-                </div>
+      return;
+    }
 
-                <h2 className="font-bold text-slate-900">{career}</h2>
+    const storedCareer = getCareerFromStorage();
 
-                <p className="mt-2 text-sm text-slate-500">
-                  Start skill assessment →
-                </p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+    if (storedCareer) {
+      setCareer(storedCareer);
+    }
+  }, [location.state?.career]);
+
+  /* =======================================================
+     LOAD SKILLS
+  ======================================================= */
+
+  const skills = useMemo(() => {
+    if (!career) {
+      return [];
+    }
+
+    return CAREER_SKILLS[career] || [];
+  }, [career]);
+
+  /* =======================================================
+     LOAD SAVED ANSWERS FOR CURRENT CAREER
+  ======================================================= */
+
+  useEffect(() => {
+    if (!career || !skills.length) {
+      return;
+    }
+
+    const existing = loadExistingAnswers();
+
+    /*
+      If selfAssessmentAnswers was stored
+      in the new format:
+
+      {
+        career: "...",
+        skillScores: {...}
+      }
+
+      support that too.
+    */
+
+    let loadedAnswers = existing;
+
+    try {
+      const raw = localStorage.getItem("selfAssessmentAnswers");
+
+      if (raw) {
+        const parsed = JSON.parse(raw);
+
+        if (
+          parsed &&
+          parsed.career &&
+          normalizeCareer(parsed.career) === career &&
+          parsed.skillScores
+        ) {
+          loadedAnswers = parsed.skillScores;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse saved answers:", error);
+    }
+
+    const validAnswers = {};
+
+    skills.forEach((skill) => {
+      if (loadedAnswers[skill.name] !== undefined) {
+        validAnswers[skill.name] = Number(loadedAnswers[skill.name]);
+      }
+    });
+
+    if (Object.keys(validAnswers).length > 0) {
+      setAnswers(validAnswers);
+    }
+  }, [career, skills]);
+
+  /* =======================================================
+     CURRENT SKILL
+  ======================================================= */
+
+  const currentSkill = skills[currentIndex];
+
+  /* =======================================================
+     CURRENT ANSWER
+  ======================================================= */
+
+  const selectedValue = currentSkill ? answers[currentSkill.name] : undefined;
+
+  /* =======================================================
+     PROGRESS
+  ======================================================= */
+
+  const progress = skills.length
+    ? Math.round(((currentIndex + 1) / skills.length) * 100)
+    : 0;
+
+  /* =======================================================
+     COMPLETED SKILLS
+  ======================================================= */
+
+  const completedCount = skills.filter(
+    (skill) => answers[skill.name] !== undefined,
+  ).length;
+
+  /* =======================================================
+     SELECT LEVEL
+  ======================================================= */
+
+  const handleSelectLevel = (value) => {
+    if (!currentSkill) {
+      return;
+    }
+
+    setAnswers((previous) => ({
+      ...previous,
+      [currentSkill.name]: value,
+    }));
+  };
+
+  /* =======================================================
+     SAVE CURRENT ANSWERS
+  ======================================================= */
+
+  const saveAnswers = (skillScores) => {
+    const payload = {
+      career,
+      skillScores,
+      completedSkills: Object.keys(skillScores).length,
+      totalSkills: skills.length,
+      updatedAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem("selfAssessmentAnswers", JSON.stringify(payload));
+
+    /*
+      assessmentResults is the key
+      consumed by MCQVerification.jsx.
+    */
+
+    localStorage.setItem(
+      "assessmentResults",
+      JSON.stringify({
+        career,
+        skillScores,
+        completedSkills: Object.keys(skillScores).length,
+        totalSkills: skills.length,
+        source: "self-assessment",
+        completedAt: new Date().toISOString(),
+      }),
     );
-  }
+
+    /*
+      Keep these keys synchronized
+      because other PathWise pages
+      may consume them.
+    */
+
+    localStorage.setItem("assessmentCareer", career);
+
+    localStorage.setItem("selectedCareer", career);
+
+    localStorage.setItem("career", career);
+
+    localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skillScores));
+
+    localStorage.setItem(
+      "pathwiseSkillData",
+      JSON.stringify(
+        skills.map((skill) => ({
+          name: skill.name,
+          claimedProgress: skillScores[skill.name],
+          progress: skillScores[skill.name],
+          score: skillScores[skill.name],
+          source: "self-assessment",
+          career,
+        })),
+      ),
+    );
+  };
 
   /* =======================================================
-     SAFETY CHECK
+     NEXT
   ======================================================= */
 
-  if (questions.length === 0) {
+  const handleNext = () => {
+    if (!currentSkill || selectedValue === undefined) {
+      return;
+    }
+
+    if (currentIndex < skills.length - 1) {
+      setCurrentIndex((previous) => previous + 1);
+
+      return;
+    }
+
+    /*
+      Last question -> save
+      complete assessment.
+    */
+
+    const finalSkillScores = buildSkillScores(skills, answers);
+
+    saveAnswers(finalSkillScores);
+
+    setCompleted(true);
+  };
+
+  /* =======================================================
+     BACK
+  ======================================================= */
+
+  const handleBack = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((previous) => previous - 1);
+
+      return;
+    }
+
+    navigate(-1);
+  };
+
+  /* =======================================================
+     RESET
+  ======================================================= */
+
+  const handleReset = () => {
+    setCurrentIndex(0);
+    setAnswers({});
+    setCompleted(false);
+
+    localStorage.removeItem("selfAssessmentAnswers");
+
+    localStorage.removeItem("assessmentResults");
+
+    localStorage.removeItem("assessmentVerificationResults");
+
+    localStorage.removeItem("verifiedSkillData");
+
+    localStorage.removeItem("pathwiseSkillData");
+
+    localStorage.removeItem("pathwiseProfileSkills");
+
+    localStorage.removeItem("skillAssessmentCompleted");
+
+    localStorage.removeItem("skillAssessmentCompletedAt");
+
+    localStorage.removeItem("conceptualTestUnlocked");
+
+    localStorage.removeItem("conceptualTestSkills");
+  };
+
+  /* =======================================================
+     GO TO VERIFICATION
+  ======================================================= */
+
+  const handleStartVerification = () => {
+    const finalSkillScores = buildSkillScores(skills, answers);
+
+    saveAnswers(finalSkillScores);
+
+    /*
+        MCQVerification reads
+        assessmentCareer and
+        assessmentResults.
+
+        We explicitly pass the normalized
+        career through navigation state
+        as well.
+      */
+
+    navigate("/mcq-verification", {
+      state: {
+        career,
+        assessmentResults: {
+          career,
+          skillScores: finalSkillScores,
+        },
+      },
+    });
+  };
+
+  /* =======================================================
+     NO CAREER
+  ======================================================= */
+
+  if (!career) {
     return (
-      <div className="min-h-screen bg-slate-50 py-10">
-        <div className="mx-auto max-w-2xl px-4 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">
-            No assessment questions found.
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-xl">
+          <Brain className="mx-auto text-primary-600" size={48} />
+
+          <h1 className="mt-5 text-2xl font-bold text-slate-900">
+            No career selected
           </h1>
 
-          <p className="mt-3 text-slate-600">
-            Please choose a supported career.
+          <p className="mt-3 text-slate-500">
+            Please select a career before starting your skill assessment.
           </p>
 
           <button
-            onClick={() => {
-              setSelectedCareer("");
-              setCurrentQuestion(0);
-              setAnswers({});
-            }}
-            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white"
+            type="button"
+            onClick={() => navigate("/assessment")}
+            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-bold text-white transition hover:bg-primary-700"
           >
             Choose Career
           </button>
@@ -406,251 +797,273 @@ function SkillAssessment() {
   }
 
   /* =======================================================
-     CURRENT QUESTION
+     CAREER HAS NO SKILL CONFIG
   ======================================================= */
 
-  const question = questions[currentQuestion];
+  if (!skills.length) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-lg rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-xl">
+          <Target className="mx-auto text-amber-500" size={48} />
 
-  const skill = question?.[0] || "";
+          <h1 className="mt-5 text-2xl font-bold text-slate-900">
+            Assessment unavailable
+          </h1>
 
-  const questionText = question?.[1] || "";
+          <p className="mt-3 text-slate-500">
+            We don't have a skill configuration for <strong>{career}</strong>{" "}
+            yet.
+          </p>
 
-  const currentAnswer = answers[skill];
+          <button
+            type="button"
+            onClick={() => navigate("/assessment")}
+            className="mt-6 rounded-xl bg-primary-600 px-6 py-3 font-bold text-white transition hover:bg-primary-700"
+          >
+            Back to Careers
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   /* =======================================================
-     PROGRESS
+     COMPLETED SCREEN
   ======================================================= */
 
-  const progress =
-    questions.length > 0 ? ((currentQuestion + 1) / questions.length) * 100 : 0;
+  if (completed) {
+    const finalScores = buildSkillScores(skills, answers);
 
-  /* =======================================================
-     ANSWER
-  ======================================================= */
-
-  const handleAnswer = (value) => {
-    setAnswers((previousAnswers) => ({
-      ...previousAnswers,
-      [skill]: value,
-    }));
-  };
-
-  /* =======================================================
-     NEXT
-  ======================================================= */
-
-  const handleNext = () => {
-    if (!currentAnswer) {
-      return;
-    }
-
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion((previous) => previous + 1);
-    }
-  };
-
-  /* =======================================================
-     PREVIOUS
-  ======================================================= */
-
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion((previous) => previous - 1);
-    }
-  };
-
-  /* =======================================================
-     SUBMIT ASSESSMENT
-  ======================================================= */
-
-  const handleSubmit = () => {
-    if (!currentAnswer) {
-      return;
-    }
-
-    const finalAnswers = {
-      ...answers,
-      [skill]: currentAnswer,
-    };
-
-    /* -----------------------------------------------------
-       SAVE RAW ASSESSMENT
-    ----------------------------------------------------- */
-
-    localStorage.setItem("assessmentResults", JSON.stringify(finalAnswers));
-
-    localStorage.setItem("assessmentCareer", selectedCareer);
-
-    localStorage.setItem("selectedCareer", selectedCareer);
-
-    /* -----------------------------------------------------
-       CREATE ASSESSED SKILLS
-    ----------------------------------------------------- */
-
-    const assessedSkills = questions.map(([skillName]) => {
-      const score = finalAnswers[skillName] || 0;
-
-      const level = levels.find((item) => item.value === score) || levels[0];
-
-      return {
-        name: skillName,
-        progress: score,
-        level: level.label,
-        source: "assessment",
-        career: selectedCareer,
-      };
-    });
-
-    /* -----------------------------------------------------
-       LOAD EXISTING PROFILE SKILLS
-    ----------------------------------------------------- */
-
-    let existingProfileSkills = [];
-
-    const savedProfileSkills = localStorage.getItem("pathwiseProfileSkills");
-
-    if (savedProfileSkills) {
-      try {
-        const parsedSkills = JSON.parse(savedProfileSkills);
-
-        if (Array.isArray(parsedSkills)) {
-          existingProfileSkills = parsedSkills;
-        }
-      } catch (error) {
-        console.error("Failed to load profile skills:", error);
-      }
-    }
-
-    /* -----------------------------------------------------
-       MERGE PROFILE + ASSESSMENT SKILLS
-    ----------------------------------------------------- */
-
-    const mergedSkills = [
-      ...existingProfileSkills
-        .filter(
-          (profileSkill) =>
-            !assessedSkills.some(
-              (assessedSkill) =>
-                assessedSkill.name.toLowerCase() ===
-                String(profileSkill).toLowerCase(),
-            ),
-        )
-        .map((skillName) => ({
-          name: skillName,
-          progress: 0,
-          level: "Not Assessed",
-          source: "profile",
-        })),
-
-      ...assessedSkills,
-    ];
-
-    /* -----------------------------------------------------
-       SAVE COMPLETE SKILL DATA
-    ----------------------------------------------------- */
-
-    localStorage.setItem("pathwiseSkillData", JSON.stringify(mergedSkills));
-
-    /* -----------------------------------------------------
-       SAVE PROFILE SKILL NAMES
-    ----------------------------------------------------- */
-
-    const skillNames = mergedSkills.map((item) => item.name);
-
-    localStorage.setItem("pathwiseProfileSkills", JSON.stringify(skillNames));
-
-    /* -----------------------------------------------------
-       COMPLETION FLAG
-    ----------------------------------------------------- */
-
-    localStorage.setItem("skillAssessmentCompleted", "true");
-
-    /* -----------------------------------------------------
-       SAVE ASSESSMENT TIMESTAMP
-    ----------------------------------------------------- */
-
-    localStorage.setItem(
-      "skillAssessmentCompletedAt",
-      new Date().toISOString(),
+    const overallScore = Math.round(
+      Object.values(finalScores).reduce(
+        (total, score) => total + Number(score),
+        0,
+      ) / skills.length,
     );
 
-    /* -----------------------------------------------------
-       GO TO RESULTS
-    ----------------------------------------------------- */
+    return (
+      <div className="min-h-screen bg-slate-50 px-4 py-10">
+        <div className="mx-auto max-w-4xl">
+          {/* Header */}
 
-    navigate("/results");
-  };
+          <div className="mb-8 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-600">
+              <CheckCircle2 size={18} />
+              Assessment Complete
+            </div>
+
+            <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
+              Your Skill Assessment is Complete 🎉
+            </h1>
+
+            <p className="mt-3 text-slate-600">
+              Here's your current self-assessed skill profile for{" "}
+              <strong>{career}</strong>.
+            </p>
+          </div>
+
+          {/* Overall score */}
+
+          <div className="mb-8 rounded-3xl border border-slate-100 bg-white p-8 text-center shadow-xl">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-indigo-50">
+              <Trophy className="text-primary-600" size={38} />
+            </div>
+
+            <p className="mt-5 text-sm font-bold uppercase tracking-wide text-slate-500">
+              Overall Self-Assessment Score
+            </p>
+
+            <div className="mt-2 text-5xl font-black text-primary-600">
+              {overallScore}%
+            </div>
+
+            <p className="mx-auto mt-4 max-w-xl text-slate-500">
+              Your self-assessment is now saved. The next step will verify these
+              claimed skill levels with MCQ questions.
+            </p>
+          </div>
+
+          {/* Skill breakdown */}
+
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-xl md:p-8">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">
+                Skill Breakdown
+              </h2>
+
+              <p className="mt-1 text-slate-500">
+                Your current self-assessed proficiency in each skill.
+              </p>
+            </div>
+
+            <div className="space-y-5">
+              {skills.map((skill) => {
+                const score = Number(finalScores[skill.name] || 25);
+
+                const level =
+                  levels.find((item) => item.value === score) || levels[0];
+
+                return (
+                  <div
+                    key={skill.name}
+                    className="rounded-2xl border border-slate-100 bg-slate-50 p-5"
+                  >
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="font-bold text-slate-900">
+                          {skill.name}
+                        </h3>
+
+                        <p className="mt-1 text-sm text-slate-500">
+                          {skill.description}
+                        </p>
+                      </div>
+
+                      <div className="text-left sm:text-right">
+                        <p className="text-xl font-black text-primary-600">
+                          {score}%
+                        </p>
+
+                        <p className="text-sm font-semibold text-slate-500">
+                          {level.label}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className="h-full rounded-full bg-primary-600 transition-all"
+                        style={{
+                          width: `${score}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Verification CTA */}
+
+          <div className="mt-8 rounded-3xl border border-indigo-100 bg-indigo-50 p-6 md:p-8">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Brain className="text-primary-600" size={24} />
+
+                  <h2 className="text-xl font-bold text-slate-900">
+                    Ready for skill verification?
+                  </h2>
+                </div>
+
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                  We'll now test your knowledge with timed MCQs and compare your
+                  verified performance with your self-assessment.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleStartVerification}
+                className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-bold text-white shadow-md transition hover:bg-primary-700"
+              >
+                Start Verification
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Reset */}
+
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-slate-700"
+            >
+              <RotateCcw size={16} />
+              Retake Assessment
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* =======================================================
-     RENDER
+     CURRENT LEVEL DATA
+  ======================================================= */
+
+  const currentLevel =
+    levels.find((level) => level.value === selectedValue) || null;
+
+  /* =======================================================
+     RENDER ASSESSMENT
   ======================================================= */
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
-      <div className="mx-auto max-w-3xl px-4">
+    <div className="min-h-screen bg-slate-50 px-4 py-8">
+      <div className="mx-auto max-w-4xl">
         {/* =================================================
-            TOP NAVIGATION
+            TOP HEADER
         ================================================= */}
 
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-8">
           <button
-            onClick={() => navigate("/dashboard")}
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-primary-600"
+            type="button"
+            onClick={handleBack}
+            className="mb-5 flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
           >
-            <ArrowLeft size={18} />
-            Back to Dashboard
+            <ArrowLeft size={17} />
+            Back
           </button>
 
-          <button
-            onClick={() => {
-              setSelectedCareer("");
-              setCurrentQuestion(0);
-              setAnswers({});
-            }}
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Change Career
-          </button>
-        </div>
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-bold text-primary-600">
+                <Brain size={17} />
+                Skill Assessment
+              </div>
 
-        {/* =================================================
-            HEADER
-        ================================================= */}
+              <h1 className="text-3xl font-black text-slate-900 md:text-4xl">
+                How comfortable are you with these skills?
+              </h1>
 
-        <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-2 text-sm font-semibold text-primary-600">
-            <Brain size={17} />
-            Skill Assessment
+              <p className="mt-3 text-slate-600">
+                Assess yourself honestly for the <strong>{career}</strong>{" "}
+                career path.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-100 bg-white px-5 py-4 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                Progress
+              </p>
+
+              <p className="mt-1 text-xl font-black text-primary-600">
+                {completedCount}/{skills.length}
+              </p>
+            </div>
           </div>
-
-          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
-            Discover Your Skill Level
-          </h1>
-
-          <p className="mt-3 text-slate-600">
-            Assessment for{" "}
-            <span className="font-semibold text-primary-600">
-              {selectedCareer}
-            </span>
-          </p>
         </div>
 
         {/* =================================================
             PROGRESS
         ================================================= */}
 
-        <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
+        <div className="mb-6 rounded-2xl border border-slate-100 bg-white p-5 shadow-md">
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-600">
-              Question {currentQuestion + 1} of {questions.length}
+            <span className="text-sm font-bold text-slate-600">
+              Skill {currentIndex + 1} of {skills.length}
             </span>
 
-            <span className="text-sm font-semibold text-primary-600">
-              {Math.round(progress)}%
+            <span className="text-sm font-black text-primary-600">
+              {progress}%
             </span>
           </div>
 
-          <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
             <div
               className="h-full rounded-full bg-primary-600 transition-all duration-300"
               style={{
@@ -661,67 +1074,114 @@ function SkillAssessment() {
         </div>
 
         {/* =================================================
-            QUESTION CARD
+            SKILL CARD
         ================================================= */}
 
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xl md:p-8">
-          <div className="mb-8">
-            <p className="mb-2 text-sm font-semibold text-primary-600">
-              {skill}
-            </p>
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-xl md:p-10">
+          {/* Skill */}
 
-            <h2 className="text-2xl font-bold text-slate-900">
-              {questionText}
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50">
+              <Target className="text-primary-600" size={30} />
+            </div>
+
+            <h2 className="text-3xl font-black text-slate-900">
+              {currentSkill.name}
             </h2>
 
-            <p className="mt-2 text-slate-500">
-              Select the option that best describes your current ability.
+            <p className="mx-auto mt-3 max-w-2xl text-slate-500">
+              {currentSkill.description}
             </p>
+          </div>
+
+          {/* Question */}
+
+          <div className="mb-7 rounded-2xl border border-indigo-100 bg-indigo-50 p-5">
+            <div className="flex gap-3">
+              <Brain className="mt-0.5 shrink-0 text-primary-600" size={22} />
+
+              <div>
+                <p className="font-bold text-slate-900">
+                  How comfortable are you with {currentSkill.name}?
+                </p>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Select the option that best describes your current ability.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* =================================================
               LEVEL OPTIONS
           ================================================= */}
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {levels.map((level) => {
-              const isSelected = currentAnswer === level.value;
+              const selected = selectedValue === level.value;
 
               return (
                 <button
-                  key={level.label}
+                  key={level.value}
                   type="button"
-                  onClick={() => handleAnswer(level.value)}
-                  className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
-                    isSelected
-                      ? "border-primary-600 bg-indigo-50"
-                      : "border-slate-200 hover:border-primary-300 hover:bg-slate-50"
+                  onClick={() => handleSelectLevel(level.value)}
+                  className={`group w-full rounded-2xl border-2 p-5 text-left transition-all ${
+                    selected
+                      ? "border-primary-600 bg-indigo-50 shadow-md"
+                      : "border-slate-200 bg-white hover:border-primary-300 hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-4">
+                    {/* Radio */}
+
                     <div
-                      className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
-                        isSelected ? "border-primary-600" : "border-slate-300"
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 ${
+                        selected
+                          ? "border-primary-600"
+                          : "border-slate-300 group-hover:border-primary-400"
                       }`}
                     >
-                      {isSelected && (
-                        <div className="h-3 w-3 rounded-full bg-primary-600" />
+                      {selected && (
+                        <div className="h-3.5 w-3.5 rounded-full bg-primary-600" />
                       )}
                     </div>
 
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-800">
-                        {level.label}
+                    {/* Content */}
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                        <h3
+                          className={`text-lg font-bold ${
+                            selected ? "text-primary-700" : "text-slate-900"
+                          }`}
+                        >
+                          {level.label}
+                        </h3>
+
+                        <span
+                          className={`text-sm font-black ${
+                            selected ? "text-primary-600" : "text-slate-400"
+                          }`}
+                        >
+                          {level.value}%
+                        </span>
+                      </div>
+
+                      <p className="mt-1 font-medium text-slate-600">
+                        {level.description}
                       </p>
 
-                      <p className="text-sm text-slate-500">
-                        {level.description}
+                      <p className="mt-1 text-sm text-slate-400">
+                        {level.detail}
                       </p>
                     </div>
 
-                    <span className="text-sm font-semibold text-slate-400">
-                      {level.value}%
-                    </span>
+                    {selected && (
+                      <CheckCircle2
+                        className="shrink-0 text-primary-600"
+                        size={24}
+                      />
+                    )}
                   </div>
                 </button>
               );
@@ -729,62 +1189,118 @@ function SkillAssessment() {
           </div>
 
           {/* =================================================
+              SELECTED LEVEL SUMMARY
+          ================================================= */}
+
+          {currentLevel && (
+            <div className="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="shrink-0 text-emerald-600" size={21} />
+
+                <p className="text-sm font-semibold text-emerald-800">
+                  You selected{" "}
+                  <strong>
+                    {currentLevel.label} ({currentLevel.value}
+                    %)
+                  </strong>{" "}
+                  for {currentSkill.name}.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* =================================================
               NAVIGATION
           ================================================= */}
 
-          <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-6">
+          <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-              className="flex items-center gap-2 rounded-xl px-5 py-3 font-semibold text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+              onClick={handleBack}
+              className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-600 transition hover:bg-slate-50"
             >
               <ArrowLeft size={18} />
-              Previous
+
+              {currentIndex === 0 ? "Back" : "Previous"}
             </button>
 
-            {currentQuestion === questions.length - 1 ? (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!currentAnswer}
-                className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Finish Assessment
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={selectedValue === undefined}
+              className="flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-bold text-white shadow-md transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {currentIndex === skills.length - 1
+                ? "Complete Assessment"
+                : "Next Skill"}
+
+              {currentIndex === skills.length - 1 ? (
                 <CheckCircle2 size={18} />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleNext}
-                disabled={!currentAnswer}
-                className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Next
+              ) : (
                 <ArrowRight size={18} />
-              </button>
-            )}
+              )}
+            </button>
           </div>
         </div>
 
         {/* =================================================
-            QUESTION INDICATORS
+            TIMER / INFO
         ================================================= */}
 
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          {questions.map(([skillName], index) => (
-            <div
-              key={skillName}
-              title={skillName}
-              className={`h-3 w-3 rounded-full ${
-                answers[skillName]
-                  ? "bg-green-500"
-                  : index === currentQuestion
-                    ? "bg-primary-600"
-                    : "bg-slate-200"
-              }`}
-            />
-          ))}
+        <div className="mt-6 flex gap-3 rounded-2xl border border-slate-200 bg-white p-5">
+          <Clock3 className="mt-0.5 shrink-0 text-primary-600" size={21} />
+
+          <div>
+            <p className="font-bold text-slate-800">
+              This part is self-assessment
+            </p>
+
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              There are no right or wrong answers here. Your selected levels
+              will be used to create a claimed skill profile, which will then be
+              verified through the MCQ assessment.
+            </p>
+          </div>
+        </div>
+
+        {/* =================================================
+            SKILL INDICATORS
+        ================================================= */}
+
+        <div className="mt-6 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-bold text-slate-900">Assessment Skills</h3>
+
+            <span className="text-sm text-slate-400">
+              {completedCount} completed
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => {
+              const answered = answers[skill.name] !== undefined;
+
+              const active = index === currentIndex;
+
+              return (
+                <button
+                  key={skill.name}
+                  type="button"
+                  onClick={() => setCurrentIndex(index)}
+                  className={`rounded-full px-3 py-2 text-xs font-bold transition ${
+                    active
+                      ? "bg-primary-600 text-white"
+                      : answered
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  }`}
+                >
+                  {answered ? "✓ " : ""}
+                  {skill.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

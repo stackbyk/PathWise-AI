@@ -21,12 +21,13 @@ const messages = [
 export default function FunnyMessage() {
   const [message] = useState(() => {
     const randomIndex = Math.floor(Math.random() * messages.length);
+
     return messages[randomIndex];
   });
 
   return (
-    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-4 shadow-sm">
-      <p className="text-sm text-slate-700">{message}</p>
-    </div>
+    <p className="max-w-2xl text-xl font-extrabold leading-relaxed text-white sm:text-2xl md:text-3xl">
+      {message}
+    </p>
   );
 }

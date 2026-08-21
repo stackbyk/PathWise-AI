@@ -17,23 +17,29 @@ import {
   Trophy,
   Zap,
   Star,
-  Medal,
   Rocket,
   Gamepad2,
   Sparkles,
   Shield,
-  Crown,
   Code2,
   RefreshCw,
 } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-function Dashboard() {
-  /* =====================================================
-     AUTH
-  ===================================================== */
+/* =====================================================
+   GET TODAY
+===================================================== */
 
+const getToday = () => {
+  return new Date().toDateString();
+};
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function Dashboard() {
   const { user } = useAuth();
 
   /* =====================================================
@@ -76,6 +82,26 @@ function Dashboard() {
   });
 
   /* =====================================================
+     NORMALIZED SKILLS
+  ===================================================== */
+
+  const skills = profileSkills.map((skill) => {
+    if (typeof skill === "string") {
+      return {
+        name: skill,
+        progress: 0,
+        completed: false,
+      };
+    }
+
+    return {
+      name: skill?.name || skill?.skill || "Unknown Skill",
+      progress: Number(skill?.progress) || 0,
+      completed: skill?.completed === true || skill?.isCompleted === true,
+    };
+  });
+
+  /* =====================================================
      GAMIFICATION
   ===================================================== */
 
@@ -105,9 +131,8 @@ function Dashboard() {
 
   const [dailyQuestCompleted, setDailyQuestCompleted] = useState(() => {
     const savedDate = localStorage.getItem("pathwiseDailyQuestDate");
-    const today = new Date().toDateString();
 
-    return savedDate === today;
+    return savedDate === getToday();
   });
 
   /* =====================================================
@@ -232,6 +257,7 @@ function Dashboard() {
       if (!token) {
         setDailyChallenge(null);
         setChallengeCompleted(false);
+        setDailyQuestCompleted(false);
 
         setChallengeMessage("Please log in again to load today's challenge.");
 
@@ -243,7 +269,6 @@ function Dashboard() {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       });
 
@@ -262,6 +287,7 @@ function Dashboard() {
         );
 
         setDailyChallenge(null);
+        setDailyQuestCompleted(false);
 
         if (response.status === 401) {
           setChallengeMessage(
@@ -289,19 +315,17 @@ function Dashboard() {
         console.error("Failed to parse challenge JSON:", error);
 
         setDailyChallenge(null);
+        setDailyQuestCompleted(false);
 
-        setChallengeMessage(
-          "The challenge server returned invalid data. Please try again.",
-        );
+        setChallengeMessage("The challenge server returned invalid data.");
 
         setChallengeLoading(false);
         return;
       }
 
       if (!response.ok) {
-        console.error("Challenge API error:", data);
-
         setDailyChallenge(null);
+        setDailyQuestCompleted(false);
 
         if (response.status === 401) {
           setChallengeMessage("Please log in again to load today's challenge.");
@@ -317,6 +341,7 @@ function Dashboard() {
 
       if (!data?.success || !data?.challenge) {
         setDailyChallenge(null);
+        setDailyQuestCompleted(false);
 
         setChallengeMessage(
           data?.message || "Today's challenge could not be loaded.",
@@ -328,11 +353,9 @@ function Dashboard() {
 
       setDailyChallenge(data.challenge);
 
-      /* -------------------------------------------------
-         CHECK LOCAL COMPLETION
-      ------------------------------------------------- */
+      const today = getToday();
 
-      const today = new Date().toDateString();
+      const challengeId = data.challenge._id || data.challenge.id;
 
       const completedChallengeId = localStorage.getItem(
         "pathwiseDailyDeveloperChallengeId",
@@ -343,10 +366,17 @@ function Dashboard() {
       );
 
       const alreadyCompleted =
-        completedChallengeId === String(data.challenge.id) &&
+        completedChallengeId === String(challengeId) &&
         completedChallengeDate === today;
 
       setChallengeCompleted(alreadyCompleted);
+
+      const savedQuestDate = localStorage.getItem("pathwiseDailyQuestDate");
+
+      const alreadyCompletedDailyQuest =
+        alreadyCompleted && savedQuestDate === today;
+
+      setDailyQuestCompleted(alreadyCompletedDailyQuest);
 
       if (alreadyCompleted) {
         setChallengeMessage(
@@ -359,6 +389,7 @@ function Dashboard() {
       console.error("Daily challenge loading error:", error);
 
       setDailyChallenge(null);
+      setDailyQuestCompleted(false);
 
       setChallengeMessage(
         "Unable to connect to the challenge server. Please try again.",
@@ -374,10 +405,13 @@ function Dashboard() {
 
   const completeDailyDeveloperChallenge = async () => {
     if (!dailyChallenge) return;
-
     if (challengeCompleted) return;
-
     if (submittingChallenge) return;
+
+    if (selectedAnswer === "") {
+      setChallengeMessage("Please select an answer first.");
+      return;
+    }
 
     const rawToken = getAuthToken();
     const token = cleanToken(rawToken);
@@ -389,32 +423,12 @@ function Dashboard() {
       return;
     }
 
-    /* -------------------------------------------------
-       ANSWER CHECK
-    ------------------------------------------------- */
-
-    const userAnswer = String(selectedAnswer || "")
-      .trim()
-      .replace(/\s+/g, "");
-
-    const correctAnswer = String(dailyChallenge.answer || "")
-      .trim()
-      .replace(/\s+/g, "");
-
-    if (!userAnswer) {
-      setChallengeMessage("Please enter your answer first.");
-      return;
-    }
-
-    if (userAnswer.toLowerCase() !== correctAnswer.toLowerCase()) {
-      setChallengeMessage("Not quite! Try again. 💪");
-      return;
-    }
-
     setSubmittingChallenge(true);
     setChallengeMessage("");
 
     try {
+      const challengeId = dailyChallenge._id || dailyChallenge.id;
+
       const response = await fetch(
         `${API_BASE_URL}/api/challenges/daily/complete`,
         {
@@ -424,7 +438,8 @@ function Dashboard() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            challengeId: dailyChallenge.id,
+            challengeId,
+            selectedAnswer: Number(selectedAnswer),
           }),
         },
       );
@@ -442,7 +457,6 @@ function Dashboard() {
           "The server returned an unexpected response. Please try again.",
         );
 
-        setSubmittingChallenge(false);
         return;
       }
 
@@ -455,30 +469,34 @@ function Dashboard() {
 
         setChallengeMessage("Invalid response from the server.");
 
-        setSubmittingChallenge(false);
         return;
       }
 
-      if (!response.ok || !data?.success) {
+      if (!response.ok) {
         if (response.status === 401) {
           setChallengeMessage(
             "Please log in again before completing the challenge.",
           );
         } else {
           setChallengeMessage(
-            data?.message || "Failed to complete today's challenge.",
+            data?.message || "Failed to submit today's challenge.",
           );
         }
 
-        setSubmittingChallenge(false);
         return;
       }
 
-      /* -------------------------------------------------
-         XP
-      ------------------------------------------------- */
+      /* WRONG ANSWER */
 
-      const earnedXP = Number(data.xpEarned) || 20;
+      if (!data.correct) {
+        setChallengeMessage("Not quite! Try again. 💪");
+
+        return;
+      }
+
+      /* CORRECT ANSWER */
+
+      const earnedXP = Number(data.xpEarned) || Number(dailyChallenge.xp) || 20;
 
       const currentXP = Math.max(
         0,
@@ -489,28 +507,35 @@ function Dashboard() {
 
       localStorage.setItem("pathwiseXP", String(newXP));
 
-      /* -------------------------------------------------
-         DAILY CHALLENGE COMPLETION
-      ------------------------------------------------- */
-
-      const today = new Date().toDateString();
+      const today = getToday();
 
       localStorage.setItem(
         "pathwiseDailyDeveloperChallengeId",
-        String(dailyChallenge.id),
+        String(challengeId),
       );
 
       localStorage.setItem("pathwiseDailyDeveloperChallengeDate", today);
 
-      /* -------------------------------------------------
-         UPDATE UI
-      ------------------------------------------------- */
+      const currentCompletedChallenges = Math.max(
+        0,
+        Number(localStorage.getItem("pathwiseCompletedChallenges")) || 0,
+      );
+
+      const newCompletedChallenges = currentCompletedChallenges + 1;
+
+      localStorage.setItem(
+        "pathwiseCompletedChallenges",
+        String(newCompletedChallenges),
+      );
 
       setXp(newXP);
-
       setChallengeCompleted(true);
+      setDailyQuestCompleted(false);
+      setSelectedAnswer("");
 
-      setChallengeMessage(`Quest Completed! 🎉 +${earnedXP} XP`);
+      setChallengeMessage(
+        `Developer Challenge Completed! 🎉 +${earnedXP} XP\n\nDaily Quest is now unlocked! Complete it below to earn another +20 XP.`,
+      );
 
       window.dispatchEvent(new Event("pathwiseXPUpdated"));
 
@@ -519,7 +544,7 @@ function Dashboard() {
       console.error("Challenge completion error:", error);
 
       setChallengeMessage(
-        "Unable to complete the challenge. Please try again.",
+        "Unable to connect to the challenge server. Please try again.",
       );
     } finally {
       setSubmittingChallenge(false);
@@ -565,7 +590,6 @@ function Dashboard() {
     localStorage.setItem("pathwiseXP", String(newXP));
 
     setXp(newXP);
-
     setWheelCompleted(true);
 
     window.dispatchEvent(new Event("pathwiseXPUpdated"));
@@ -754,27 +778,28 @@ function Dashboard() {
     setSelectedCareer(career);
 
     refreshProfile();
-
     calculateRoadmapProgress(career);
   }, [calculateRoadmapProgress, getRoadmapKey, refreshProfile]);
 
   /* =====================================================
-     COMPLETE SIMPLE DAILY QUEST
+     COMPLETE DAILY QUEST
   ===================================================== */
 
   const completeDailyQuest = () => {
-    if (dailyQuestCompleted) {
-      return;
-    }
+    if (!challengeCompleted) return;
 
-    const today = new Date().toDateString();
+    if (dailyQuestCompleted) return;
+
+    const today = getToday();
 
     const currentXP = Math.max(
       0,
       Number(localStorage.getItem("pathwiseXP")) || 0,
     );
 
-    const newXP = currentXP + 20;
+    const dailyQuestXP = 20;
+
+    const newXP = currentXP + dailyQuestXP;
 
     localStorage.setItem("pathwiseXP", String(newXP));
 
@@ -797,6 +822,8 @@ function Dashboard() {
 
     if (user) {
       loadDailyChallenge();
+    } else {
+      setChallengeLoading(false);
     }
 
     const handleUpdate = () => {
@@ -860,93 +887,6 @@ function Dashboard() {
   const remainingXP = Math.max(nextLevelXP - xp, 0);
 
   /* =====================================================
-     BADGES
-  ===================================================== */
-
-  const badges = [
-    {
-      id: 1,
-      name: "First Step",
-      icon: "🚀",
-      unlocked: completedSkills >= 1,
-    },
-    {
-      id: 2,
-      name: "Skill Builder",
-      icon: "🛠️",
-      unlocked: completedSkills >= 5,
-    },
-    {
-      id: 3,
-      name: "Roadmap Starter",
-      icon: "🗺️",
-      unlocked: completedSkills >= 10,
-    },
-    {
-      id: 4,
-      name: "Consistency King",
-      icon: "🔥",
-      unlocked: streak >= 7,
-    },
-    {
-      id: 5,
-      name: "Unstoppable",
-      icon: "💎",
-      unlocked: streak >= 30,
-    },
-    {
-      id: 6,
-      name: "Career Ready",
-      icon: "🏆",
-      unlocked: level >= 5,
-    },
-  ];
-
-  const unlockedBadges = badges.filter((badge) => badge.unlocked).length;
-
-  /* =====================================================
-     SKILLS
-  ===================================================== */
-
-  const skills =
-    profileSkills.length > 0
-      ? profileSkills.map((skill) => ({
-          name: typeof skill === "string" ? skill : skill.name || "Skill",
-
-          progress: typeof skill === "object" ? Number(skill.progress) || 0 : 0,
-
-          completed:
-            typeof skill === "object" ? skill.completed === true : false,
-        }))
-      : [];
-
-  /* =====================================================
-     LEADERBOARD
-  ===================================================== */
-
-  const leaderboard = [
-    {
-      rank: 1,
-      name: "Arjun",
-      xp: Math.max(xp + 450, 950),
-      avatar: "🧑‍💻",
-    },
-    {
-      rank: 2,
-      name: "Priya",
-      xp: Math.max(xp + 200, 700),
-      avatar: "👩‍💻",
-    },
-    {
-      rank: 3,
-      name: profileName || "You",
-      xp,
-      avatar: "🚀",
-      currentUser: true,
-    },
-  ];
-
-  /* =====================================================
      MOTIVATION
   ===================================================== */
 
@@ -987,54 +927,148 @@ function Dashboard() {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
         {/* =================================================
             WELCOME
         ================================================= */}
 
         <section>
-          <p className="text-primary-600 font-semibold mb-2">
+          <p className="mb-2 font-semibold text-primary-600">
             Your Career Dashboard
           </p>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
+          <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
             Welcome back, {displayName}! 👋
           </h1>
 
-          <p className="text-slate-600 mt-2">
+          <p className="mt-2 text-slate-600">
             Keep learning, keep growing and get closer to your dream career.
           </p>
-
-          <div className="mt-5 max-w-2xl">
-            <FunnyMessage />
-          </div>
         </section>
+
+        {/* =================================================
+            WISDOM + MOTIVATION
+        ================================================= */}
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* DEVELOPER WISDOM */}
+
+          <section className="group relative overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-8 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl sm:p-10">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl animate-pulse" />
+
+            <div
+              className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-yellow-300/10 blur-3xl animate-pulse"
+              style={{
+                animationDelay: "1s",
+              }}
+            />
+
+            <div className="pointer-events-none absolute left-8 top-5 text-3xl font-bold text-white/20 animate-bounce">
+              {"</>"}
+            </div>
+
+            <div
+              className="pointer-events-none absolute bottom-5 right-8 text-3xl font-bold text-white/20 animate-bounce"
+              style={{
+                animationDelay: "0.8s",
+              }}
+            >
+              {"{ }"}
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="mb-4 text-5xl drop-shadow-lg transition-transform duration-500 group-hover:scale-110">
+                😂
+              </div>
+
+              <p className="text-xs font-bold tracking-[0.25em] text-indigo-100 sm:text-sm">
+                DEVELOPER WISDOM
+              </p>
+
+              <div className="mt-5">
+                <FunnyMessage />
+              </div>
+
+              <p className="mt-5 text-sm font-medium text-indigo-100 sm:text-base">
+                Keep coding. Keep debugging. Keep building. 💻✨
+              </p>
+
+              <div className="mt-6 h-1 w-20 rounded-full bg-white/70 animate-pulse" />
+            </div>
+          </section>
+
+          {/* DAILY MOTIVATION */}
+
+          <section className="group relative overflow-hidden rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-8 shadow-xl transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl sm:p-10">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-3xl animate-pulse" />
+
+            <div
+              className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-cyan-300/10 blur-3xl animate-pulse"
+              style={{
+                animationDelay: "1s",
+              }}
+            />
+
+            <div className="pointer-events-none absolute left-8 top-5 text-3xl font-bold text-white/20 animate-bounce">
+              ✦
+            </div>
+
+            <div
+              className="pointer-events-none absolute bottom-5 right-8 text-3xl font-bold text-white/20 animate-bounce"
+              style={{
+                animationDelay: "0.8s",
+              }}
+            >
+              ✨
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="mb-4 text-5xl drop-shadow-lg transition-transform duration-500 group-hover:scale-110">
+                🧠
+              </div>
+
+              <p className="text-xs font-bold tracking-[0.25em] text-blue-100 sm:text-sm">
+                DAILY MOTIVATION
+              </p>
+
+              <h2 className="mt-4 max-w-2xl text-xl font-extrabold leading-relaxed text-white sm:text-2xl">
+                “{quote}”
+              </h2>
+
+              <p className="mt-5 text-sm font-medium leading-relaxed text-blue-100 sm:text-base">
+                Keep showing up. Your dream career is built one skill at a time.
+                🚀
+              </p>
+
+              <div className="mt-6 h-1 w-20 rounded-full bg-white/70 animate-pulse" />
+            </div>
+          </section>
+        </div>
 
         {/* =================================================
             CAREER
         ================================================= */}
 
-        <section className="bg-gradient-to-r from-primary-600 to-indigo-700 rounded-2xl p-6 md:p-8 text-white shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <section className="rounded-2xl bg-gradient-to-r from-primary-600 to-indigo-700 p-6 text-white shadow-xl md:p-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="mb-3 flex items-center gap-2">
                 <Target size={22} />
-
                 <span className="font-medium">Your Target Career</span>
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold">
+              <h2 className="text-2xl font-bold md:text-3xl">
                 {selectedCareer}
               </h2>
 
-              <p className="text-indigo-100 mt-2">
+              <p className="mt-2 text-indigo-100">
                 Your personalized learning roadmap is ready.
               </p>
             </div>
 
             <Link
               to="/roadmap"
-              className="bg-white text-primary-700 px-5 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-indigo-50 transition"
+              className="flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-primary-700 transition hover:bg-indigo-50"
             >
               Continue Roadmap
               <ArrowRight size={18} />
@@ -1046,34 +1080,33 @@ function Dashboard() {
             XP / LEVEL / STREAK
         ================================================= */}
 
-        <section className="grid md:grid-cols-3 gap-5">
+        <section className="grid gap-5 md:grid-cols-3">
           {/* XP */}
 
-          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-100 rounded-2xl p-6 shadow-md">
+          <div className="rounded-2xl border border-yellow-100 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-yellow-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-yellow-100 p-3">
                 <Zap className="text-yellow-600" size={25} />
               </div>
 
               <span className="text-sm font-bold text-yellow-700">XP</span>
             </div>
 
-            <p className="text-3xl font-bold text-slate-900 mt-5">{xp}</p>
+            <p className="mt-5 text-3xl font-bold text-slate-900">{xp}</p>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="mt-1 text-sm text-slate-500">
               Total Experience Points
             </p>
 
             <div className="mt-4">
-              <div className="flex justify-between text-xs mb-2">
+              <div className="mb-2 flex justify-between text-xs">
                 <span>Level {level}</span>
-
                 <span>{xpInsideLevel}/250 XP</span>
               </div>
 
-              <div className="h-2 bg-white rounded-full overflow-hidden">
+              <div className="h-2 overflow-hidden rounded-full bg-white">
                 <div
-                  className="h-full bg-yellow-500 rounded-full transition-all"
+                  className="h-full rounded-full bg-yellow-500 transition-all"
                   style={{
                     width: `${levelProgress}%`,
                   }}
@@ -1084,42 +1117,42 @@ function Dashboard() {
 
           {/* LEVEL */}
 
-          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 shadow-md">
+          <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-indigo-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-indigo-100 p-3">
                 <Star className="text-indigo-600" size={25} />
               </div>
 
               <span className="text-sm font-bold text-indigo-600">LEVEL</span>
             </div>
 
-            <p className="text-3xl font-bold text-slate-900 mt-5">{level}</p>
+            <p className="mt-5 text-3xl font-bold text-slate-900">{level}</p>
 
-            <p className="text-sm text-slate-500 mt-1">{levelName}</p>
+            <p className="mt-1 text-sm text-slate-500">{levelName}</p>
 
-            <p className="text-xs text-indigo-600 font-semibold mt-3">
+            <p className="mt-3 text-xs font-semibold text-indigo-600">
               Keep going! 🔥
             </p>
           </div>
 
           {/* STREAK */}
 
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 rounded-2xl p-6 shadow-md">
+          <div className="rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 to-red-50 p-6 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-orange-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-orange-100 p-3">
                 <Flame className="text-orange-600" size={25} />
               </div>
 
               <span className="text-sm font-bold text-orange-600">STREAK</span>
             </div>
 
-            <p className="text-3xl font-bold text-slate-900 mt-5">
+            <p className="mt-5 text-3xl font-bold text-slate-900">
               {streak} 🔥
             </p>
 
-            <p className="text-sm text-slate-500 mt-1">Day learning streak</p>
+            <p className="mt-1 text-sm text-slate-500">Day learning streak</p>
 
-            <p className="text-xs text-orange-600 font-semibold mt-3">
+            <p className="mt-3 text-xs font-semibold text-orange-600">
               Don't break the streak!
             </p>
           </div>
@@ -1129,53 +1162,53 @@ function Dashboard() {
             STATISTICS
         ================================================= */}
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
+        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-indigo-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-indigo-100 p-3">
                 <TrendingUp className="text-primary-600" size={22} />
               </div>
 
               <span className="text-2xl font-bold">{roadmapProgress}%</span>
             </div>
 
-            <p className="text-slate-500 mt-4">Roadmap Progress</p>
+            <p className="mt-4 text-slate-500">Roadmap Progress</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-green-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-green-100 p-3">
                 <CheckCircle2 className="text-green-600" size={22} />
               </div>
 
               <span className="text-2xl font-bold">{completedSkills}</span>
             </div>
 
-            <p className="text-slate-500 mt-4">Skills Completed</p>
+            <p className="mt-4 text-slate-500">Skills Completed</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-yellow-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-yellow-100 p-3">
                 <Award className="text-yellow-600" size={22} />
               </div>
 
               <span className="text-2xl font-bold">{xp}</span>
             </div>
 
-            <p className="text-slate-500 mt-4">XP Earned</p>
+            <p className="mt-4 text-slate-500">XP Earned</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md border border-slate-100">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-md">
             <div className="flex items-center justify-between">
-              <div className="bg-orange-100 p-3 rounded-xl">
+              <div className="rounded-xl bg-orange-100 p-3">
                 <Flame className="text-orange-600" size={22} />
               </div>
 
               <span className="text-2xl font-bold">{streak}</span>
             </div>
 
-            <p className="text-slate-500 mt-4">Day Streak</p>
+            <p className="mt-4 text-slate-500">Day Streak</p>
           </div>
         </section>
 
@@ -1183,67 +1216,80 @@ function Dashboard() {
             MAIN CONTENT
         ================================================= */}
 
-        <section className="grid lg:grid-cols-3 gap-6">
+        <section className="grid gap-6 lg:grid-cols-3">
           {/* =================================================
               SKILLS
           ================================================= */}
 
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-md lg:col-span-2">
+            {/* HEADER */}
+
+            <div className="mb-3 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-lg font-bold text-slate-900">
                   Your Skills
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-xs text-slate-500">
                   Track your progress toward your target career.
                 </p>
               </div>
 
-              <Brain className="text-primary-600" size={24} />
+              <Brain className="text-primary-600" size={21} />
             </div>
 
-            {skills.length === 0 ? (
-              <div className="text-center py-8">
-                <Brain className="mx-auto text-slate-300" size={42} />
+            {/* EMPTY STATE */}
 
-                <p className="text-slate-500 mt-3">
-                  You haven't added any skills yet.
-                </p>
+            {skills.length === 0 ? (
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
+                    <Brain className="text-primary-600" size={18} />
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      No skills added yet
+                    </p>
+
+                    <p className="text-xs text-slate-500">
+                      Add skills to track your progress.
+                    </p>
+                  </div>
+                </div>
 
                 <Link
                   to="/profile"
-                  className="mt-4 inline-flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+                  className="shrink-0 text-xs font-semibold text-primary-600 transition hover:text-primary-700"
                 >
-                  Add Skills to Profile
-                  <ArrowRight size={17} />
+                  Add Skills →
                 </Link>
               </div>
             ) : (
-              <div className="space-y-5">
+              <div className="space-y-3">
                 {skills.map((skill) => (
                   <div key={skill.name}>
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="mb-1.5 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {skill.completed ? (
-                          <CheckCircle2 size={18} className="text-green-500" />
+                          <CheckCircle2 size={16} className="text-green-500" />
                         ) : (
-                          <Circle size={18} className="text-slate-300" />
+                          <Circle size={16} className="text-slate-300" />
                         )}
 
-                        <span className="font-medium text-slate-700">
+                        <span className="text-sm font-medium text-slate-700">
                           {skill.name}
                         </span>
                       </div>
 
-                      <span className="text-sm font-semibold text-slate-600">
+                      <span className="text-xs font-semibold text-slate-600">
                         {skill.progress}%
                       </span>
                     </div>
 
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
                       <div
-                        className="h-full bg-primary-600 rounded-full transition-all"
+                        className="h-full rounded-full bg-primary-600 transition-all"
                         style={{
                           width: `${Math.min(
                             Math.max(skill.progress, 0),
@@ -1257,12 +1303,14 @@ function Dashboard() {
               </div>
             )}
 
+            {/* ASSESSMENT */}
+
             <Link
               to="/skill-assessment"
-              className="mt-6 inline-flex items-center gap-2 text-primary-600 font-semibold hover:text-primary-700"
+              className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 transition hover:text-primary-700"
             >
               Take Skill Assessment
-              <ArrowRight size={17} />
+              <ArrowRight size={14} />
             </Link>
           </div>
 
@@ -1273,19 +1321,19 @@ function Dashboard() {
           <div className="space-y-6">
             {/* QUICK ACTIONS */}
 
-            <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
+            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
               <h2 className="text-xl font-bold text-slate-900">
                 Quick Actions
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1 mb-5">
+              <p className="mb-5 mt-1 text-sm text-slate-500">
                 Continue your career journey.
               </p>
 
               <div className="space-y-3">
                 <Link
                   to="/career-exploration"
-                  className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
+                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
                 >
                   <Target className="text-primary-600" size={21} />
 
@@ -1302,7 +1350,7 @@ function Dashboard() {
 
                 <Link
                   to="/skill-assessment"
-                  className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
+                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
                 >
                   <Brain className="text-primary-600" size={21} />
 
@@ -1319,7 +1367,7 @@ function Dashboard() {
 
                 <Link
                   to="/roadmap"
-                  className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-indigo-50 transition"
+                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
                 >
                   <BookOpen className="text-primary-600" size={21} />
 
@@ -1332,7 +1380,7 @@ function Dashboard() {
 
                 <Link
                   to="/arena"
-                  className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 hover:bg-yellow-50 transition"
+                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-yellow-50"
                 >
                   <Trophy className="text-yellow-500" size={21} />
 
@@ -1349,11 +1397,11 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* CAREER QUEST */}
+            {/* =================================================
+                CAREER QUEST
+            ================================================= */}
 
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-900 p-6 text-white shadow-xl">
-              <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-purple-500/20" />
-
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="rounded-xl bg-white/10 p-2">
@@ -1448,19 +1496,17 @@ function Dashboard() {
             ================================================= */}
 
             <div className="relative overflow-hidden rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50 via-white to-indigo-50 p-6 shadow-md">
-              <div className="absolute -top-10 -right-10 h-28 w-28 rounded-full bg-purple-200/40" />
-
               <div className="relative flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-purple-600">
                     Career Challenge
                   </p>
 
-                  <h2 className="text-xl font-bold text-slate-900 mt-1">
+                  <h2 className="mt-1 text-xl font-bold text-slate-900">
                     Spin Your Career Quest 🎡
                   </h2>
 
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="mt-1 text-sm text-slate-500">
                     Get a random challenge and earn XP.
                   </p>
                 </div>
@@ -1468,37 +1514,31 @@ function Dashboard() {
                 <div className="text-4xl">🎡</div>
               </div>
 
-              {/* BEFORE SPIN */}
-
               {!wheelChallenge && !wheelSpinning && (
                 <button
                   onClick={spinCareerWheel}
-                  className="mt-5 w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-white hover:bg-purple-700 transition"
+                  className="mt-5 w-full rounded-xl bg-purple-600 px-4 py-3 font-bold text-white transition hover:bg-purple-700"
                 >
                   🎡 Spin the Wheel
                 </button>
               )}
 
-              {/* SPINNING */}
-
               {wheelSpinning && (
                 <div className="mt-5 rounded-xl bg-purple-100 p-6 text-center">
-                  <div className="text-5xl animate-spin inline-block">🎡</div>
+                  <div className="inline-block text-5xl animate-spin">🎡</div>
 
                   <p className="mt-4 font-bold text-purple-700">
                     Choosing your challenge...
                   </p>
 
-                  <p className="text-xs text-purple-500 mt-1">
+                  <p className="mt-1 text-xs text-purple-500">
                     Your career mission is being selected!
                   </p>
                 </div>
               )}
 
-              {/* RESULT */}
-
               {wheelChallenge && !wheelSpinning && (
-                <div className="mt-5 rounded-xl bg-white border border-purple-100 p-5 shadow-sm">
+                <div className="mt-5 rounded-xl border border-purple-100 bg-white p-5 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="text-4xl">{wheelChallenge.icon}</div>
@@ -1521,7 +1561,7 @@ function Dashboard() {
                     <>
                       <button
                         onClick={completeWheelChallenge}
-                        className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-bold text-white hover:bg-indigo-700 transition"
+                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-bold text-white transition hover:bg-indigo-700"
                       >
                         <CheckCircle2 size={17} />
                         Complete Challenge
@@ -1529,7 +1569,7 @@ function Dashboard() {
 
                       <button
                         onClick={spinCareerWheel}
-                        className="mt-2 w-full rounded-xl border border-purple-200 px-4 py-2.5 text-sm font-semibold text-purple-700 hover:bg-purple-50 transition"
+                        className="mt-2 w-full rounded-xl border border-purple-200 px-4 py-2.5 text-sm font-semibold text-purple-700 transition hover:bg-purple-50"
                       >
                         🎡 Spin Again
                       </button>
@@ -1541,14 +1581,14 @@ function Dashboard() {
                           🎉 Challenge Completed!
                         </p>
 
-                        <p className="text-sm text-green-600 mt-1">
+                        <p className="mt-1 text-sm text-green-600">
                           +20 XP earned
                         </p>
                       </div>
 
                       <button
                         onClick={spinCareerWheel}
-                        className="mt-3 w-full rounded-xl bg-purple-600 px-4 py-3 text-sm font-bold text-white hover:bg-purple-700 transition"
+                        className="mt-3 w-full rounded-xl bg-purple-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-purple-700"
                       >
                         🎡 Spin Another Challenge
                       </button>
@@ -1563,7 +1603,7 @@ function Dashboard() {
             ================================================= */}
 
             <div className="relative overflow-hidden rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-900 p-6 text-white shadow-xl">
-              <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-purple-500/20" />
+              <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-purple-500/20" />
 
               <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-indigo-400/10" />
 
@@ -1583,7 +1623,7 @@ function Dashboard() {
                 </div>
 
                 <span className="rounded-full bg-yellow-400/20 px-3 py-1 text-xs font-bold text-yellow-300">
-                  +20 XP
+                  +{dailyChallenge?.xp || 20} XP
                 </span>
               </div>
 
@@ -1617,7 +1657,7 @@ function Dashboard() {
 
                   <button
                     onClick={loadDailyChallenge}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-indigo-800 hover:bg-indigo-50 transition"
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-indigo-800 transition hover:bg-indigo-50"
                   >
                     <RefreshCw size={17} />
                     Try Again
@@ -1631,18 +1671,14 @@ function Dashboard() {
                 <div className="relative mt-6">
                   <div className="rounded-xl bg-white/10 p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-bold">
-                        {dailyChallenge.title}
-                      </h3>
+                      <span className="rounded-full bg-indigo-400/20 px-3 py-1 text-xs font-bold text-indigo-200">
+                        {dailyChallenge.category}
+                      </span>
 
-                      <span className="rounded-full bg-green-400/20 px-2.5 py-1 text-xs font-bold text-green-300">
+                      <span className="rounded-full bg-green-400/20 px-3 py-1 text-xs font-bold text-green-300">
                         {dailyChallenge.difficulty}
                       </span>
                     </div>
-
-                    <p className="mt-3 text-sm leading-6 text-indigo-100">
-                      {dailyChallenge.description}
-                    </p>
                   </div>
 
                   <div className="mt-4 rounded-xl bg-black/20 p-4">
@@ -1650,58 +1686,78 @@ function Dashboard() {
                       Challenge
                     </p>
 
-                    <p className="mt-2 text-sm text-white">
+                    <p className="mt-2 text-base font-medium leading-7 text-white">
                       {dailyChallenge.question}
                     </p>
                   </div>
 
                   {!challengeCompleted && (
-                    <>
-                      <div className="mt-4">
-                        <label className="text-sm font-semibold text-indigo-100">
-                          Your Answer
-                        </label>
+                    <div className="mt-4 space-y-3">
+                      <p className="text-sm font-semibold text-indigo-100">
+                        Choose your answer:
+                      </p>
 
-                        <input
-                          type="text"
-                          value={selectedAnswer}
-                          onChange={(event) =>
-                            setSelectedAnswer(event.target.value)
-                          }
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter") {
-                              completeDailyDeveloperChallenge();
-                            }
-                          }}
-                          placeholder="Enter your answer..."
-                          className="mt-2 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-indigo-300 outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-400/30"
-                        />
-                      </div>
+                      {Array.isArray(dailyChallenge.options) &&
+                        dailyChallenge.options.map((option, index) => {
+                          const isSelected =
+                            String(index) === String(selectedAnswer);
 
-                      {challengeMessage && (
-                        <div className="mt-3 rounded-xl bg-white/10 px-4 py-3 text-sm text-indigo-100">
-                          {challengeMessage}
-                        </div>
+                          return (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => setSelectedAnswer(String(index))}
+                              className={`w-full rounded-xl border p-4 text-left transition ${
+                                isSelected
+                                  ? "border-indigo-300 bg-indigo-500/30 ring-2 ring-indigo-300/30"
+                                  : "border-white/10 bg-white/10 hover:bg-white/15"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                                    isSelected
+                                      ? "bg-white text-indigo-800"
+                                      : "bg-white/10 text-indigo-200"
+                                  }`}
+                                >
+                                  {String.fromCharCode(65 + index)}
+                                </div>
+
+                                <span className="text-sm text-white">
+                                  {option}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  {challengeMessage && !challengeCompleted && (
+                    <div className="mt-4 whitespace-pre-line rounded-xl bg-white/10 px-4 py-3 text-sm text-indigo-100">
+                      {challengeMessage}
+                    </div>
+                  )}
+
+                  {!challengeCompleted && (
+                    <button
+                      onClick={completeDailyDeveloperChallenge}
+                      disabled={submittingChallenge || selectedAnswer === ""}
+                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-indigo-800 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {submittingChallenge ? (
+                        <>
+                          <RefreshCw size={17} className="animate-spin" />
+                          Checking...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 size={17} />
+                          Submit Answer
+                        </>
                       )}
-
-                      <button
-                        onClick={completeDailyDeveloperChallenge}
-                        disabled={submittingChallenge}
-                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-indigo-800 transition hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {submittingChallenge ? (
-                          <>
-                            <RefreshCw size={17} className="animate-spin" />
-                            Checking...
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 size={17} />
-                            Submit Answer
-                          </>
-                        )}
-                      </button>
-                    </>
+                    </button>
                   )}
 
                   {challengeCompleted && (
@@ -1717,19 +1773,42 @@ function Dashboard() {
 
                           <div>
                             <p className="font-bold text-green-300">
-                              Quest Completed! 🎉
+                              Developer Challenge Completed! 🎉
                             </p>
 
                             <p className="text-sm text-green-100">
-                              +20 XP earned
+                              +{dailyChallenge.xp || 20} XP earned
                             </p>
                           </div>
                         </div>
 
-                        <p className="mt-3 text-sm text-indigo-100">
-                          Amazing work! Come back tomorrow for a new daily
-                          challenge.
-                        </p>
+                        {challengeMessage && (
+                          <p className="mt-3 whitespace-pre-line text-sm text-indigo-100">
+                            {challengeMessage}
+                          </p>
+                        )}
+
+                        {dailyChallenge.explanation && (
+                          <div className="mt-4 rounded-xl bg-white/10 p-4">
+                            <p className="text-xs font-bold uppercase tracking-wide text-indigo-300">
+                              Explanation
+                            </p>
+
+                            <p className="mt-2 text-sm leading-6 text-indigo-100">
+                              {dailyChallenge.explanation}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="mt-4 rounded-xl border border-purple-300/20 bg-purple-400/10 p-4">
+                          <p className="font-bold text-purple-200">
+                            🔓 Daily Quest Unlocked!
+                          </p>
+
+                          <p className="mt-1 text-sm text-indigo-200">
+                            Complete the quest below to earn another +20 XP.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1741,48 +1820,89 @@ function Dashboard() {
                 DAILY QUEST
             ================================================= */}
 
-            <div className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-5 shadow-md">
+            <div
+              className={`relative overflow-hidden rounded-2xl border p-5 shadow-md transition ${
+                !challengeCompleted
+                  ? "border-slate-200 bg-slate-100"
+                  : dailyQuestCompleted
+                    ? "border-green-200 bg-green-50"
+                    : "border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50"
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-100">
+                  <div
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+                      dailyQuestCompleted
+                        ? "bg-green-100"
+                        : challengeCompleted
+                          ? "bg-indigo-100"
+                          : "bg-slate-200"
+                    }`}
+                  >
                     {dailyQuestCompleted ? (
                       <CheckCircle2 className="text-green-600" size={23} />
-                    ) : (
+                    ) : challengeCompleted ? (
                       <Zap className="text-indigo-600" size={23} />
+                    ) : (
+                      <Shield className="text-slate-400" size={23} />
                     )}
                   </div>
 
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-indigo-600">
+                    <p
+                      className={`text-xs font-bold uppercase tracking-wide ${
+                        challengeCompleted
+                          ? "text-indigo-600"
+                          : "text-slate-400"
+                      }`}
+                    >
                       Daily Quest
                     </p>
 
                     <p className="font-bold text-slate-800">
                       {dailyQuestCompleted
                         ? "Quest Completed! 🎉"
-                        : "Complete Today's Quest"}
+                        : !challengeCompleted
+                          ? "Quest Locked 🔒"
+                          : "Complete Today's Quest"}
                     </p>
                   </div>
                 </div>
 
-                <span className="rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-bold text-yellow-700">
+                <span
+                  className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                    challengeCompleted
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-slate-200 text-slate-400"
+                  }`}
+                >
                   +20 XP
                 </span>
               </div>
 
               <p className="mt-3 text-sm text-slate-600">
                 {dailyQuestCompleted
-                  ? "Amazing work! Come back tomorrow for a new daily challenge."
-                  : "Take one small step toward your career goal today."}
+                  ? "Amazing work! You completed both of today's quests. 🚀"
+                  : !challengeCompleted
+                    ? "Complete today's Daily Developer Challenge above to unlock this quest."
+                    : "You've completed the developer challenge! Now take one small step toward your career goal."}
               </p>
 
-              {!dailyQuestCompleted && (
+              {!challengeCompleted && !dailyQuestCompleted && (
+                <div className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 px-4 py-3 text-sm font-bold text-slate-500">
+                  <Shield size={17} />
+                  Complete Developer Challenge First
+                </div>
+              )}
+
+              {challengeCompleted && !dailyQuestCompleted && (
                 <button
                   onClick={completeDailyQuest}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
                 >
                   <CheckCircle2 size={17} />
-                  Complete Quest
+                  Complete Quest +20 XP
                 </button>
               )}
 
@@ -1793,196 +1913,15 @@ function Dashboard() {
                 </div>
               )}
             </div>
-
-            {/* =================================================
-                MINI ACHIEVEMENT
-            ================================================= */}
-
-            <div className="relative overflow-hidden rounded-2xl border border-yellow-100 bg-gradient-to-br from-yellow-50 to-orange-50 p-5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yellow-100">
-                  {completedSkills >= 1 ? (
-                    <Crown className="text-yellow-600" size={23} />
-                  ) : (
-                    <Shield className="text-yellow-600" size={23} />
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wide text-yellow-700">
-                    Next Achievement
-                  </p>
-
-                  <p className="font-bold text-slate-800">
-                    {completedSkills >= 10
-                      ? "Roadmap Master 🏆"
-                      : completedSkills >= 5
-                        ? "Skill Builder 🛠️"
-                        : "First Step 🚀"}
-                  </p>
-                </div>
-              </div>
-
-              <p className="mt-3 text-xs text-slate-600">
-                {completedSkills >= 10
-                  ? "Amazing! Keep completing skills to reach the next milestone."
-                  : completedSkills >= 5
-                    ? `${Math.max(
-                        10 - completedSkills,
-                        0,
-                      )} more skills to unlock Roadmap Starter.`
-                    : `${Math.max(
-                        1 - completedSkills,
-                        0,
-                      )} skill to unlock your first badge.`}
-              </p>
-            </div>
           </div>
         </section>
 
         {/* =================================================
-            LEADERBOARD
+            RECENT ACHIEVEMENT
         ================================================= */}
 
-        <section className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Trophy className="text-yellow-500" size={23} />
-                PathWise Leaderboard
-              </h2>
-
-              <p className="text-sm text-slate-500 mt-1">
-                A little friendly competition never hurts 😎
-              </p>
-            </div>
-
-            <Medal className="text-yellow-500" size={28} />
-          </div>
-
-          <div className="space-y-3">
-            {leaderboard.map((leaderboardUser) => (
-              <div
-                key={leaderboardUser.rank}
-                className={`flex items-center gap-4 p-4 rounded-xl ${
-                  leaderboardUser.currentUser
-                    ? "bg-indigo-50 border border-indigo-100"
-                    : "bg-slate-50"
-                }`}
-              >
-                <div className="w-10 text-center font-bold text-slate-500">
-                  {leaderboardUser.rank === 1
-                    ? "🥇"
-                    : leaderboardUser.rank === 2
-                      ? "🥈"
-                      : "🥉"}
-                </div>
-
-                <div className="text-2xl">{leaderboardUser.avatar}</div>
-
-                <div className="flex-1">
-                  <p className="font-semibold text-slate-800">
-                    {leaderboardUser.name}
-
-                    {leaderboardUser.currentUser && (
-                      <span className="ml-2 text-xs text-primary-600 font-bold">
-                        YOU
-                      </span>
-                    )}
-                  </p>
-
-                  <p className="text-xs text-slate-500">
-                    Level{" "}
-                    {leaderboardUser.currentUser
-                      ? level
-                      : Math.floor(leaderboardUser.xp / 250) + 1}
-                  </p>
-                </div>
-
-                <div className="font-bold text-yellow-600">
-                  ⚡ {leaderboardUser.xp} XP
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* =================================================
-            BADGES
-        ================================================= */}
-
-        <section className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Medal className="text-yellow-500" size={23} />
-                Your Badges
-              </h2>
-
-              <p className="text-sm text-slate-500 mt-1">
-                {unlockedBadges}/{badges.length} badges unlocked
-              </p>
-            </div>
-
-            <Link
-              to="/arena"
-              className="text-primary-600 font-semibold text-sm flex items-center gap-1 hover:text-primary-700"
-            >
-              View All
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {badges.map((badge) => (
-              <div
-                key={badge.id}
-                className={`rounded-xl p-4 text-center border transition ${
-                  badge.unlocked
-                    ? "bg-yellow-50 border-yellow-200"
-                    : "bg-slate-50 border-slate-100 opacity-50"
-                }`}
-              >
-                <div className="text-3xl mb-2">
-                  {badge.unlocked ? badge.icon : "🔒"}
-                </div>
-
-                <p className="font-semibold text-sm text-slate-800">
-                  {badge.name}
-                </p>
-
-                <p className="text-xs text-slate-500 mt-1">
-                  {badge.unlocked ? "Unlocked" : "Locked"}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* =================================================
-            DAILY MOTIVATION
-        ================================================= */}
-
-        <section className="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl p-7 md:p-9 text-white shadow-xl text-center">
-          <div className="text-4xl mb-3">🧠</div>
-
-          <p className="text-xs font-bold tracking-widest text-indigo-300 mb-3">
-            DAILY MOTIVATION
-          </p>
-
-          <h2 className="text-xl md:text-2xl font-bold">“{quote}”</h2>
-
-          <p className="text-slate-300 mt-3">
-            Keep showing up. Your dream career is built one skill at a time. 🚀
-          </p>
-        </section>
-
-        {/* =================================================
-            ACHIEVEMENT
-        ================================================= */}
-
-        <section className="bg-white rounded-2xl shadow-md border border-slate-100 p-6">
-          <div className="flex items-center gap-3 mb-4">
+        <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
+          <div className="mb-4 flex items-center gap-3">
             <Award className="text-yellow-500" size={25} />
 
             <div>
@@ -1994,10 +1933,10 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-yellow-50 rounded-xl p-4">
+          <div className="rounded-xl bg-yellow-50 p-4">
             <p className="font-semibold text-yellow-800">🏆 First Steps</p>
 
-            <p className="text-sm text-yellow-700 mt-1">
+            <p className="mt-1 text-sm text-yellow-700">
               Completed your first career assessment.
             </p>
           </div>
