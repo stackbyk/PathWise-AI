@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const challengeSchema = new mongoose.Schema(
   {
+    // =====================================================
+    // CATEGORY
+    // =====================================================
+
     category: {
       type: String,
       enum: [
@@ -14,10 +18,13 @@ const challengeSchema = new mongoose.Schema(
         "Computer Networks",
         "Web Development",
         "Logical Reasoning",
-        "OS",
       ],
       required: true,
     },
+
+    // =====================================================
+    // DIFFICULTY
+    // =====================================================
 
     difficulty: {
       type: String,
@@ -25,11 +32,19 @@ const challengeSchema = new mongoose.Schema(
       default: "Easy",
     },
 
+    // =====================================================
+    // QUESTION
+    // =====================================================
+
     question: {
       type: String,
       required: true,
       trim: true,
     },
+
+    // =====================================================
+    // OPTIONS
+    // =====================================================
 
     options: {
       type: [String],
@@ -42,6 +57,14 @@ const challengeSchema = new mongoose.Schema(
       },
     },
 
+    // =====================================================
+    // CORRECT ANSWER
+    // =====================================================
+    // 0 = first option
+    // 1 = second option
+    // 2 = third option
+    // 3 = fourth option
+
     correctAnswer: {
       type: Number,
       required: true,
@@ -49,17 +72,29 @@ const challengeSchema = new mongoose.Schema(
       max: 3,
     },
 
+    // =====================================================
+    // EXPLANATION
+    // =====================================================
+
     explanation: {
       type: String,
       required: true,
       trim: true,
     },
 
+    // =====================================================
+    // XP
+    // =====================================================
+
     xp: {
       type: Number,
       default: 10,
       min: 0,
     },
+
+    // =====================================================
+    // ACTIVE
+    // =====================================================
 
     active: {
       type: Boolean,
