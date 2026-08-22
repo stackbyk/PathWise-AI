@@ -24,6 +24,8 @@ import Recommendations from "./pages/Recommendations";
 import Arena from "./pages/Arena";
 import SkillGapAnalysis from "./pages/SkillGapAnalysis";
 import Badges from "./pages/Badges";
+import PlacementReadiness from "./pages/PlacementReadiness";
+import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 
 // =========================================================
 // COMPONENTS
@@ -981,6 +983,19 @@ function App() {
             />
 
             {/* =================================================
+                PLACEMENT READINESS
+            ================================================= */}
+
+            <Route
+              path="/placement-readiness"
+              element={
+                <ProtectedRoute>
+                  <PlacementReadiness />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* =================================================
                 SKILL GAP
             ================================================= */}
 
@@ -989,6 +1004,18 @@ function App() {
               element={
                 <ProtectedRoute>
                   <SkillGapAnalysis />
+                </ProtectedRoute>
+              }
+            />
+            {/* =================================================
+    RESUME ANALYZER
+================================================= */}
+
+            <Route
+              path="/resume-analyzer"
+              element={
+                <ProtectedRoute>
+                  <ResumeAnalyzer />
                 </ProtectedRoute>
               }
             />

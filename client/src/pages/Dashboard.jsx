@@ -23,6 +23,7 @@ import {
   Shield,
   Code2,
   RefreshCw,
+  FileText,
 } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -1319,83 +1320,46 @@ function Dashboard() {
           ================================================= */}
 
           <div className="space-y-6">
-            {/* QUICK ACTIONS */}
+            {/* =================================================
+                RESUME ANALYZER
+            ================================================= */}
 
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-md">
-              <h2 className="text-xl font-bold text-slate-900">
-                Quick Actions
-              </h2>
+            <Link
+              to="/resume-analyzer"
+              className="group relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 via-slate-900 to-indigo-500/10 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/40 hover:shadow-xl"
+            >
+              <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-500/10 blur-3xl transition group-hover:bg-cyan-400/15" />
 
-              <p className="mb-5 mt-1 text-sm text-slate-500">
-                Continue your career journey.
-              </p>
-
-              <div className="space-y-3">
-                <Link
-                  to="/career-exploration"
-                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
-                >
-                  <Target className="text-primary-600" size={21} />
-
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      Explore Careers
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      Find your ideal career
-                    </p>
+              <div className="relative flex items-start justify-between gap-4">
+                <div>
+                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-500/10">
+                    <FileText className="text-cyan-400" size={23} />
                   </div>
-                </Link>
 
-                <Link
-                  to="/skill-assessment"
-                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
-                >
-                  <Brain className="text-primary-600" size={21} />
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-400">
+                    AI Career Intelligence
+                  </p>
 
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      Skill Assessment
-                    </p>
+                  <h2 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">
+                    Resume Analyzer
+                  </h2>
 
-                    <p className="text-xs text-slate-500">
-                      Identify your skill gaps
-                    </p>
-                  </div>
-                </Link>
+                  <p className="mt-2 max-w-sm text-sm text-slate-500 dark:text-slate-400">
+                    Upload your resume and get ATS scoring, career matching,
+                    skill gaps and AI-powered improvement suggestions.
+                  </p>
+                </div>
 
-                <Link
-                  to="/roadmap"
-                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-indigo-50"
-                >
-                  <BookOpen className="text-primary-600" size={21} />
-
-                  <div>
-                    <p className="font-semibold text-slate-800">View Roadmap</p>
-
-                    <p className="text-xs text-slate-500">Continue learning</p>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/arena"
-                  className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 transition hover:bg-yellow-50"
-                >
-                  <Trophy className="text-yellow-500" size={21} />
-
-                  <div>
-                    <p className="font-semibold text-slate-800">
-                      PathWise Arena
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      View XP, badges & leaderboard
-                    </p>
-                  </div>
-                </Link>
+                <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500 text-slate-950 transition-transform group-hover:translate-x-1">
+                  <ArrowRight size={19} />
+                </div>
               </div>
-            </div>
+
+              <div className="relative mt-5 inline-flex items-center gap-2 text-sm font-bold text-cyan-400">
+                Analyze Your Resume
+                <ArrowRight size={16} />
+              </div>
+            </Link>
 
             {/* =================================================
                 CAREER QUEST
@@ -1913,6 +1877,43 @@ function Dashboard() {
                 </div>
               )}
             </div>
+          </div>
+        </section>
+
+        {/* =================================================
+            PLACEMENT READINESS
+        ================================================= */}
+
+        <section className="overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 shadow-md">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="rounded-2xl bg-indigo-100 p-3">
+                <Target className="text-indigo-600" size={25} />
+              </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-600">
+                  Placement Readiness
+                </p>
+
+                <h2 className="mt-1 text-2xl font-bold text-slate-900">
+                  Know how ready you are for placements
+                </h2>
+
+                <p className="mt-1 max-w-2xl text-sm text-slate-500">
+                  See how your assessment, verification, skills, roadmap and
+                  practice progress contribute to your career readiness.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/placement-readiness"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-bold text-white transition hover:bg-indigo-700"
+            >
+              View Readiness Score
+              <ArrowRight size={17} />
+            </Link>
           </div>
         </section>
 

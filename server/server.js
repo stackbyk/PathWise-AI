@@ -108,6 +108,7 @@ app.use("/api/roadmaps", require("./routes/roadmapRoutes"));
 app.use("/api/skills", require("./routes/skillRoutes"));
 
 app.use("/api/chat", require("./routes/chatRoutes"));
+app.use("/api/resume", require("./routes/resumeRoutes"));
 
 // =====================================================
 // NEO4J TEST
