@@ -1,5 +1,5 @@
 const Groq = require("groq-sdk");
-const pdfParse = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
 
 const User = require("../models/User");
 const Roadmap = require("../models/Roadmap");
@@ -128,9 +128,29 @@ const analyzeResume = async (req, res) => {
     // -------------------------------------------------------
 
     let pdfData;
-
+    let resumeText;
+    console.log("========== RESUME PDF DEBUG ==========");
+    console.log("File name:", req.file.originalname);
+    console.log("MIME type:", req.file.mimetype);
+    console.log("File size:", req.file.size);
+    console.log("Buffer exists:", !!req.file.buffer);
+    console.log("Buffer length:", req.file.buffer?.length);
+    console.log("======================================");
     try {
-      pdfData = await pdfParse(req.file.buffer);
+      const parser = new PDFParse({
+        data: req.file.buffer,
+      });
+
+      const result = await parser.getText();
+
+      resumeText = result.text?.trim();
+
+      await parser.destroy();
+
+      pdfData = {
+        text: resumeText,
+        numpages: result.total || null,
+      };
     } catch (error) {
       console.error("PDF parsing error:", error);
 
@@ -140,8 +160,6 @@ const analyzeResume = async (req, res) => {
           "Could not read this PDF. Please upload a valid text-based PDF resume.",
       });
     }
-
-    const resumeText = pdfData.text?.trim();
 
     if (!resumeText) {
       return res.status(400).json({
