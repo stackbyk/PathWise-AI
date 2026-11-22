@@ -48,21 +48,13 @@ function App() {
         {/* CAREER EXPLORATION */}
         <Route
           path="/career-exploration"
-          element={
-            <ProtectedRoute>
-              <CareerExploration />
-            </ProtectedRoute>
-          }
+          element={<CareerExploration />}
         />
 
         {/* SKILL ASSESSMENT */}
         <Route
           path="/skill-assessment"
-          element={
-            <ProtectedRoute>
-              <SkillAssessment />
-            </ProtectedRoute>
-          }
+          element={<SkillAssessment />}
         />
 
         {/* RESULTS */}
