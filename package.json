@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "mongoose": "^9.9.2"
+  },
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "lint": "npm --prefix client run lint"
+  }
+}
