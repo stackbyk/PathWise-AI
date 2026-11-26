@@ -1,0 +1,42 @@
+[
+  {
+    "oldUrl": "https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final",
+    "newUrls": ["https://csrc.nist.gov/pubs/sp/800/61/r3/final"],
+    "reason": "Revision 2 was superseded by Revision 3 in April 2025; the learning steps now reference Rev. 3 and CSF 2.0."
+  },
+  {
+    "oldUrl": "https://www.deeplearning.ai/",
+    "newUrls": ["https://pytorch.org/tutorials/", "https://course.fast.ai/"],
+    "reason": "The old landing page mixes free and paid offerings. Use explicitly free tutorials and a free course instead."
+  },
+  {
+    "oldUrl": "https://aws.amazon.com/training/",
+    "newUrls": ["https://docs.aws.amazon.com/", "https://learn.microsoft.com/training/"],
+    "reason": "The broad training page does not guarantee that every offering or cloud exercise is free. Link free documentation/training and use local project tools."
+  },
+  {
+    "oldUrl": "https://www.google.com/",
+    "newUrls": ["https://www.freecodecamp.org/learn/", "https://cs50.harvard.edu/x/"],
+    "reason": "Removed the uncurated search-engine fallback in favor of an explicit free foundation path."
+  },
+  {
+    "oldUrl": "https://www.open.edu/openlearn/digital-computing/network-security",
+    "newUrls": ["https://www.netacad.com/courses/network-defense"],
+    "reason": "Candidate course verified as free on the provider site but its automated HEAD/GET checks returned HTTP 403; replaced with a verified free self-paced course."
+  },
+  {
+    "oldUrl": "https://www.cloudflare.com/learning/",
+    "newUrls": ["https://www.wireshark.org/docs/wsug_html_chunked/"],
+    "reason": "Candidate article library intermittently returned HTTP 403 to the checker; replaced with a concrete free online networking book."
+  },
+  {
+    "oldUrl": "https://www.py4e.com/",
+    "newUrls": ["https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/"],
+    "reason": "Candidate course returned HTTP 403 during research; used the verified MIT OpenCourseWare course instead."
+  },
+  {
+    "oldUrl": "https://docs.wazuh.com/current/quickstart.html",
+    "newUrls": ["https://documentation.wazuh.com/current/quickstart.html"],
+    "reason": "Rejected an uncertain candidate hostname; the provider's actual documentation uses documentation.wazuh.com."
+  }
+]

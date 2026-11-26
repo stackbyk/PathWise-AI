@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:links": "node scripts/check-resource-links.mjs",
+    "typecheck:recommendations": "tsc -p tsconfig.recommendations.json"
   },
   "dependencies": {
     "axios": "^1.19.0",
@@ -30,6 +32,7 @@
     "oxlint": "^1.75.0",
     "postcss": "^8.5.26",
     "tailwindcss": "^3.4.17",
+    "typescript": "^7.0.2",
     "vite": "^6.4.5"
   }
 }

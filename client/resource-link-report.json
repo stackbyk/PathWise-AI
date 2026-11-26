@@ -1,0 +1,521 @@
+{
+  "checkedAt": "2026-11-26T01:56:25.203Z",
+  "total": 64,
+  "passed": 64,
+  "blocked": 0,
+  "failed": 0,
+  "results": [
+    {
+      "url": "https://attack.mitre.org/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://attack.mitre.org/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://automatetheboringstuff.com/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://automatetheboringstuff.com/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://course.fast.ai/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://course.fast.ai/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://cs50.harvard.edu/cybersecurity/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://cs50.harvard.edu/cybersecurity/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://cs50.harvard.edu/python/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://cs50.harvard.edu/python/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://cs50.harvard.edu/sql/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://cs50.harvard.edu/sql/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://cs50.harvard.edu/x/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://cs50.harvard.edu/x/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://developer.mozilla.org/en-US/docs/Learn_web_development",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://developers.google.com/machine-learning/crash-course",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://developers.google.com/machine-learning/crash-course",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://docs.aws.amazon.com/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.aws.amazon.com/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://docs.docker.com/compose/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.docker.com/compose/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://docs.docker.com/get-started/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.docker.com/learn/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://docs.github.com/en/actions",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.github.com/en/actions",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://docs.python.org/3/tutorial/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.python.org/3/tutorial/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://documentation.ubuntu.com/server/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://ubuntu.com/server/docs/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://documentation.wazuh.com/current/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://documentation.wazuh.com/current/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://documentation.wazuh.com/current/quickstart.html",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://documentation.wazuh.com/current/quickstart.html",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://exercism.org/tracks/python",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://exercism.org/tracks/python",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://firebase.google.com/docs/auth",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://firebase.google.com/docs/auth",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://github.com/OTRF/Security-Datasets",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://github.com/OTRF/Security-Datasets",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://kubernetes.io/docs/tutorials/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://kubernetes.io/docs/tutorials/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://learn.microsoft.com/training/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://learn.microsoft.com/en-us/training/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://learn.mongodb.com/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://learn.mongodb.com/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://linuxcommand.org/tlcl.php",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://linuxcommand.org/tlcl.php",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://matplotlib.org/stable/users/index.html",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://matplotlib.org/stable/users/index.html",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://missing.csail.mit.edu/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://missing.csail.mit.edu/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://nodejs.org/en/learn",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://nodejs.org/learn",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://nodejs.org/en/learn/getting-started/introduction-to-nodejs",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://nodejs.org/learn/getting-started/introduction-to-nodejs",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://overthewire.org/wargames/bandit/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://overthewire.org/wargames/bandit/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://owasp.org/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://owasp.org/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://owasp.org/www-project-web-security-testing-guide/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://owasp.org/projects/web-security-testing-guide",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://pandas.pydata.org/docs/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://pandas.pydata.org/docs/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://portswigger.net/web-security",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://portswigger.net/web-security",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://pwn.college/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://pwn.college/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://pytorch.org/tutorials/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://docs.pytorch.org/tutorials/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://react.dev/learn",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://react.dev/learn",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://skills.github.com/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://skills.github.com/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://training.linuxfoundation.org/training/introduction-to-linux/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://training.linuxfoundation.org/training/introduction-to-linux/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://wiki.wireshark.org/SampleCaptures",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://wiki.wireshark.org/SampleCaptures",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.freecodecamp.org/learn/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.freecodecamp.org/learn",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.kaggle.com/learn",
+      "status": 200,
+      "method": "GET",
+      "finalUrl": "https://www.kaggle.com/learn",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.khanacademy.org/math",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.khanacademy.org/math",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.khanacademy.org/math/statistics-probability",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.khanacademy.org/math/statistics-probability",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.netacad.com/courses/cyber-threat-management",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.netacad.com/courses/cyber-threat-management",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.netacad.com/courses/introduction-to-cybersecurity",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.netacad.com/courses/introduction-to-cybersecurity",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.netacad.com/courses/network-defense",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.netacad.com/courses/network-defense",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.netacad.com/courses/networking-basics",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.netacad.com/courses/networking-basics",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.nist.gov/cyberframework",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.nist.gov/cyberframework",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.postgresql.org/docs/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.postgresql.org/docs/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.splunk.com/en_us/training/free-courses/overview.html",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.splunk.com/en_us/training/free-courses/overview.html",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.wireshark.org/docs/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.wireshark.org/docs/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.wireshark.org/docs/wsug_html_chunked/",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.wireshark.org/docs/wsug_html_chunked/",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@13Cubed",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@13Cubed",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@coreyms",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@coreyms",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@davidbombal",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@davidbombal",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@freecodecamp",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@freecodecamp",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@LearnLinuxTV",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@LearnLinuxTV",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@PracticalNetworking",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@PracticalNetworking",
+      "ok": true,
+      "blocked": false
+    },
+    {
+      "url": "https://www.youtube.com/@professormesser",
+      "status": 200,
+      "method": "HEAD",
+      "finalUrl": "https://www.youtube.com/@professormesser",
+      "ok": true,
+      "blocked": false
+    }
+  ]
+}

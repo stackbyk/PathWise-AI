@@ -1,34 +1,25 @@
-import { Handle, Position } from '@xyflow/react';
-import { CheckCircle2, Lock, PlayCircle, BookOpen } from 'lucide-react';
+import { Handle, Position } from 'reactflow';
+import { CheckCircle2, LockKeyhole, BookOpen, Compass, Clock3 } from 'lucide-react';
 
-export default function RoadmapNode({ data }) {
-  const isLocked = data.status === 'Locked';
-  const isCompleted = data.status === 'Completed';
-  const isInProgress = data.status === 'In Progress';
-  const isAvailable = data.status === 'Available';
-
-  let bgClass = 'bg-slate-100 border-slate-300 dark:bg-slate-800 dark:border-slate-700 text-slate-500';
-  if (isCompleted) bgClass = 'bg-green-100 border-green-500 dark:bg-green-900/30 dark:border-green-500 text-green-700 dark:text-green-400';
-  if (isInProgress) bgClass = 'bg-blue-100 border-blue-500 dark:bg-blue-900/30 dark:border-blue-500 text-blue-700 dark:text-blue-400';
-  if (isAvailable) bgClass = 'bg-white border-primary-500 dark:bg-slate-800 dark:border-primary-500 text-slate-900 dark:text-slate-100 shadow-lg shadow-primary-500/20';
-
+export function RoadmapStageCard({ data }) {
+  const locked = data.status === 'Locked';
+  const StatusIcon = data.status === 'Completed' ? CheckCircle2 : locked ? LockKeyhole : data.status === 'In Progress' ? BookOpen : Compass;
   return (
-    <div className={`px-4 py-3 rounded-xl border-2 min-w-[180px] transition-all ${bgClass} ${!isLocked ? 'cursor-pointer hover:scale-105' : 'opacity-70'}`}>
-      <Handle type="target" position={Position.Top} className="w-3 h-3 bg-slate-400" />
-      
-      <div className="flex items-center gap-3">
-        {isLocked && <Lock size={20} />}
-        {isAvailable && <PlayCircle size={20} className="text-primary-500" />}
-        {isInProgress && <BookOpen size={20} />}
-        {isCompleted && <CheckCircle2 size={20} />}
-        
-        <div>
-          <div className="font-bold text-sm">{data.label}</div>
-          <div className="text-xs opacity-80">{data.status}</div>
-        </div>
-      </div>
-
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-slate-400" />
+    <div className={`rm-stage-node rm-status-${data.status.toLowerCase().replace(/\s/g,'-')}`}>
+      <button type="button" className="rm-node-button nodrag nopan" disabled={locked}
+        onClick={data.onSelect} aria-label={`${data.label}: ${data.status}${locked ? '. Complete the previous stages to unlock.' : '. Open module.'}`}>
+        <div className="rm-node-top"><span className="rm-stage-index">STAGE {String(data.index + 1).padStart(2,'0')}</span><span className="rm-status"><StatusIcon size={13} />{data.status}</span></div>
+        <h3>{data.label}</h3>
+        <p className="rm-node-description">{data.description}</p>
+        <div className="rm-node-meta"><span><Clock3 size={13} />{data.duration}</span><span>{data.completedSkillCount}/{data.skillCount} skills</span></div>
+        <div className="rm-mini-progress" aria-hidden="true"><span style={{width:`${data.skillCount ? data.completedSkillCount / data.skillCount * 100 : 0}%`}} /></div>
+        <span className="rm-node-action">{locked ? 'Finish earlier stages to unlock' : data.status === 'Completed' ? 'Review module' : 'Explore module'}</span>
+      </button>
     </div>
   );
+}
+
+export default function RoadmapNode({ data }) {
+  const positions = {top:Position.Top,bottom:Position.Bottom,left:Position.Left,right:Position.Right};
+  return <><Handle type="target" position={positions[data.targetPosition] || Position.Top} isConnectable={false} /><RoadmapStageCard data={data} /><Handle type="source" position={positions[data.sourcePosition] || Position.Bottom} isConnectable={false} /></>;
 }
